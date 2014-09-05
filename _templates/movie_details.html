@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Local Movie Database</title>
+    <link href="../_resources/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="../_resources/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body role="document">
+    <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="./index.html">List of Content <span class="badge">{{ number_of_movies }}</span></a></li>
+            <li><a href="./filter">Filter Results <span class="badge">{{ number_of_movies }}</span></a></li>
+            <li><a href="./about.html">About</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container theme-showcase" role="main" style="margin-top:80px;margin-left: auto; margin-right:auto;">
+      <div class="jumbotron" style="width:800px; margin-left:auto; margin-right:auto; padding:20px;">
+        <span style="vertical-align:top">
+          <img data-src="holder.js/200x200" class="img-thumbnail" alt="200x200" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=" style="width: 200px; height: 300px; vertical-align:top">
+        </span>
+        <span style="display:inline-block; padding-left:30px; width:70%">
+          <h2> {{movie.title}} ({{movie.year}}) </h2>
+          <h3> {{movie.rating}}/10 ({{movie.votes}} votes) </h3>
+          {% for item in movie.genre %}
+            <h4> {{item}}, </h4>
+          {% endfor %}
+          <h4> {{movie.running_time}} </h4>
+          <h3>Cast:</h3>
+          {% for item in movie.stars %}
+            <h4> {{item}} </h4>
+          {% endfor %}
+          <h3>Languages:{{movie.languages}}</h3>
+        </span>
+        <div style="padding:10px;">
+          <p> {{movie.description}} </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
