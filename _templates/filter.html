@@ -29,9 +29,15 @@
             <h4 style="display:inline-block;">Title:</h4>
             <input id="title-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Year (Minimum):</h4>
-            <input id="year-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div style="display:inline-block; width:100%">
+            <span style="float:left; width:48%">
+              <h4 style="">Year (Minimum):</h4>
+              <input id="year-min-search" class="form-control" type="text" onkeyup="search_table(results)">
+            </span>
+            <span style="float:right; width:48%">
+              <h4 style="">Year (Maximum):</h4>
+              <input id="year-max-search" class="form-control" type="text" onkeyup="search_table(results)">
+            </span>
           </div>
           <div>
             <h4 style="display:inline-block;">Genre:</h4>
@@ -85,7 +91,8 @@
       // Get queries from each search field
       var rating_query    = document.getElementById('rating-search').value.toLowerCase();
       var title_query     = document.getElementById('title-search').value.toLowerCase();
-      var year_query      = document.getElementById('year-search').value.toLowerCase();
+      var year_min_query  = document.getElementById('year-min-search').value.toLowerCase();
+      var year_max_query  = document.getElementById('year-max-search').value.toLowerCase();
       var genre_query     = document.getElementById('genre-search').value.toLowerCase();
       var cast_query      = document.getElementById('cast-search').value.toLowerCase();
       var director_query  = document.getElementById('director-search').value.toLowerCase();
@@ -93,11 +100,11 @@
 
       // Traverse each row and cell. Hide rows whose content fails to match query
       for (i=1; i<tableID.rows.length; i++) {
-        var rating_cell = tableID.rows[i].cells[0].innerHTML.toLowerCase();
-        var title_cell = tableID.rows[i].cells[1].innerHTML.toLowerCase();
-        var year_cell = tableID.rows[i].cells[2].innerHTML.toLowerCase();
-        var genre_cell = tableID.rows[i].cells[3].innerHTML.toLowerCase();
-        var cast_cell = tableID.rows[i].cells[4].innerHTML.toLowerCase();
+        var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
+        var title_cell    = tableID.rows[i].cells[1].innerHTML.toLowerCase();
+        var year_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase();
+        var genre_cell    = tableID.rows[i].cells[3].innerHTML.toLowerCase();
+        var cast_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
         var director_cell = tableID.rows[i].cells[5].innerHTML.toLowerCase();
         var language_cell = tableID.rows[i].cells[6].innerHTML.toLowerCase();
 
@@ -107,7 +114,10 @@
         else if (title_cell.indexOf(title_query) == -1 && title_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (year_query != '' && year_cell != '' && (parseInt(year_cell) < parseInt(year_query))) {
+        else if (year_min_query != '' && year_cell != '' && (parseInt(year_cell) < parseInt(year_min_query))) {
+          tableID.rows[i].style.display = 'none';
+        }
+        else if (year_max_query != '' && year_cell != '' && (parseInt(year_cell) > parseInt(year_max_query))) {
           tableID.rows[i].style.display = 'none';
         }
         else if (genre_cell.indexOf(genre_query) == -1 && genre_query != '') {
@@ -119,7 +129,7 @@
         else if (director_cell.indexOf(director_query) == -1 && director_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (language_cell.indexOf(language_query) == -1 && language_query != '' && language_cell != []) {
+        else if (language_cell.indexOf(language_query) == -1 && language_query != '' && language_cell != "[]") {
           tableID.rows[i].style.display = 'none';
         }
         else {
