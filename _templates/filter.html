@@ -83,12 +83,13 @@
   <script type="text/javascript">
     function search_table(tableID) {
       // Get queries from each search field
-      var rating_query = document.getElementById('rating-search').value.toLowerCase();
-      var title_query = document.getElementById('title-search').value.toLowerCase();
-      var year_query = document.getElementById('year-search').value.toLowerCase();
-      var genre_query = document.getElementById('genre-search').value.toLowerCase();
-      var cast_query = document.getElementById('cast-search').value.toLowerCase();
-      var director_query = document.getElementById('director-search').value.toLowerCase();
+      var rating_query    = document.getElementById('rating-search').value.toLowerCase();
+      var title_query     = document.getElementById('title-search').value.toLowerCase();
+      var year_query      = document.getElementById('year-search').value.toLowerCase();
+      var genre_query     = document.getElementById('genre-search').value.toLowerCase();
+      var cast_query      = document.getElementById('cast-search').value.toLowerCase();
+      var director_query  = document.getElementById('director-search').value.toLowerCase();
+      var language_query  = document.getElementById('language-search').value.toLowerCase();
 
       // Traverse each row and cell. Hide rows whose content fails to match query
       for (i=1; i<tableID.rows.length; i++) {
@@ -118,7 +119,7 @@
         else if (director_cell.indexOf(director_query) == -1 && director_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (language_cell.indexOf(director_query) == -1 && language_query != '') {
+        else if (language_cell.indexOf(language_query) == -1 && language_query != '' && language_cell != []) {
           tableID.rows[i].style.display = 'none';
         }
         else {
