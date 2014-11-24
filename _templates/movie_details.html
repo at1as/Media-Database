@@ -20,24 +20,29 @@
     <div class="container theme-showcase" role="main" style="margin-top:80px;margin-left: auto; margin-right:auto;">
       <div class="jumbotron" style="width:800px; margin-left:auto; margin-right:auto; padding:20px;">
         <span style="vertical-align:top">
-          <img data-src="holder.js/200x200" class="img-thumbnail" alt="200x200" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=" style="width: 200px; height: 300px; vertical-align:top">
+          <img style="width: 200px; height: 300px; vertical-align:top; margin-top:25px" data-src="holder.js/200x200" class="img-thumbnail" alt="200x200" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEwMCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+MjAweDIwMDwvdGV4dD48L3N2Zz4=">
         </span>
         <span style="display:inline-block; padding-left:30px; width:70%">
           <h2> {{movie.title}} ({{movie.year}}) </h2>
           <h3> {{movie.rating}}/10 ({{movie.votes}} votes) </h3>
           {% for item in movie.genre %}
-            <h4> {{item}}, </h4>
+            <h5> {{item}} </h5>
           {% endfor %}
           <h4> {{movie.running_time}} </h4>
-          <h3>Cast:</h3>
+          <h4>Cast:</h4>
           {% for item in movie.stars %}
-            <h4> {{item}} </h4>
+            <h5> {{item}} </h5>
           {% endfor %}
-          <h3>Languages:{{movie.languages}}</h3>
+          <h4>Languages:</h4>
+          {% for item in movie.languages %}
+            <h5> {{item}} </h5>
+          {% endfor %}
         </span>
+        <hr>
         <div style="padding:10px;">
           <p> {{movie.description}} </p>
         </div>
+        <p style="text-align:center"><a href="{{movie.url}}">{{movie.url}}</a></p>
       </div>
     </div>
   </body>

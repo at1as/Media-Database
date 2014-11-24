@@ -36,22 +36,22 @@
           <tbody>
             {% for movie in movie_list %}
               <tr>
-                <td>{{ movie.rating }}</td>
-                <td><a href="{{movie.title}}({{movie.year}}).html">{{ movie.title }}</a></td>
-                <td>{{ movie.year }}</td>
-                {% if movie.genre|length > 0 %}
-                  <td>{{ movie.genre }}</td>
+                <td>{{ movie_list[movie].rating }}</td>
+                <td><a href="{{movie_list[movie].title}}({{movie_list[movie].year}}).html">{{ movie_list[movie].title }}</a></td>
+                <td>{{ movie_list[movie].year }}</td>
+                {% if movie_list[movie].genre|length > 0 %}
+                  <td>{{ movie_list[movie].genre|join(', ') }}</td>
                 {% else %}
                   <td></td>
                 {% endif %}
-                {% if movie.stars|length > 0 %}
-                  <td>{{ movie.stars }}</td>
+                {% if movie_list[movie].stars|length > 0 %}
+                  <td>{{ movie_list[movie].stars|join(', ') }}</td>
                 {% else %}
                   <td></td>
                 {% endif %}
-                <td>{{ movie.director }}</td>
-                {% if movie.languages|length > 0 %}
-                  <td>{{ movie.languages }}</td>
+                <td>{{ movie_list[movie].director }}</td>
+                {% if movie_list[movie].languages|length > 0 %}
+                  <td>{{ movie_list[movie].languages|join(', ') }}</td>
                 {% else %}
                   <td></td>
                 {% endif %}

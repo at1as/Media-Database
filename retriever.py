@@ -5,13 +5,16 @@ import requests
 import lxml.html
 import os
 import jinja2
+import json
+import simplejson
+from datetime import datetime
 
-base_url = "http://www.imdb.com"
-search_path = "/find?q="
-asset_location = "/"
-exclude_formats = ["srt", "jpeg", "jpg", "png", "txt", "rtf", "py", "pyc", "ini", "frm", "css", "html", "htm", "DS_Store", "conf"]
 
-# Environment for static html generation
+# Input Environment Configuration
+with open('conf.json') as config_json:
+  config = json.load(config_json)
+
+# Output Environment for static html generation
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
 index = env.get_template("index.html")
 about = env.get_template("about.html")
@@ -20,45 +23,55 @@ movie_details = env.get_template("movie_details.html")
 
 
 # Check specified path for files, and filter out unwanted content before returning
-def get_movie_list(path = "./"):
-  stored_files = os.listdir(u"%s" % path)
-  stored_movies = []
-  for file in stored_files:
-    # Remove all hidden file types (files that begin with "." or "_"), and explicitly excluded file types
-    if file.split(".")[-1:][0] not in exclude_formats and file[0] not in [".", "_"]:
-      # Add the file (removing the file extension)
-      stored_movies.append("".join(file.split(".")[0:-1]))
-  #print("1. STORED MOVIES:", stored_movies)#TEMP:
-  return stored_movies
+def get_movie_list(path):
+  movie_list = os.listdir(u"%s" % path)
+  filtered_movie_list = []
+
+  if not os.path.isfile('movie_data.json'):
+    with open("movie_data.json", "w+") as movie_feed:
+      json.dump({}, movie_feed)
+
+  for file in movie_list:
+    if file.split(".")[-1:][0] in config["include_formats"]:
+      movie_title = "".join(file.split(".")[0:-1])
+
+      # Add the file if it is not already in
+      with open("movie_data.json", 'r') as saved_movie_list:
+        saved_movies = json.load(saved_movie_list)
+
+        # Do not repeat scrape for already acquired title
+        if saved_movies.has_key(movie_title):
+          print "Already added: %s" % movie_title
+        else:
+          print "Now adding: %s" % movie_title
+          filtered_movie_list.append(movie_title)
+  return filtered_movie_list
 
 
 # Construct search results url for specified movie
 def construct_search_url(movie):
-  #print("2. SEARCH URL:", base_url + search_path + movie.replace(" ", "+").lower()) #TEMP
-  #print "3. SEARCH URL (ENC):", u'%s' %(base_url + search_path + movie.replace(" ", "+").lower())
-  return u'%s' %(base_url + search_path + movie.replace(" ", "+").lower())
+  return u'%s' %(config["base_url"] + config["search_path"] + movie.replace(" ", "+").lower())
 
 
 # Return the URL corresponding to particular movie
 def get_movie_url(movie):
   # TODO: ensure that search results are from titles, rather than characters, etc
   search_url = construct_search_url(movie)
-  print "SURL:", search_url, type(search_url)
-  print "SURL ENC ", u'%s' % search_url, type(u'%s' % search_url)
-  print "SURL Eu", unicode(search_url), type(unicode(search_url))
   search_results = requests.get(search_url)
-  print 'SR:', search_results.url, type(search_results.url)
-  print 'SR:', u'%s' % search_results.url
   page = lxml.html.document_fromstring(requests.get(construct_search_url(movie)).content)
-  endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr/td/a')[0].attrib['href']
-  print "BASE_URL + END POINT:" + base_url + endpoint
-  return base_url + endpoint
+  try:
+    endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr/td/a')[0].attrib['href']
+    return config["base_url"] + endpoint
+  except IndexError:
+    pass
+
 
 
 # Scrape movie page for attributes specified below
 def get_movie_details(movie):
   movie_attributes = {}
-  movie_page = lxml.html.document_fromstring(requests.get(get_movie_url(movie)).content)
+  movie_url = get_movie_url(movie)
+  movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
   try:
     movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
   except IndexError:
@@ -102,42 +115,55 @@ def get_movie_details(movie):
     movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[3]/a/text()')
   except IndexError:
     movie_attributes['languages'] = ""
+  movie_attributes['url'] = movie_url
+  movie_attributes['filename'] = movie
   return movie_attributes
 
 
 # Create list of movie attributes
 def compile_movie_list():
   movie_attributes_list = []
-  for movie in get_movie_list():
-    movie_attributes_list.append(get_movie_details(movie))
+  for movie in get_movie_list(config["asset_location"]):
+    movie_attributes = get_movie_details(movie)
+    movie_attributes_list.append(movie_attributes)
   return movie_attributes_list
 
 
 def generate_site():
-  final_list = compile_movie_list()
+  additional_movies = compile_movie_list()
+
+  # Save Data to JSON file
+  with open("movie_data.json", 'r') as movie_feed:
+    saved_movies = json.load(movie_feed)
+
+  for movie in additional_movies:
+    saved_movies[movie['filename']] = movie
+
+  with open("movie_data.json", 'w+') as movie_feed:
+    json.dump(saved_movies, movie_feed)
 
   # List Page
-  list_page = index.render(movie_list = final_list)
+  list_page = index.render(movie_list = saved_movies)
   f = open("_output/index.html", "w")
   f.write(list_page.encode('utf-8'))
   f.close
 
   # Filer Page
-  filter_page = filter_index.render(movie_list = final_list)
+  filter_page = filter_index.render(movie_list = saved_movies)
   j = open("_output/filter.html", "w")
   j.write(filter_page)
   j.close
 
   # About Page
-  about_page = about.render(number_of_movies = len(final_list))
+  about_page = about.render(number_of_movies = len(saved_movies), time = str(datetime.now()))
   g = open("_output/about.html", "w")
   g.write(about_page.encode('utf-8'))
   g.close
 
   # Individual Title Pages
-  for item in final_list:
-    output_dir = "_output/%s(%s).html" %(item['title'], item['year'])
-    movie_page = movie_details.render(number_of_movies = len(final_list), movie = item)
+  for item in saved_movies:
+    output_dir = "_output/%s(%s).html" %(saved_movies[item]['title'], saved_movies[item]['year'])
+    movie_page = movie_details.render(number_of_movies = len(saved_movies), movie = saved_movies[item])
     h = open(output_dir, "w")
     h.write(movie_page.encode('utf-8'))
     h.close

@@ -72,13 +72,13 @@
           <tbody>
             {% for movie in movie_list %}
               <tr>
-                <td>{{ movie.rating }}</td>
-                <td><a href="{{movie.title}}({{movie.year}}).html">{{ movie.title }}</a></td>
-                <td>{{ movie.year }}</td>
-                <td>{{ movie.genre }}</td>
-                <td>{{ movie.stars }}</td>
-                <td>{{ movie.director }}</td>
-                <td>{{ movie.languages }}</td>
+                <td>{{ movie_list[movie].rating }}</td>
+                <td><a href="{{movie_list[movie].title}}({{movie_list[movie].year}}).html">{{ movie_list[movie].title }}</a></td>
+                <td>{{ movie_list[movie].year }}</td>
+                <td>{{ movie_list[movie].genre|join(', ') }}</td>
+                <td>{{ movie_list[movie].stars|join(', ') }}</td>
+                <td>{{ movie_list[movie].director }}</td>
+                <td>{{ movie_list[movie].languages|join(', ') }}</td>
               </tr>
             {% endfor %}
           </tbody>
