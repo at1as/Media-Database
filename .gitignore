@@ -1,1 +1,14 @@
 .DS_Store
+movie_data.json
+*.avi
+*.mp4
+*.mov
+*.mpg
+*.mpeg
+*.mkv
+*.divx
+*.ts
+*.mov
+*.qt
+*.rm
+*.wmv
