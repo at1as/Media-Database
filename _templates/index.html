@@ -4,8 +4,9 @@
     <title>Local Movie Database</title>
     <link href="../_resources/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/bootstrap-theme.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/sortable-theme-minimal.css" rel="stylesheet" />
+    <link href="../_resources/sortable-theme-minimal.css" rel="stylesheet" type="text/css" />
     <script src="../_resources/sortable.min.js" type="text/javascript"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
   <body role="document">
     <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
@@ -21,23 +22,23 @@
     </div>
     <div class="container theme-showcase" role="main" style="margin-top:80px; margin-left:auto; margin-right:auto;">
       <div style="width:100%">
-        <table class="table table-striped" data-sortable>
+        <table class="table table-striped" data-sortable style="margin-bottom:50px">
           <thead>
             <tr>
-              <th data-sorted="true">Rating</th>
-              <th>Title</th>
-              <th>Year</th>
-              <th data-sortable="false">Genre(s)</th>
-              <th data-sortable="false">Cast</th>
-              <th>Director</th>
-              <th>Language</th>
+              <th style="vertical-align:top" data-sorted="true">Rating</th>
+              <th style="vertical-align:top">Title</th>
+              <th style="vertical-align:top">Year</th>
+              <th style="vertical-align:top" data-sortable="false">Genre(s)</th>
+              <th style="vertical-align:top" data-sortable="false">Cast</th>
+              <th style="vertical-align:top">Director</th>
+              <th style="vertical-align:top">Language</th>
             </tr>
           </thead>
           <tbody>
             {% for movie in movie_list %}
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
-                <td><a href="{{movie_list[movie].title}}({{movie_list[movie].year}}).html">{{ movie_list[movie].title }}</a></td>
+                <td><a href="./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html">{{ movie_list[movie].title }}</a></td>
                 <td>{{ movie_list[movie].year }}</td>
                 {% if movie_list[movie].genre|length > 0 %}
                   <td>{{ movie_list[movie].genre|join(', ') }}</td>
