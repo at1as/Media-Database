@@ -1,6 +1,7 @@
 {
   "base_url": "http://www.imdb.com",
   "search_path": "/find?q=",
+  "url_end": "&s=all",
   "asset_location": "./",
   "exclude_formats": ["srt", "jpeg", "jpg", "png", "txt", "rtf", "py", "pyc", "ini", "frm", "css", "html", "htm", "DS_Store"],
   "include_formats": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
