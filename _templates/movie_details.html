@@ -12,14 +12,13 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="../index.html">List of Content <span class="badge">{{ number_of_movies }}</span></a></li>
-            <li><a href="../filter.html">Filter Results <span class="badge">{{ number_of_movies }}</span></a></li>
             <li><a href="../about.html">About</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
     <div class="container theme-showcase" role="main" style="margin-top:80px;margin-left: auto; margin-right:auto;">
-      <div class="jumbotron" style="width:800px; margin-left:auto; margin-right:auto; padding:20px;">
+      <div id="movie_content" class="jumbotron" style="width:800px; margin-left:auto; margin-right:auto; padding:20px;">
         <span style="vertical-align:top">
           <a href="../images/{{movie.filename}}.png">
             <img style="width: 200px; height: 300px; vertical-align:top; margin-top:25px" data-src="holder.js/200x200" class="img-thumbnail" alt="200x200" src="../images/{{movie.filename}}.png">
@@ -36,7 +35,7 @@
 
           <div style="margin-left:10px">
             <h5>
-              <span style="margin-right:10px; padding-left:2px; padding-right:2px; border:1px #AAA solid; border-radius:2px;">
+              <span style="margin-right:10px; padding-left:4px; padding-right:2px; border:1px #AAA solid; border-radius:2px;">
                 {{movie.content_rating[0]}}
               </span> &mdash;
               <span style="margin-left:10px; margin-right:10px">{{movie.running_time}}</span> &mdash;

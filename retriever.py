@@ -28,7 +28,6 @@ if not os.path.isfile('movie_data.json'):
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
 index = env.get_template("index.html")
 about = env.get_template("about.html")
-filter_index = env.get_template("filter.html")
 movie_details = env.get_template("movie_details.html")
 
 
@@ -205,12 +204,6 @@ def generate_site(additional_movies):
   f = open("_output/index.html", "w")
   f.write(list_page.encode('utf-8'))
   f.close
-
-  # Filer Page
-  filter_page = filter_index.render(movie_list = saved_movies)
-  j = open("_output/filter.html", "w")
-  j.write(filter_page.encode('utf-8'))
-  j.close
 
   # About Page
   about_page = about.render(number_of_movies = len(saved_movies), time = str(datetime.now()))
