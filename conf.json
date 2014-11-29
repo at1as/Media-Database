@@ -2,7 +2,8 @@
   "base_url": "http://www.imdb.com",
   "search_path": "/find?q=",
   "url_end": "&s=all",
-  "asset_location": "./",
-  "exclude_formats": ["srt", "jpeg", "jpg", "png", "txt", "rtf", "py", "pyc", "ini", "frm", "css", "html", "htm", "DS_Store"],
-  "include_formats": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
+  "max_quantity": 950,
+  "asset_location": "/Volumes/3TB-JASON/Movies/",
+  "exclude_files": ["LICENSE", ".DS_Store", "Thumbs.db" ],
+  "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
 }

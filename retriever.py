@@ -34,21 +34,21 @@ movie_details = env.get_template("movie_details.html")
 
 # Check specified path for files, and filter out unwanted content before returning
 def get_movie_list(path):
-  movie_list = os.listdir(path)
+  movie_list = os.listdir(path)[0:config["max_quantity"]]
   filtered_movie_list = []
 
   for file in movie_list:
-    if file.split(".")[-1:][0] in config["include_formats"]: #or len(file.split(".")) == 1:
-      movie_title = "".join(file.split(".")[0:-1])
+    # If the extension is in include_extension, or file is a folder not preceded by '_'
+    if file.split(".")[-1:][0] in config["include_extensions"] or (len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
+
+      movie_title = file.rsplit(".", 1)[0]
 
       # Add the file if it is not already in
       with open("movie_data.json", 'r') as saved_movie_list:
         saved_movies = json.load(saved_movie_list)
 
         # Do not repeat scrape for already acquired title
-        if saved_movies.has_key(movie_title):
-          print "Already added: %s" % movie_title
-        else:
+        if not saved_movies.has_key(movie_title):
           print "Now adding: %s" % movie_title
           filtered_movie_list.append(movie_title)
   return filtered_movie_list
@@ -56,7 +56,7 @@ def get_movie_list(path):
 
 # Construct search results url for specified movie
 def construct_search_url(movie):
-  safe_movie = normalize("NFC", movie).replace(" ", "+").lower()
+  safe_movie = normalize("NFC", movie).replace(" ", "+").replace("&", "%26").lower()
   return config["base_url"] + config["search_path"] + safe_movie + config["url_end"]
 
 # Return the URL corresponding to particular movie
@@ -87,72 +87,85 @@ def get_movie_url(movie):
     if page.xpath('//*[@id="main"]/div[1]/div[6]/h3/text()')[0] == "Titles":
       endpoint = page.xpath('//*[@id="main"]/div[1]/div[6]/table[1]/tr/td/a')[0].attrib['href']
       return config["base_url"] + endpoint
-  except IndexError: pass
+  except IndexError:
+    print "***SKIPPING: %s" % movie
+    return None
 
 
 # Scrape movie page for attributes specified below
 def get_movie_details(movie):
   movie_attributes = {}
   movie_url = get_movie_url(movie)
-  movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
+  if movie_url != None:
+    movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
 
-  movie_attributes['url'] = movie_url
-  movie_attributes['filename'] = movie
-  movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
-  try:
-    movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
-  except IndexError:
-    movie_attributes['title'] = ""
-  try:
-    movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/a/text()')[0].strip()
-  except IndexError:
+    movie_attributes['url'] = movie_url
+    movie_attributes['filename'] = movie
+    movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
     try:
-      movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/a/text()')[0].strip()
+      movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
     except IndexError:
-      movie_attributes['year'] = ""
-  try:
-    movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]/text()')[0].strip()
-  except IndexError:
-    movie_attributes['description'] = ""
-  try:
-    movie_attributes['director'] = movie_page.xpath('//*[@id="overview-top"]/div[4]/a/span/text()')[0].strip()
-  except IndexError:
-    movie_attributes['director'] = ""
-  try:
-    movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[6]/a/span/text()')
-  except IndexError:
-    movie_attributes['stars'] = ""
-  try:
-    movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/a/span/text()')
-  except IndexError:
-    movie_attributes['genre'] = ""
-  try:
-    movie_attributes['rating'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/strong/span/text()')[0]
-  except IndexError:
-    movie_attributes['rating'] = ""
-  try:
-    movie_attributes['votes'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/a[1]/span/text()')[0].strip()
-  except IndexError:
-    movie_attributes['votes'] = ""
-  try:
-    movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/time/text()')[0].strip()
-  except IndexError:
-    movie_attributes['running_time'] = ""
-  try:
-    movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[3]/a/text()')
-  except IndexError:
-    movie_attributes['languages'] = ""
-  try:
-    movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/span[1]/@content')
-  except IndexError:
-    movie_attributes['content_rating'] = ""
-  try:
-    movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
-    save_image(movie_attributes['image_url'], movie_attributes['filename'])
-  except IndexError:
-    movie_attributes['image_url'] = ""
-  return movie_attributes
-
+      movie_attributes['title'] = ""
+    try:
+      if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(":
+        if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(I)":
+          movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip()[1:-1]
+        else:
+          movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/a/text()')[0].strip()
+      else:
+        movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/a/text()')[0].strip()
+    except IndexError:
+      try:
+        movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/a/text()')[0].strip()
+      except IndexError:
+        movie_attributes['year'] = ""
+    try:
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]/text()')[0].strip()
+    except IndexError:
+      movie_attributes['description'] = ""
+    try:
+      movie_attributes['director'] = movie_page.xpath('//*[@id="overview-top"]/div[4]/a/span/text()')[0].strip()
+    except IndexError:
+      movie_attributes['director'] = ""
+    try:
+      movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[6]/a/span/text()')
+    except IndexError:
+      movie_attributes['stars'] = ""
+    try:
+      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/a/span/text()')
+    except IndexError:
+      movie_attributes['genre'] = ""
+    try:
+      movie_attributes['rating'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/strong/span/text()')[0]
+    except IndexError:
+      movie_attributes['rating'] = ""
+    try:
+      movie_attributes['votes'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/a[1]/span/text()')[0].strip()
+    except IndexError:
+      movie_attributes['votes'] = ""
+    try:
+      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/time/text()')[0].strip()
+    except IndexError:
+      movie_attributes['running_time'] = ""
+    try:
+      if movie_page.xpath('//*[@id="titleDetails"]/div[3]/h4/text()') == ['Language:']:
+        movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[3]/a/text()')
+      else:
+        movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[2]/a/text()')
+    except IndexError:
+      movie_attributes['languages'] = ""
+    try:
+      movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/span[1]/@content')
+    except IndexError:
+      movie_attributes['content_rating'] = ""
+    try:
+      movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
+      save_image(movie_attributes['image_url'], movie_attributes['filename'])
+    except IndexError:
+      movie_attributes['image_url'] = ""
+    return movie_attributes
+  else:
+    return None
 
 # If image_url was found, write image to directory
 def save_image(url, name):
@@ -168,7 +181,8 @@ def compile_movie_list():
   movie_attributes_list = []
   for movie in get_movie_list(config["asset_location"]):
     movie_attributes = get_movie_details(movie)
-    movie_attributes_list.append(movie_attributes)
+    if movie_attributes != None:
+      movie_attributes_list.append(movie_attributes)
   return movie_attributes_list
 
 
@@ -206,7 +220,7 @@ def generate_site(additional_movies):
 
   # Individual Title Pages
   for item in saved_movies:
-    output_dir = "_output/pages/%s(%s).html" %(saved_movies[item]['title'], saved_movies[item]['year'])
+    output_dir = "_output/pages/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
     movie_page = movie_details.render(number_of_movies = len(saved_movies), movie = saved_movies[item])
     h = open(output_dir, "w")
     h.write(movie_page.encode('utf-8'))
