@@ -5,11 +5,11 @@
     <link href="../_resources/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/bootstrap-theme.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/sortable-theme-minimal.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/lodash.min.css" rel="stylesheet" type="text/css" />
+    <link href="../_resources/main.css" rel="stylesheet" type="text/css" />
     <script src="../_resources/sortable.min.js" type="text/javascript"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
-  <body role="document">
+  <body role="document" onload="search_table(results)">
     <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-collapse collapse">
@@ -29,47 +29,45 @@
     <div class="container theme-showcase" role="main" style="margin-top:80px; margin-left:auto; margin-right:auto;">
 
       <!-- Filters -->
-      <div id="filters" class="jumbotron" style="max-width:800px; margin-left:auto; margin-right:auto; display:visible">
-          <div>
-            <h4 style="display:inline-block;">Rating (Minimum):</h4>
-            <input id="rating-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+      <div id="filters" class="jumbotron" style="max-width:800px; margin-left:auto; margin-right:auto; display:visible; padding-top:20px; padding-bottom:20px;">
+          <div class="filter-section">
+            <h4 class="filter-left">Title:</h4>
+            <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Title:</h4>
-            <input id="title-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div class="filter-section">
+            <h4 class="filter-left">Rating (Min):</h4>
+            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div style="display:inline-block; width:100%">
-            <span style="float:left; width:48%">
-              <h4 style="">Year (Minimum):</h4>
-              <input id="year-min-search" class="form-control" type="text" onkeyup="search_table(results)">
-            </span>
-            <span style="float:right; width:48%">
-              <h4 style="">Year (Maximum):</h4>
-              <input id="year-max-search" class="form-control" type="text" onkeyup="search_table(results)">
-            </span>
+          <div class="filter-section">
+              <h4 class="filter-left">Year (Min):</h4>
+              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Genre:</h4>
-            <input id="genre-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div class="filter-section">
+              <h4 class="filter-left">Year (Max):</h4>
+              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Cast:</h4>
-            <input id="cast-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div class="filter-section">
+            <h4 class="filter-left">Genre:</h4>
+            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Director:</h4>
-            <input id="director-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div class="filter-section">
+            <h4 class="filter-left">Cast:</h4>
+            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_table(results)">
           </div>
-          <div>
-            <h4 style="display:inline-block;">Language:</h4>
-            <input id="language-search" class="form-control" type="text" onkeyup="search_table(results)" style="display:inline-block;">
+          <div class="filter-section">
+            <h4 class="filter-left">Director:</h4>
+            <input class="form-control filter-right" id="director-search" type="text" onkeyup="search_table(results)">
+          </div>
+          <div class="filter-section">
+            <h4 class="filter-left">Language:</h4>
+            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_table(results)">
           </div>
       </div>
 
       <!-- Show / Hide filter toggle -->
       <div id="filter_toggle" style="width:100%; text-align:center; margin-right:auto; margin-left:auto">
-        <button id="filter_toggle_btn" class="btn btn-small" onclick="filter_toggle()" style="padding-left:30px;padding-right:30px; background-color:#444; margin-bottom:20px; color:white;">
-          Hide Search Options
+        <button id="filter_toggle_btn" class="btn btn-small" onclick="filter_toggle()" style="padding-left:45px;padding-right:45px; background-color:#444; margin-bottom:20px; color:white;">
+          Hide Search Filters
         </button>
       </div>
 
@@ -79,19 +77,19 @@
           <thead>
             <tr>
               <th style="vertical-align:top" class="sorttable_numeric">Rating</th>
-              <th style="vertical-align:top">Title</th>
+              <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th style="vertical-align:top">Year</th>
-              <th style="vertical-align:top" data-sortable="false">Genre(s)</th>
-              <th style="vertical-align:top" data-sortable="false">Star(s)</th>
+              <th style="vertical-align:top" data-sortable="false">Genres</th>
+              <th style="vertical-align:top" data-sortable="false">Stars</th>
               <th style="vertical-align:top">Director</th>
-              <th style="vertical-align:top">Language</th>
+              <th style="vertical-align:top">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for movie in movie_list %}
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
-                <td><a href="./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a></td>
+                <td><a href="#./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a></td>
                 <td>{{ movie_list[movie].year }}</td>
                 <td>{{ movie_list[movie].genre|join(', ') }}</td>
                 <td>{{ movie_list[movie].stars|join(', ') }}</td>
@@ -104,7 +102,16 @@
       </div>
     </div>
 
+    <!-- Modal: Movie Content-->
+    <div id="backdrop" style="display:none" onclick="close_details()">
+      <div id="modal-alert" class="centered" tabindex="-1" role="dialog" style="display:none; z-index:11; width:800px;">
+        <div id="modal-content" class="modal-content; height:100%">
+        </div>
+      </div>
+    </div>
+
   </body>
+
   <script type="text/javascript">
 
     function search_table(tableID) {
@@ -129,7 +136,7 @@
         var language_cell = tableID.rows[i].cells[6].innerHTML.toLowerCase();
 
         // Discard row if rating is empty or less than query
-        if (rating_query != '' && rating_cell == '' || (parseFloat(rating_cell) < parseFloat(rating_query))) {
+        if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query != '' && rating_cell == '')) {
           tableID.rows[i].style.display = 'none';
         }
         else if (title_cell.indexOf(title_query) == -1 && title_query != '') {
@@ -141,17 +148,17 @@
         else if (year_max_query != '' && year_cell != '' && (parseInt(year_cell) > parseInt(year_max_query))) {
           tableID.rows[i].style.display = 'none';
         }
-        else if (genre_cell.indexOf(genre_query) == -1 && genre_query != '') {
-          tableID.rows[i].style.display = 'none';
+        else if (!substrings_in_list(genre_query, genre_cell) && genre_query != '') {
+            tableID.rows[i].style.display = 'none';
         }
-        else if (cast_cell.indexOf(cast_query) == -1 && cast_query != '') {
+        else if (!substrings_in_list(cast_query, cast_cell) && cast_query != '') {
           tableID.rows[i].style.display = 'none';
         }
         else if (director_cell.indexOf(director_query) == -1 && director_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (language_cell.indexOf(language_query) == -1 && language_query != '' && language_cell != "") {
-          tableID.rows[i].style.display = 'none';
+        else if (!substrings_in_list(language_query, language_cell) && language_query != '') {
+            tableID.rows[i].style.display = 'none';
         }
         else {
           tableID.rows[i].style.display = '';
@@ -173,21 +180,48 @@
       current_count.innerHTML = count;
 
       if (count == total_count.innerHTML) {
-        current_count.style.display   = 'none';
+        current_count.style.display = 'none';
         count_spacer.style.display  = 'none'
       } else {
-        current_count.style.display   = '';
+        current_count.style.display = '';
         current_count.style.color   = '#45d234';
         count_spacer.style.display  = ''
       }
     }
 
     // TODO: Load movie details in modal, rather than a page redirect
-    /*
     function load_details(movie) {
       var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
-      document.getElementById('moviecontenthere').innerHTML = "<iframe src='" + movie_details + "'></iframe>";
-    }*/
+      document.getElementById('backdrop').style.display = '';
+      document.getElementById('modal-alert').style.display = '';
+      document.getElementById('modal-content').innerHTML = "<iframe id='frame' style='width:800px; border:none; border-radius:3px' frameborder='0' scrolling='no' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+    }
+
+    function close_details() {
+      document.getElementById('backdrop').style.display = 'none';
+      document.getElementById('modal-alert').style.display = 'none';
+    }
+
+    function resize_frame(obj) {
+      obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
+
+    function substrings_in_list(query, item) {
+
+      var query_list  = query.split(',');
+      var item_list   = item.split(',');
+      var item_found  = false;
+
+      for(j=0; j<query_list.length; j++) {
+        item_found = false;
+
+        for(k=0; k<item_list.length; k++) {
+          if (item_list[k].trim().indexOf(query_list[j].trim()) == 0) { item_found = true; }
+        }
+        if (!item_found) { return false; }
+      }
+      return true;
+    }
 
     function filter_toggle() {
       var filters   = document.getElementById('filters');
@@ -195,13 +229,15 @@
 
       if (filters.style.display == '') {
         filters.style.display = 'none';
-        btn_text.innerHTML        = 'Show Filter Options';
+        btn_text.innerHTML    = 'Show Filter Options';
         window.scroll(0, 0);
       } else {
         filters.style.display = '';
-        btn_text.innerHTML        = 'Hide Filter Options';
+        btn_text.innerHTML    = 'Hide Filter Options';
       }
     }
+
+
 
   </script>
 </html>
