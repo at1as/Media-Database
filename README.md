@@ -2,9 +2,11 @@
 
 Gathers information about movies stored in a local directory and compiles it into an HTML document
 
-## Screenshot
+## Screenshots
 
+#### List of Content
 ![Screenshot](http://at1as.github.io/github_repo_assets/imdb-scrape.jpg)
+#### Movie Details
 ![Screenshot](http://at1as.github.io/github_repo_assets/imdb-scrape2.jpg)
 
 ## Usage
