@@ -41,6 +41,10 @@ def get_movie_list(path):
     if file.split(".")[-1:][0] in config["include_extensions"] or (len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
 
       movie_title = file.rsplit(".", 1)[0]
+      
+      # External drives often prepend item with "._"
+      if movie_title[0:2] == "._":
+        movie_title = movie_title[2:]
 
       # Add the file if it is not already in
       with open("movie_data.json", 'r') as saved_movie_list:
