@@ -59,7 +59,7 @@ def get_movie_list(path):
 
 # Construct search results url for specified movie
 def construct_search_url(movie):
-  safe_movie = normalize("NFC", movie).replace(" ", "+").replace("&", "%26").lower()
+  safe_movie = normalize("NFC", movie).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
   return config["base_url"] + config["search_path"] + safe_movie + config["url_end"]
 
 # Return the URL corresponding to particular movie
@@ -111,7 +111,7 @@ def get_movie_details(movie):
       movie_attributes['title'] = ""
     try:
       if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(":
-        if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(I)":
+        if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() not in ["(I)", "(II)", "(III)", "(IV)", "(V)"]:
           movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip()[1:-1]
         else:
           movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/a/text()')[0].strip()
