@@ -91,7 +91,7 @@
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
-                  <a href="#./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                  <a href="#./pages/{{movie_list[movie].title|replace("/", "")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
                 </td>
                 <td>{{ movie_list[movie].year }}</td>
                 <td>{{ movie_list[movie].genre|join(', ') }}</td>
