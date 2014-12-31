@@ -90,7 +90,9 @@
             {% for movie in movie_list %}
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
-                <td><a href="#./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a></td>
+                <td sorttable_customkey="{{ movie_list[movie].title }}">
+                  <a href="#./pages/{{movie_list[movie].title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                </td>
                 <td>{{ movie_list[movie].year }}</td>
                 <td>{{ movie_list[movie].genre|join(', ') }}</td>
                 <td>{{ movie_list[movie].stars|join(', ') }}</td>
@@ -190,7 +192,6 @@
       }
     }
 
-    // TODO: Load movie details in modal, rather than a page redirect
     function load_details(movie) {
       var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
       document.getElementById('backdrop').style.display = '';
@@ -204,6 +205,7 @@
     }
 
     function resize_frame(obj) {
+      // Firefox & Safari
       obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
 
@@ -237,8 +239,6 @@
         btn_text.innerHTML    = 'Hide Filter Options';
       }
     }
-
-
 
   </script>
 </html>
