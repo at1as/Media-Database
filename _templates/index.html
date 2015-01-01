@@ -30,7 +30,7 @@
     <div class="container theme-showcase" role="main" style="margin-top:80px; margin-left:auto; margin-right:auto;">
 
       <!-- Filters -->
-      <div id="filters" class="jumbotron" style="max-width:800px; margin-left:auto; margin-right:auto; display:visible; padding-top:20px; padding-bottom:20px;">
+      <div id="filters" class="jumbotron" style="max-width:800px; margin-left:auto; margin-right:auto; display:visible; padding-top:20px; padding-bottom:20px; margin-bottom:15px">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
             <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_table(results)">
@@ -91,7 +91,7 @@
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
-                  <a href="#./pages/{{movie_list[movie].title|replace("/", "")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                  <a href="#./pages/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
                 </td>
                 <td>{{ movie_list[movie].year }}</td>
                 <td>{{ movie_list[movie].genre|join(', ') }}</td>
@@ -131,7 +131,7 @@
       // Traverse each row and cell. Hide rows whose content fails to match query
       for (i=1; i<tableID.rows.length; i++) {
         var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
-        var title_cell    = tableID.rows[i].cells[1].innerHTML.toLowerCase();
+        var title_cell    = tableID.rows[i].cells[1].children[0].innerHTML.toLowerCase();
         var year_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase();
         var genre_cell    = tableID.rows[i].cells[3].innerHTML.toLowerCase();
         var cast_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
