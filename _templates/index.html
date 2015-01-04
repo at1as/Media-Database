@@ -80,8 +80,8 @@
               <th style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th style="vertical-align:top">Year</th>
-              <th style="vertical-align:top" data-sortable="false">Genres</th>
-              <th style="vertical-align:top" data-sortable="false">Stars</th>
+              <th style="vertical-align:top">Genres</th>
+              <th style="vertical-align:top">Stars</th>
               <th style="vertical-align:top">Director</th>
               <th style="vertical-align:top">Languages</th>
             </tr>
@@ -189,6 +189,34 @@
         current_count.style.display = '';
         current_count.style.color   = '#45d234';
         count_spacer.style.display  = ''
+      }
+
+      // Re-strip table after hiding rows
+      var all_rows      = document.querySelectorAll('.table > tbody > tr');
+      var visible_rows  = []
+      var even_row      = false;
+
+      for(n=0; n<all_rows.length; n++){
+        if (all_rows[n].style.display !== "none") { visible_rows.push(all_rows[n]) }
+      }
+
+      for(k=0; k<visible_rows.length; k++){
+
+        var visible_cells = visible_rows[k].children;
+
+        if (even_row === false) {
+          for (m=0; m<visible_cells.length; m++) {
+            visible_cells[m].className = "stripe-on";
+          }
+          even_row = true;
+
+        } else {
+          for (m=0; m<visible_cells.length; m++) {
+            visible_cells[m].className = "stripe-off";
+          }
+          even_row = false;
+
+        }
       }
     }
 

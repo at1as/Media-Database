@@ -30,3 +30,11 @@ h4, .h4 {
   max-width:550px;
   float:right
 }
+.table-striped > tbody > tr > td.stripe-on{
+  background-color: #F9F9F9;
+  !important
+}
+.table-striped > tbody > tr > td.stripe-off{
+  background-color: #FFFFFF;
+  !important
+}
