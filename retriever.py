@@ -41,7 +41,7 @@ def get_movie_list(path):
     if file.split(".")[-1:][0] in config["include_extensions"] or (len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
 
       movie_title = file.rsplit(".", 1)[0]
-      
+
       # External drives often prepend item with "._"
       if movie_title[0:2] == "._":
         movie_title = movie_title[2:]
@@ -62,34 +62,28 @@ def construct_search_url(movie):
   safe_movie = normalize("NFC", movie).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
   return config["base_url"] + config["search_path"] + safe_movie + config["url_end"]
 
+
 # Return the URL corresponding to particular movie
 def get_movie_url(movie):
+  invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)"]
   search_url = construct_search_url(movie)
   page = lxml.html.document_fromstring(requests.get(search_url).content)
+
   try:
-    if page.xpath('//*[@id="main"]/div[1]/div[2]/h3/text()')[0] == "Titles":
-      endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr/td/a')[0].attrib['href']
-      return config["base_url"] + endpoint
-  except IndexError: pass
-  try:
-    if page.xpath('//*[@id="main"]/div[1]/div[3]/h3/text()')[0] == "Titles":
-      endpoint = page.xpath('//*[@id="main"]/div[1]/div[3]/table[1]/tr/td/a')[0].attrib['href']
-      return config["base_url"] + endpoint
-  except IndexError: pass
-  try:
-    if page.xpath('//*[@id="main"]/div[1]/div[4]/h3/text()')[0] == "Titles":
-      endpoint = page.xpath('//*[@id="main"]/div[1]/div[4]/table[1]/tr/td/a')[0].attrib['href']
-      return config["base_url"] + endpoint
-  except IndexError: pass
-  try:
-    if page.xpath('//*[@id="main"]/div[1]/div[5]/h3/text()')[0] == "Titles":
-      endpoint = page.xpath('//*[@id="main"]/div[1]/div[5]/table[1]/tr/td/a')[0].attrib['href']
-      return config["base_url"] + endpoint
-  except IndexError: pass
-  try:
-    if page.xpath('//*[@id="main"]/div[1]/div[6]/h3/text()')[0] == "Titles":
-      endpoint = page.xpath('//*[@id="main"]/div[1]/div[6]/table[1]/tr/td/a')[0].attrib['href']
-      return config["base_url"] + endpoint
+    for index, section in enumerate(page.xpath('//*[@id="main"]/div[1]/div')):
+      if len(section.xpath('h3/text()')) > 0:
+
+        # Find the Div associated with Titles (rather than Characters, etc)
+        if section.xpath('h3/text()')[0] == "Titles":
+
+          # Select first in list which doesn't contain invalid_results
+          for index, list_title in enumerate(page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
+            if not any(x in list_title.text_content() for x in invalid_results):
+              endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+              return config["base_url"] + endpoint
+
+    # If not found, return None
+    return None
   except IndexError:
     print "***SKIPPING: %s" % movie
     return None
@@ -169,6 +163,7 @@ def get_movie_details(movie):
     return movie_attributes
   else:
     return None
+
 
 # If image_url was found, write image to directory
 def save_image(url, name):
