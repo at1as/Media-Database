@@ -91,7 +91,8 @@
               <tr>
                 <td>{{ movie_list[movie].rating }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
-                  <a href="#./pages/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                  <a href="#./pages/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                  <!-- ' -->
                 </td>
                 <td>{{ movie_list[movie].year }}</td>
                 <td>{{ movie_list[movie].genre|join(', ') }}</td>
@@ -151,7 +152,7 @@
         else if (year_max_query != '' && year_cell != '' && (parseInt(year_cell) > parseInt(year_max_query))) {
           tableID.rows[i].style.display = 'none';
         }
-        else if (!substrings_in_list(genre_query, genre_cell) && genre_query != '') {
+        else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query != '') {
             tableID.rows[i].style.display = 'none';
         }
         else if (!substrings_in_list(cast_query, cast_cell) && cast_query != '') {
@@ -160,7 +161,7 @@
         else if (director_cell.indexOf(director_query) == -1 && remove_diacritics(director_cell).indexOf(director_query) && director_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (!substrings_in_list(language_query, language_cell) && language_query != '') {
+        else if (!substrings_in_list(language_query, language_cell, 'language') && language_query != '') {
             tableID.rows[i].style.display = 'none';
         }
         else {
@@ -313,7 +314,7 @@
         {'base':'z','letters':/[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g},
         {'base':'1/2','letters':/[\xBD]/g},
         {'base':'1/4','letters':/[\xBC]/g},
-        {'base':'1/4','letters':/[\xBE]/g},
+        {'base':'1/3','letters':/[\xBE]/g},
         {'base':'2','letters':/[\xB2]/g},
         {'base':'3','letters':/[\xB3]/g},
         {'base':'"','letters':/[\xAB\xBB]/g}
@@ -330,7 +331,7 @@
       var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
       document.getElementById('backdrop').style.display = '';
       document.getElementById('modal-alert').style.display = '';
-      document.getElementById('modal-content').innerHTML = "<iframe id='frame' style='width:800px; min-height:560; border:none; border-radius:3px' frameborder='0' scrolling='no' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+      document.getElementById('modal-content').innerHTML = "<iframe id='frame' style='width:800px; min-height:560px; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
     }
 
     function close_details() {
@@ -343,11 +344,18 @@
       obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
 
-    function substrings_in_list(query, item) {
+    function substrings_in_list(query, item, filter_type) {
 
       var query_list  = query.split(',');
       var item_list   = item.split(',');
       var item_found  = false;
+
+      // allow genres to be seperated by spaces
+      if (filter_type === "genre" || filter_type === "language") {
+        if (query_list.length === 1 && query.split(' ').length > 1) {
+          query_list = query.split(' ');
+        }
+      }
 
       for(j=0; j<query_list.length; j++) {
         item_found = false;

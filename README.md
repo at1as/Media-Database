@@ -34,11 +34,11 @@ $ python remove_entry.py "<movie_title>"
 * Script will only search files in the folder specified by asset_location. Will not search subdirectories
 * Movies should, in general, be titled as "Movie Title (YYYY).extension"
 * Only works for movies (documentaries and television entries will be scraped incorrectly)
+* Works best in Firefox/Safari. In Chrome, iFrames will be scrollable, rather than resizing to their full height
 
 ## TODO
  
 * *Filter*: Add options for NOT string
-* *Viewing*: Fix for Chrome not opening Movie Details iframe to the correct height (Google security policy for local files)
 
 ## Disclaimer
  
