@@ -33,35 +33,35 @@
       <div id="filters" class="jumbotron" style="max-width:800px; margin-left:auto; margin-right:auto; display:visible; padding-top:20px; padding-bottom:20px; margin-bottom:15px">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
-            <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Rating (Min):</h4>
-            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Year (Min):</h4>
-              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_table(results)">
+              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Year (Max):</h4>
-              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_table(results)">
+              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Genre:</h4>
-            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Cast:</h4>
-            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Director:</h4>
-            <input class="form-control filter-right" id="director-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="director-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Language:</h4>
-            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_table(results)">
+            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_table(results)" spellcheck="false">
           </div>
       </div>
 
@@ -348,7 +348,8 @@
 
       var query_list  = query.split(',');
       var item_list   = item.split(',');
-      var item_found  = false;
+      var positive_match  = false;
+      var negative_match  = false;
 
       // allow genres to be seperated by spaces
       if (filter_type === "genre" || filter_type === "language") {
@@ -357,15 +358,47 @@
         }
       }
 
-      for(j=0; j<query_list.length; j++) {
-        item_found = false;
+      // seperate NOT filters from other filters
+      var query_not = [];
+      var query_match = [];
+      var current_query = '';
 
-        for(k=0; k<item_list.length; k++) {
-          if (item_list[k].trim().indexOf(query_list[j].trim()) == 0) { item_found = true; }
+      for(j=0; j<query_list.length; j++) {
+        current_query = query_list[j].trim();
+        if (current_query.length > 1 && current_query[0] === "!"){
+          query_not.push(current_query.substring(1,current_query.length));
+        } else {
+          if (current_query !== '!') { query_match.push(current_query); }
         }
-        if (!item_found) { return false; }
       }
+
+      for(k=0; k<query_match.length; k++){
+        positive_match = false;
+
+        for(l=0; l<item_list.length; l++){
+          if (item_list[l].trim().indexOf(query_match[k].trim()) == 0) { positive_match = true; }
+        }
+        if (!positive_match) { return false; }
+      }
+
+      for(m=0; m<query_not.length; m++){
+
+        negative_match = [];
+        console.log(query_not);
+
+        for(n=0; n<item_list.length; n++){
+          if (!item_list[n].trim().indexOf(query_not[m].trim()) == 0) {
+            negative_match.push(true);
+          } else {
+            negative_match.push(false);
+          }
+        }
+        //console.log("NM: " + negative_match);
+        if (negative_match.indexOf(false) !== -1) { return false; }
+      }
+
       return true;
+
     }
 
     function filter_toggle() {
