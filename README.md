@@ -45,7 +45,7 @@ For example, in the case of the language input:
 
 * "English, French, German" => Returns movies with languages matching English, French, and German
 * "English, !Klingon, Welsh" => Returns movies with languages matching English and Welsh, without the presence of Klingon
-* "Ger, P" => Returns movies with languages matching Ger[...] (German), P[...] (Portuguese, Persian, etc)
+* "Ger, P" => Returns movies with languages matching Ger... (German), P... (Portuguese, Persian, etc)
 
 ## Disclaimer
  
