@@ -1,0 +1,146 @@
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%,-50%); /* IE 9 */
+  -webkit-transform: translate(-50%,-50%); /* Chrome, Safari, Opera */
+}
+.heading_spacer{
+  padding-left:10px;
+}
+
+/* DOM Elements */
+h4, .h4 {
+  font-size: 16px;
+}
+hr{
+   border-color:#CCC;
+}
+
+.body-container{
+  margin-top:80px;
+  margin-left:auto;
+  margin-right:auto;
+}
+#backdrop{
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  z-order:5;
+}
+#results{
+  margin-bottom:50px;
+}
+#modal-alert{
+  z-index:11;
+  width:800px;
+}
+.well{
+  width:600px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.title-image{
+  width:200px;
+  height:300px;
+  vertical-align:top;
+  margin-top:25px;
+}
+
+/* Filters */
+#filter_toggle{
+  width:100%;
+  text-align:center;
+  margin-right:auto;
+  margin-left:auto;
+}
+#filter_toggle_btn{
+  padding-left:45px;
+  padding-right:45px;
+  background-color:#444;
+  margin-bottom:20px;
+  color:white;
+}
+.filter-container{
+  max-width:800px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:15px;
+  display:visible;
+  padding-top:20px;
+  padding-bottom:20px;
+}
+.filter-section{
+  width:100%;
+  display:inline-block;
+}
+.filter-left{
+  width:120px;
+  float:left;
+}
+.filter-right{
+  max-width:550px;
+  float:right
+}
+
+/* Tables */
+.table-striped > tbody > tr > td.stripe-on{
+  background-color: #F9F9F9;
+  !important
+}
+.table-striped > tbody > tr > td.stripe-off{
+  background-color: #FFFFFF;
+  !important
+}
+
+/* Individual Title Page */
+#item-description{
+  padding:10px;
+}
+#data-retrieved{
+  margin-top:5px;
+  font-size:12px;
+  text-align:center;
+}
+#item-content-rating{
+  margin-right:10px;
+  padding-left:4px;
+  padding-right:2px;
+  border:1px #AAA solid;
+  border-radius:2px;
+}
+#item-running-time{
+  margin-left:10px;
+  margin-right:10px;
+}
+#star{
+  display:inline-block;
+  color:orange;
+  font-size:30px;
+  margin-left:10px;
+}
+#item-rating{
+  display:inline-block;
+}
+#title_content{
+  width:800px;
+  margin-left:auto;
+  margin-right:auto;
+  padding:20px;
+  margin-bottom:0px;
+}
+#title-header{
+  display:inline-block;
+  padding-left:30px;
+  width:70%;
+}
+#title-url{
+  text-align:center;
+}
+.title-language{
+  font-weight:400;
+}

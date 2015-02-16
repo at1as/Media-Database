@@ -12,51 +12,51 @@
     <div class="container theme-showcase" role="main" style="margin:0px; padding:0px;">
       <div id="title_content" class="jumbotron">
         <span style="vertical-align:top">
-          <a href="../images/{{movie.filename}}.png">
-            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/{{movie.filename}}.png">
+          <a href="../images/{{series.filename}}.png">
+            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/{{series.filename}}.png">
           </a>
         </span>
         <span id="title-header">
 
-          <h2> {{movie.title}} ({{movie.year}}) </h2>
+          <h2> {{series.title}} ({{series.year}}) </h2>
 
           <div>
             <span id="star">&#9733; </span>
-            <h4 id="item-rating"><b> {{movie.rating}} / 10</b> ({{movie.votes}} votes) </h4>
+            <h4 id="item-rating"><b> {{series.rating}} / 10</b> ({{series.votes}} votes) </h4>
           </div>
 
           <div style="margin-left:10px">
             <h5>
               <span id="item-content-rating">
-                {{movie.content_rating[0]}}
+                {{series.content_rating[0]}}
               </span> &mdash;
-              <span id="item-running-time">{{movie.running_time}}</span> &mdash;
+              <span id="item-running-time">{{series.running_time}}</span> &mdash;
               <span style="margin-left:10px">
-                {% for item in movie.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
+                {% for item in series.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
               </span>
           </div>
 
           <h4 style="padding-top:10px">Cast:</h4>
           <div style="margin-left:10px">
-            {% for item in movie.stars %}
+            {% for item in series.stars %}
               <h5 style="font-weight:400"> {{item}} </h5>
             {% endfor %}
           </div>
 
           <h4 style="padding-top:10px">Languages:</h4>
           <div style="margin-left:10px;">
-            {% for item in movie.languages %}
+            {% for item in series.languages %}
               <h5 class="title-language"> {{item}} </h5>
             {% endfor %}
           </div>
         </span>
         <hr>
         <div id="item-description">
-          <p> {{movie.description}} </p>
+          <p> {{series.description}} </p>
         </div>
-        <p id="title-url"><a href="{{movie.url}}" target="_blank">Go to IMDB</a></p>
+        <p id="title-url"><a href="{{series.url}}" target="_blank">Go to IMDB</a></p>
         <div id="data-retrieved">
-          Data Retrieved: {{movie.info_retrieved}}
+          Data Retrieved: {{series.info_retrieved}}
         </div>
       </div>
     </div>

@@ -17,16 +17,16 @@
       <div class="container">
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="./index.html">Movies 
+            <li><a href="./index.html">Movies
               <span class="badge">
-                <span id="results_num" style="display:none">{{ movie_list|length }}</span>
-                <span id="mv_seperator" style="display:none"> / </span>
-                <span id="total_num">{{ movie_list|length }}</span>
+                <span>{{ number_of_movies }}</span>
               </span>
             </a></li>
- 	          <li><a href="./series.html">Series
+ 	          <li class="active"><a href="./series.html">Series
               <span class="badge">
-                <span>{{ number_of_series }}</span>
+                <span id="results_num" style="display:none">{{ series_list|length }}</span>
+                <span id="mv_seperator" style="display:none"> / </span>
+                <span id="total_num">{{ series_list|length }}</span>
               </span>
             </a></li>
             <!--<li><a href="./documentaries.html">Documentaries <span class="badge"></span></a></li>-->
@@ -41,35 +41,31 @@
       <div id="filters" class="jumbotron filter-container">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
-            <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+            <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Rating (Min):</h4>
-            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
-              <h4 class="filter-left">Year (Min):</h4>
-              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+              <h4 class="filter-left">Start Year (Min):</h4>
+              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
-              <h4 class="filter-left">Year (Max):</h4>
-              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+              <h4 class="filter-left">End Year (Max):</h4>
+              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Genre:</h4>
-            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Cast:</h4>
-            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
-          </div>
-          <div class="filter-section">
-            <h4 class="filter-left">Director:</h4>
-            <input class="form-control filter-right" id="director-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Language:</h4>
-            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
       </div>
 
@@ -87,26 +83,24 @@
             <tr onclick="stripe_table()">
               <th style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
-              <th style="vertical-align:top">Year</th>
+              <th style="vertical-align:top">Years</th>
               <th style="vertical-align:top">Genres</th>
               <th style="vertical-align:top">Stars</th>
-              <th style="vertical-align:top">Director</th>
-              <th style="vertical-align:top">Languages</th>
+              <th style="vertical-align:top; display:none">Languages</th>
             </tr>
           </thead>
           <tbody>
-            {% for movie in movie_list %}
+            {% for series in series_list %}
               <tr>
-                <td>{{ movie_list[movie].rating }}</td>
-                <td sorttable_customkey="{{ movie_list[movie].title }}">
-                  <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                <td>{{ series_list[series].rating }}</td>
+                <td sorttable_customkey="{{ series_list[series].title }}">
+                  <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">{{ series_list[series].title }}</a>
                   <!-- ' -->
                 </td>
-                <td>{{ movie_list[movie].year }}</td>
-                <td>{{ movie_list[movie].genre|join(', ') }}</td>
-                <td>{{ movie_list[movie].stars|join(', ') }}</td>
-                <td>{{ movie_list[movie].director }}</td>
-                <td>{{ movie_list[movie].languages|join(', ') }}</td>
+                <td>{{ series_list[series].year }}</td>
+                <td>{{ series_list[series].genre|join(', ') }}</td>
+                <td>{{ series_list[series].stars|join(', ') }}</td>
+                <td style="display:none">{{ series_list[series].languages|join(', ') }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -124,9 +118,9 @@
 
   </body>
 
-  <script type="text/javascript">
+  <script>
 
-    function search_movie_table(tableID) {
+    function search_series_table(tableID) {
       // Get queries from each search field
       var rating_query    = document.getElementById('rating-search').value.toLowerCase();
       var title_query     = document.getElementById('title-search').value.toLowerCase();
@@ -134,42 +128,38 @@
       var year_max_query  = document.getElementById('year-max-search').value.toLowerCase();
       var genre_query     = document.getElementById('genre-search').value.toLowerCase();
       var cast_query      = document.getElementById('cast-search').value.toLowerCase();
-      var director_query  = document.getElementById('director-search').value.toLowerCase();
       var language_query  = document.getElementById('language-search').value.toLowerCase();
 
       // Traverse each row and cell. Hide rows whose content fails to match query
       for (i=1; i<tableID.rows.length; i++) {
-        var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
-        var title_cell    = tableID.rows[i].cells[1].children[0].innerHTML.toLowerCase();
-        var year_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase();
-        var genre_cell    = tableID.rows[i].cells[3].innerHTML.toLowerCase();
-        var cast_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
-        var director_cell = tableID.rows[i].cells[5].innerHTML.toLowerCase();
-        var language_cell = tableID.rows[i].cells[6].innerHTML.toLowerCase();
+        var rating_cell     = tableID.rows[i].cells[0].innerHTML.toLowerCase();
+        var title_cell      = tableID.rows[i].cells[1].children[0].innerHTML.toLowerCase();
+        var start_year_cell = tableID.rows[i].cells[2].innerHTML.substring(0,4).toLowerCase();
+        var end_year_cell   = tableID.rows[i].cells[2].innerHTML.substring(5,9).toLowerCase().trim();
+        var genre_cell      = tableID.rows[i].cells[3].innerHTML.toLowerCase();
+        var cast_cell       = tableID.rows[i].cells[4].innerHTML.toLowerCase();
+        var language_cell   = tableID.rows[i].cells[5].innerHTML.toLowerCase();
 
         // Discard row if rating is empty or less than query
-        if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query != '' && rating_cell == '')) {
+        if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
           tableID.rows[i].style.display = 'none';
         }
-        else if (title_cell.indexOf(title_query) == -1 && remove_diacritics(title_cell).indexOf(title_query) == -1 && title_query != '') {
+        else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (year_min_query != '' && year_cell != '' && (parseInt(year_cell) < parseInt(year_min_query))) {
+        else if (year_min_query !== '' && start_year_cell !== '' && (parseInt(start_year_cell) < parseInt(year_min_query))) {
           tableID.rows[i].style.display = 'none';
         }
-        else if (year_max_query != '' && year_cell != '' && (parseInt(year_cell) > parseInt(year_max_query))) {
+        else if (year_max_query !== '' && ((end_year_cell === '') || (end_year_cell !== '' && (parseInt(end_year_cell) > parseInt(year_max_query))))) {
           tableID.rows[i].style.display = 'none';
         }
-        else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query != '') {
+        else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
             tableID.rows[i].style.display = 'none';
         }
         else if (!substrings_in_list(cast_query, cast_cell) && cast_query != '') {
           tableID.rows[i].style.display = 'none';
         }
-        else if (director_cell.indexOf(director_query) == -1 && remove_diacritics(director_cell).indexOf(director_query) && director_query != '') {
-          tableID.rows[i].style.display = 'none';
-        }
-        else if (!substrings_in_list(language_query, language_cell, 'language') && language_query != '') {
+        else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
             tableID.rows[i].style.display = 'none';
         }
         else {

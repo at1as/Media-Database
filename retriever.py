@@ -14,58 +14,49 @@ import time
 from datetime import datetime
 from unicodedata import normalize
 
-
 # Input Environment Configuration
 with open('conf.json') as config_json:
   config = json.load(config_json)
 
-# Initialise Empty Movie Dictionary (if not present)
-if not os.path.isfile('movie_data.json'):
-  with open("movie_data.json", "w+") as movie_feed:
-    json.dump({}, movie_feed)
 
-# Output Environment for static html generation
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
-index = env.get_template("index.html")
-about = env.get_template("about.html")
-movie_details = env.get_template("movie_details.html")
+def get_file_list(path, repo):
+  file_list = os.listdir(path)[0:config["max_assets"]]
+  filtered_file_list = []
 
-
-# Check specified path for files, and filter out unwanted content before returning
-def get_movie_list(path):
-  movie_list = os.listdir(path)[0:config["max_quantity"]]
-  filtered_movie_list = []
-
-  for file in movie_list:
+  for file in file_list:
     # If the extension is in include_extension, or file is a folder not preceded by '_'
     if file.split(".")[-1:][0] in config["include_extensions"] or (len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
 
-      movie_title = file.rsplit(".", 1)[0]
+      file_title = file.rsplit(".", 1)[0]
 
       # External drives often prepend item with "._"
-      if movie_title[0:2] == "._":
-        movie_title = movie_title[2:]
+      if file_title[0:2] == "._":
+        file_title = file_title[2:]
 
       # Add the file if it is not already in
-      with open("movie_data.json", 'r') as saved_movie_list:
-        saved_movies = json.load(saved_movie_list)
+      with open(repo, 'r') as saved_file_list:
+        saved_files = json.load(saved_file_list)
 
         # Do not repeat scrape for already acquired title
-        if not saved_movies.has_key(movie_title):
-          print "Now adding: %s" % movie_title
-          filtered_movie_list.append(movie_title)
-  return filtered_movie_list
+        if not saved_files.has_key(file_title):
+          print "Now adding: %s" % file_title
+          filtered_file_list.append(file_title)
+  return filtered_file_list
 
 
 # Construct search results url for specified movie
-def construct_search_url(movie):
-  safe_movie = normalize("NFC", movie).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
-  return config["base_url"] + config["search_path"] + safe_movie + config["url_end"]
+def construct_search_url(title):
+  safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
+  return config["base_url"] + config["search_path"] + safe_title + config["url_end"]
 
 
 # Return the URL corresponding to particular movie
-def get_movie_url(movie):
-  invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)"]
+def get_movie_url(movie, mediatype):
+  if mediatype == "movie":
+    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)"]
+  elif mediatype =="series":
+    valid_results = ["(TV Series)", "(TV Mini-Series)"]
+
   search_url = construct_search_url(movie)
   page = lxml.html.document_fromstring(requests.get(search_url).content)
 
@@ -78,21 +69,31 @@ def get_movie_url(movie):
 
           # Select first in list which doesn't contain invalid_results
           for index, list_title in enumerate(page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
-            if not any(x in list_title.text_content() for x in invalid_results):
-              endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-              return config["base_url"] + endpoint
+
+            # Movies in list have no tag
+            if mediatype == "movie":
+              if not any(x in list_title.text_content() for x in invalid_results):
+                endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+                return config["base_url"] + endpoint
+            
+            # Series in list are tagged
+            else:
+              if any(x in list_title.text_content() for x in valid_results):
+                endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+                return config["base_url"] + endpoint
 
     # If not found, return None
     return None
   except IndexError:
-    print "***SKIPPING: %s" % movie
+    print "*** SKIPPING: '%s' not found" % movie
     return None
 
 
 # Scrape movie page for attributes specified below
-def get_movie_details(movie):
+def get_movie_details(movie, mediatype):
   movie_attributes = {}
-  movie_url = get_movie_url(movie)
+  movie_url = get_movie_url(movie, mediatype)
+
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
 
@@ -164,6 +165,90 @@ def get_movie_details(movie):
   else:
     return None
 
+def get_series_details(movie, mediatype):
+  movie_attributes = {}
+  movie_url = get_movie_url(movie, mediatype)
+
+  if movie_url != None:
+    movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
+
+    movie_attributes['url'] = movie_url
+    movie_attributes['filename'] = movie
+    movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
+    try:
+      movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
+    except IndexError:
+      movie_attributes['title'] = ""
+    try:
+      if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(":
+        if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() not in ["(I)", "(II)", "(III)", "(IV)", "(V)"]:
+          movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip()[1:-1]
+        else:
+          movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/text()')[0].strip()[1:-1]
+      else:
+        movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip()[1:-1]
+    except IndexError:
+      try:
+        movie_attributes['year'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[3]/text()')[0].strip()[1:-1]
+      except IndexError:
+        movie_attributes['year'] = ""
+    try:
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]/text()')[0].strip()
+    except IndexError:
+      movie_attributes['description'] = ""
+    try:
+      if movie_page.xpath('//*[@id="overview-top"]/div[3]/h4/text()')[0].strip() == "Creator:":
+        movie_attributes['creator'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/a/span/text()')[0].strip()
+      else:
+        movie_attributes['creator'] = ""
+    except IndexError:
+      movie_attributes['creator'] = ""
+    try:
+      if movie_page.xpath('//*[@id="overview-top"]/div[3]/h4/text()')[0].strip() == "Stars:":
+        movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/a/span/text()')
+      else:
+        movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[4]/a/span/text()')
+    except IndexError:
+      try:
+        movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/a/span/text()')
+      except IndexError:
+        movie_attributes['stars'] = ""
+    try:
+      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[1]/a/span/text()')
+    except IndexError:
+      movie_attributes['genre'] = ""
+    try:
+      movie_attributes['rating'] = movie_page.xpath('//*[@class="titlePageSprite star-box-giga-star"]/text()')[0].strip()
+    except IndexError:
+      movie_attributes['rating'] = ""
+    try:
+      movie_attributes['votes'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/div[3]/a[1]/span/text()')[0].strip()
+    except IndexError:
+      movie_attributes['votes'] = ""
+    try:
+      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[1]/time/text()')[0].strip()
+    except IndexError:
+      movie_attributes['running_time'] = ""
+    try:
+      if movie_page.xpath('//*[@id="titleDetails"]/div[3]/h4/text()') == ['Language:']:
+        movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[3]/a/text()')
+      else:
+        movie_attributes['languages'] = movie_page.xpath('//*[@id="titleDetails"]/div[2]/a/text()')
+    except IndexError:
+      movie_attributes['languages'] = ""
+    try:
+      movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/span[1]/@content') # HELP
+    except IndexError:
+      movie_attributes['content_rating'] = ""
+    try:
+      movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
+      save_image(movie_attributes['image_url'], movie_attributes['filename'])
+    except IndexError:
+      movie_attributes['image_url'] = ""
+    return movie_attributes
+  else:
+    return None
+
 
 # If image_url was found, write image to directory
 def save_image(url, name):
@@ -174,17 +259,22 @@ def save_image(url, name):
         shutil.copyfileobj(img.raw, f)
 
 
-# Create list of movie attributes
-def compile_movie_list():
-  movie_attributes_list = []
-  for movie in get_movie_list(config["asset_location"]):
-    movie_attributes = get_movie_details(movie)
-    if movie_attributes != None:
-      movie_attributes_list.append(movie_attributes)
-  return movie_attributes_list
+def compile_file_list(path, repo, mediatype):
+  file_attributes_list = []
+
+  for file in get_file_list(path, repo):
+
+    if mediatype == "movie":
+      file_attributes = get_movie_details(file, "movie")
+    elif mediatype == "series":
+      file_attributes = get_series_details(file, "series")
+    if file_attributes != None:
+      file_attributes_list.append(file_attributes)
+   
+  return file_attributes_list
 
 
-def generate_site(additional_movies):
+def generate_site(additional_movies, additional_series):
 
   # Import Data from JSON file
   with open("movie_data.json", 'r') as movie_feed:
@@ -194,29 +284,82 @@ def generate_site(additional_movies):
   for movie in additional_movies:
     saved_movies[movie['filename']] = movie
 
-  # Write contents to JSON file
+  # Write movie contents to JSON file
   with open("movie_data.json", 'w+') as movie_feed:
     json.dump(saved_movies, movie_feed, encoding="utf-8")
 
-  # List Page
-  list_page = index.render(movie_list = saved_movies)
+
+  # Import Data from JSON file
+  with open("series_data.json", 'r') as series_feed:
+    saved_series = json.load(series_feed)
+
+  # Add new saved movies to JSON file
+  for series in additional_series:
+    saved_series[series['filename']] = series
+
+  # Write movie contents to JSON file
+  with open("series_data.json", 'w+') as series_feed:
+    json.dump(saved_series, series_feed, encoding="utf-8")
+
+  # Output Environment for static html generation
+  env             = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
+  index           = env.get_template("index.html")
+  series          = env.get_template("series.html")
+  about           = env.get_template("about.html")
+  movie_details   = env.get_template("movie_details.html")
+  series_details  = env.get_template("series_details.html")
+
+  # Movie Index Page
+  movies_page = index.render(movie_list = saved_movies, number_of_series = len(saved_series))
   f = open("_output/index.html", "w")
-  f.write(list_page.encode('utf-8'))
+  f.write(movies_page.encode('utf-8'))
   f.close
 
+  # TV Series Page
+  series_page = series.render(series_list = saved_series, number_of_movies = len(saved_movies))
+  j = open("_output/series.html", "w")
+  j.write(series_page.encode('utf-8'))
+  j.close
+
   # About Page
-  about_page = about.render(number_of_movies = len(saved_movies), time = str(datetime.now()))
+  about_page = about.render(number_of_movies = len(saved_movies), number_of_series = len(saved_series), time = str(datetime.now()))
   g = open("_output/about.html", "w")
   g.write(about_page.encode('utf-8'))
   g.close
 
-  # Individual Title Pages
+  # Individual Movie Pages
   for item in saved_movies:
-    output_dir = "_output/pages/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
-    movie_page = movie_details.render(number_of_movies = len(saved_movies), movie = saved_movies[item])
+    output_dir = "_output/movies/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
+    movie_page = movie_details.render(number_of_movies = len(saved_movies), movie = saved_movies[item], number_of_series = len(saved_series))
     h = open(output_dir, "w")
     h.write(movie_page.encode('utf-8'))
     h.close
 
+  # Individual Series Page
+  for item in saved_series:
+    output_dir = "_output/series/%s(%s).html" %(saved_series[item]['title'].replace('/', ''), saved_series[item]['year'][0:4])
+    series_page = series_details.render(number_of_series = len(saved_series), series = saved_series[item], number_of_movies = len(saved_movies))
+    k = open(output_dir, "w")
+    k.write(series_page.encode('utf-8'))
+    k.close
 
-generate_site(compile_movie_list())
+
+if __name__ == "__main__":
+
+  # Initalise empty dictionaries if not present
+  if config['assets']['movies']['index_asset']:
+    if not os.path.isfile('movie_data.json'):
+      with open("movie_data.json", "w+") as movie_feed:
+        json.dump({}, movie_feed)
+
+  if config['assets']['series']['index_asset']:
+    if not os.path.isfile('series_data.json'):
+      with open("series_data.json", "w+") as series_feed:
+        json.dump({}, series_feed)
+
+
+  movie_list  = compile_file_list(config['assets']['movies']['location'], "movie_data.json", "movie")
+  series_list = compile_file_list(config['assets']['series']['location'], "series_data.json", "series")
+
+  generate_site(movie_list, series_list)
+

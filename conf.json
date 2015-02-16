@@ -1,9 +1,22 @@
 {
-  "base_url": "http://www.imdb.com",
-  "search_path": "/find?q=",
-  "url_end": "&s=all",
-  "max_quantity": 950,
-  "asset_location": "/Volumes/3TB-JASON/Movies/",
-  "exclude_files": ["LICENSE", ".DS_Store", "Thumbs.db" ],
+  "base_url"          : "http://www.imdb.com",
+  "search_path"       : "/find?q=",
+  "url_end"           : "&s=all",
+  "assets" : {
+    "movies" : {
+      "location"      : "/Volumes/3TB-JASON/Movies/",
+      "index_asset"   : true
+    },
+    "series" : {
+      "location"      : "/Volumes/3TB-JASON/Television/",
+      "index_asset"   : true
+    },
+    "documentaries" : {
+      "location"      : "/Volumes/3TB-JASON/Documentaries/",
+      "index_asset"   : false
+    }
+  },
+  "max_assets"        : 9999,
+  "exclude_files"     : ["LICENSE", ".DS_Store", "Thumbs.db"],
   "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
 }

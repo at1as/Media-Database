@@ -2,25 +2,29 @@
 <html lang="en">
   <head>
     <title>Local Movie Database</title>
-    <link href="../_resources/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="../_resources/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="../_resources/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/favicon.png" rel="shotcut icon" type="image/png"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
+
   <body role="document">
     <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="./index.html">List of Content <span class="badge">{{ number_of_movies }}</span></a></li>
-            <li class="active"><a href="#">About</a></li>
+            <li><a href="./index.html">Movies <span class="badge">{{ number_of_movies }}</span></a></li>
+            <li><a href="./series.html">Series <span class="badge">{{ number_of_series }}</span></a></li>
+            <!--<li><a href="./documentaries.html">Documentaries <span class="badge"></span></a></li>-->
+	          <li class="active"><a href="#">About</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
-    <div class="container theme-showcase" role="main" style="margin-top:80px;margin-left: auto; margin-right:auto;">
 
-      <div class="well" style="width:600px; margin-left:auto; margin-right:auto;">
+    <div class="container theme-showcase body-container" role="main">
+      <div class="well">
         <p>
           <b>IMDB-Scrape</b> creates a local movie database containing information related to your movie collection.
           Webpages are staticly generated and uploaded to the _output directory. Rerun the script every
@@ -31,17 +35,16 @@
           <a href="https://github.com/at1as/IMDB-Scrape">https://github.com/at1as/IMDB-Scrape</a>
         </p>
         <p>
-          <b>Created by:</b> Jason Willems
+          <b>Created by:</b> <a href="http://www.jasonwillems.com/links">Jason M. Willems</a>
         </p>
         <p>
-          <b>License:</b> Distributed under an M.I.T. license
+          <b>License:</b> <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE">M.I.T. License</a>
         </p>
-        <hr style="border-color:#CCC">
+        <hr>
         <p style="text-align:center">
           <b>Last Report Generated:</b> {{ time }}
         </p>
       </div>
-
     </div>
   </body>
 </html>
