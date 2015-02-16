@@ -14,22 +14,47 @@ import time
 from datetime import datetime
 from unicodedata import normalize
 
-# Input Environment Configuration
-with open('conf.json') as config_json:
-  config = json.load(config_json)
+
+# Import Input Environment Configuration
+try:
+  with open('conf.json') as config_json:
+    config = json.load(config_json)
+except:
+  print "\nInvalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n"
+  raise SystemExit
 
 
-def get_file_list(path, repo):
+# Create empty datafiles if not present
+def initialize_asset_repo(base_path, mediatype):
+
+  if not os.path.isfile(config['assets'][base_path]['saved_data']):
+    with open(config['assets'][base_path]['saved_data'], 'w+') as item_feed:
+      json.dump({}, item_feed)
+
+  if config['assets'][base_path]['index_asset']:
+    item_list = compile_file_list(config['assets'][base_path]['location'], config['assets'][base_path]['saved_data'], mediatype)    
+  else:
+    item_list = []
+
+  return item_list
+
+
+def get_file_list(path, repo, mediatype):
   file_list = os.listdir(path)[0:config["max_assets"]]
   filtered_file_list = []
 
   for file in file_list:
     # If the extension is in include_extension, or file is a folder not preceded by '_'
-    if file.split(".")[-1:][0] in config["include_extensions"] or (len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
+    if ((os.path.isfile(file) and file.split(".")[-1:][0] in config["include_extensions"]) or (os.path.isdir(file) and file[0] != "_")) and file not in config["exclude_files"]: 
+    #(len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
 
-      file_title = file.rsplit(".", 1)[0]
+      # Strip extension from file
+      if os.path.isfile(file):
+        file_title = file.rsplit(".", 1)[0]
+      else:
+        file_title = file
 
-      # External drives often prepend item with "._"
+      # Drop prepending "._" from files on external drives
       if file_title[0:2] == "._":
         file_title = file_title[2:]
 
@@ -44,20 +69,21 @@ def get_file_list(path, repo):
   return filtered_file_list
 
 
-# Construct search results url for specified movie
+# Construct search results url for specified title
 def construct_search_url(title):
   safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
   return config["base_url"] + config["search_path"] + safe_title + config["url_end"]
 
 
-# Return the URL corresponding to particular movie
-def get_movie_url(movie, mediatype):
+# Return the URL corresponding to particular title
+def get_title_url(asset, mediatype):
+  
   if mediatype == "movie":
     invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)"]
   elif mediatype =="series":
     valid_results = ["(TV Series)", "(TV Mini-Series)"]
 
-  search_url = construct_search_url(movie)
+  search_url = construct_search_url(asset)
   page = lxml.html.document_fromstring(requests.get(search_url).content)
 
   try:
@@ -77,22 +103,23 @@ def get_movie_url(movie, mediatype):
                 return config["base_url"] + endpoint
             
             # Series in list are tagged
-            else:
+            elif mediatype == "series":
               if any(x in list_title.text_content() for x in valid_results):
                 endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
                 return config["base_url"] + endpoint
 
     # If not found, return None
+    print "*** SKIPPING: '%s' not found" % asset
     return None
   except IndexError:
-    print "*** SKIPPING: '%s' not found" % movie
+    print "*** SKIPPING: '%s' not found" % asset
     return None
 
 
 # Scrape movie page for attributes specified below
 def get_movie_details(movie, mediatype):
   movie_attributes = {}
-  movie_url = get_movie_url(movie, mediatype)
+  movie_url = get_title_url(movie, mediatype)
 
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
@@ -165,9 +192,10 @@ def get_movie_details(movie, mediatype):
   else:
     return None
 
+# Scrape series page for attributes specified below
 def get_series_details(movie, mediatype):
   movie_attributes = {}
-  movie_url = get_movie_url(movie, mediatype)
+  movie_url = get_title_url(movie, mediatype)
 
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
@@ -255,51 +283,51 @@ def save_image(url, name):
   img = requests.get(url, stream=True)
   if img.status_code == 200:
     with open('_output/images/' + name + '.png', 'wb') as f:
-        img.raw.decode_content = True
-        shutil.copyfileobj(img.raw, f)
+      img.raw.decode_content = True
+      shutil.copyfileobj(img.raw, f)
 
 
 def compile_file_list(path, repo, mediatype):
   file_attributes_list = []
 
-  for file in get_file_list(path, repo):
+  for file in get_file_list(path, repo, mediatype):
 
     if mediatype == "movie":
       file_attributes = get_movie_details(file, "movie")
     elif mediatype == "series":
       file_attributes = get_series_details(file, "series")
+    
     if file_attributes != None:
       file_attributes_list.append(file_attributes)
    
   return file_attributes_list
 
 
+def write_scraped_data(base_path, additional_assets):
+  
+  # Import Data from JSON file
+  with open(config['assets'][base_path]['saved_data'], 'r') as asset_feed:
+    saved_assets = json.load(asset_feed)
+
+  if additional_assets != []:
+    
+    # Add new saved assets to JSON file
+    for asset in additional_assets:
+      saved_assets[asset['filename']] = asset
+
+    # Write combined asset contents to JSON file
+    with open(config['assets'][base_path]['saved_data'], 'w+') as asset_feed:
+      json.dump(saved_assets, asset_feed, encoding="utf-8")
+  
+  return saved_assets
+
+
 def generate_site(additional_movies, additional_series):
 
-  # Import Data from JSON file
-  with open("movie_data.json", 'r') as movie_feed:
-    saved_movies = json.load(movie_feed)
-
-  # Add new saved movies to JSON file
-  for movie in additional_movies:
-    saved_movies[movie['filename']] = movie
-
-  # Write movie contents to JSON file
-  with open("movie_data.json", 'w+') as movie_feed:
-    json.dump(saved_movies, movie_feed, encoding="utf-8")
-
-
-  # Import Data from JSON file
-  with open("series_data.json", 'r') as series_feed:
-    saved_series = json.load(series_feed)
-
-  # Add new saved movies to JSON file
-  for series in additional_series:
-    saved_series[series['filename']] = series
-
-  # Write movie contents to JSON file
-  with open("series_data.json", 'w+') as series_feed:
-    json.dump(saved_series, series_feed, encoding="utf-8")
+  saved_movies  = write_scraped_data("movies", additional_movies)
+  saved_series  = write_scraped_data("series", additional_series)
+  num_movies    = len(saved_movies)
+  num_series    = len(saved_series)
 
   # Output Environment for static html generation
   env             = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
@@ -309,20 +337,21 @@ def generate_site(additional_movies, additional_series):
   movie_details   = env.get_template("movie_details.html")
   series_details  = env.get_template("series_details.html")
 
+
   # Movie Index Page
-  movies_page = index.render(movie_list = saved_movies, number_of_series = len(saved_series))
+  movies_page = index.render(movie_list = saved_movies, number_of_series = num_series)
   f = open("_output/index.html", "w")
   f.write(movies_page.encode('utf-8'))
   f.close
 
   # TV Series Page
-  series_page = series.render(series_list = saved_series, number_of_movies = len(saved_movies))
+  series_page = series.render(series_list = saved_series, number_of_movies = num_movies)
   j = open("_output/series.html", "w")
   j.write(series_page.encode('utf-8'))
   j.close
 
   # About Page
-  about_page = about.render(number_of_movies = len(saved_movies), number_of_series = len(saved_series), time = str(datetime.now()))
+  about_page = about.render(number_of_movies = num_movies, number_of_series = num_series, time = str(datetime.now()))
   g = open("_output/about.html", "w")
   g.write(about_page.encode('utf-8'))
   g.close
@@ -330,7 +359,7 @@ def generate_site(additional_movies, additional_series):
   # Individual Movie Pages
   for item in saved_movies:
     output_dir = "_output/movies/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
-    movie_page = movie_details.render(number_of_movies = len(saved_movies), movie = saved_movies[item], number_of_series = len(saved_series))
+    movie_page = movie_details.render(number_of_movies = num_movies, movie = saved_movies[item], number_of_series = num_series)
     h = open(output_dir, "w")
     h.write(movie_page.encode('utf-8'))
     h.close
@@ -338,7 +367,7 @@ def generate_site(additional_movies, additional_series):
   # Individual Series Page
   for item in saved_series:
     output_dir = "_output/series/%s(%s).html" %(saved_series[item]['title'].replace('/', ''), saved_series[item]['year'][0:4])
-    series_page = series_details.render(number_of_series = len(saved_series), series = saved_series[item], number_of_movies = len(saved_movies))
+    series_page = series_details.render(number_of_series = num_series, series = saved_series[item], number_of_movies = num_movies)
     k = open(output_dir, "w")
     k.write(series_page.encode('utf-8'))
     k.close
@@ -346,20 +375,7 @@ def generate_site(additional_movies, additional_series):
 
 if __name__ == "__main__":
 
-  # Initalise empty dictionaries if not present
-  if config['assets']['movies']['index_asset']:
-    if not os.path.isfile('movie_data.json'):
-      with open("movie_data.json", "w+") as movie_feed:
-        json.dump({}, movie_feed)
-
-  if config['assets']['series']['index_asset']:
-    if not os.path.isfile('series_data.json'):
-      with open("series_data.json", "w+") as series_feed:
-        json.dump({}, series_feed)
-
-
-  movie_list  = compile_file_list(config['assets']['movies']['location'], "movie_data.json", "movie")
-  series_list = compile_file_list(config['assets']['series']['location'], "series_data.json", "series")
+  movie_list  = initialize_asset_repo("movies", "movie")
+  series_list = initialize_asset_repo("series", "series")
 
   generate_site(movie_list, series_list)
-

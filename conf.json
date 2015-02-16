@@ -5,15 +5,21 @@
   "assets" : {
     "movies" : {
       "location"      : "/Volumes/3TB-JASON/Movies/",
-      "index_asset"   : true
+      "saved_data"    : "./_data/movie_data.json",
+      "index_asset"   : false,
+      "max_assets"    : 9999
     },
     "series" : {
       "location"      : "/Volumes/3TB-JASON/Television/",
-      "index_asset"   : true
+      "saved_data"    : "./_data/series_data.json",
+      "index_asset"   : false,
+      "max_assets"    : 9999
     },
     "documentaries" : {
       "location"      : "/Volumes/3TB-JASON/Documentaries/",
-      "index_asset"   : false
+      "saved_data"    : "./_data/documentary_data.json",
+      "index_asset"   : false,
+      "max_assets"    : 9999
     }
   },
   "max_assets"        : 9999,

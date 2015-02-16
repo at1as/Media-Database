@@ -1,3 +1,211 @@
+// Refine Movie Table based on current filters
+function search_movie_table(tableID) {
+  // Get queries from each search field
+  var rating_query    = document.getElementById('rating-search').value.toLowerCase();
+  var title_query     = document.getElementById('title-search').value.toLowerCase();
+  var year_min_query  = document.getElementById('year-min-search').value.toLowerCase();
+  var year_max_query  = document.getElementById('year-max-search').value.toLowerCase();
+  var genre_query     = document.getElementById('genre-search').value.toLowerCase();
+  var cast_query      = document.getElementById('cast-search').value.toLowerCase();
+  var director_query  = document.getElementById('director-search').value.toLowerCase();
+  var language_query  = document.getElementById('language-search').value.toLowerCase();
+
+  // Traverse each row and cell. Hide rows whose content fails to match query
+  for (i=1; i<tableID.rows.length; i++) {
+    var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
+    var title_cell    = tableID.rows[i].cells[1].children[0].innerHTML.toLowerCase();
+    var year_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase();
+    var genre_cell    = tableID.rows[i].cells[3].innerHTML.toLowerCase();
+    var cast_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
+    var director_cell = tableID.rows[i].cells[5].innerHTML.toLowerCase();
+    var language_cell = tableID.rows[i].cells[6].innerHTML.toLowerCase();
+
+    // Discard row if rating is empty or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (year_min_query !== '' && year_cell !== '' && (parseInt(year_cell) < parseInt(year_min_query))) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (year_max_query !== '' && year_cell !== '' && (parseInt(year_cell) > parseInt(year_max_query))) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
+        tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (director_cell.indexOf(director_query) === -1 && remove_diacritics(director_cell).indexOf(director_query) && director_query !== '') {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
+        tableID.rows[i].style.display = 'none';
+    }
+    else {
+      tableID.rows[i].style.display = '';
+    }
+  }
+
+  // Update the filtered counter in the page header
+  var count = 0;
+  for (j=1; j<tableID.rows.length; j++) {
+    if (tableID.rows[j].style.display !== 'none') {
+      count += 1;
+    }
+  }
+
+  var current_count = document.getElementById('results_num');
+  var total_count   = document.getElementById('total_num');
+  var count_spacer  = document.getElementById('mv_seperator');
+
+  current_count.innerHTML = count;
+
+  if (count == total_count.innerHTML) {
+    current_count.style.display = 'none';
+    count_spacer.style.display  = 'none';
+  } else {
+    current_count.style.display = '';
+    current_count.style.color   = '#45d234';
+    count_spacer.style.display  = '';
+  }
+
+  stripe_table();
+};
+
+
+// Refine Series Table based on current filters
+function search_series_table(tableID) {
+  // Get queries from each search field
+  var rating_query    = document.getElementById('rating-search').value.toLowerCase();
+  var title_query     = document.getElementById('title-search').value.toLowerCase();
+  var year_min_query  = document.getElementById('year-min-search').value.toLowerCase();
+  var year_max_query  = document.getElementById('year-max-search').value.toLowerCase();
+  var genre_query     = document.getElementById('genre-search').value.toLowerCase();
+  var cast_query      = document.getElementById('cast-search').value.toLowerCase();
+  var language_query  = document.getElementById('language-search').value.toLowerCase();
+
+  // Traverse each row and cell. Hide rows whose content fails to match query
+  for (i=1; i<tableID.rows.length; i++) {
+    var rating_cell     = tableID.rows[i].cells[0].innerHTML.toLowerCase();
+    var title_cell      = tableID.rows[i].cells[1].children[0].innerHTML.toLowerCase();
+    var start_year_cell = tableID.rows[i].cells[2].innerHTML.substring(0,4).toLowerCase();
+    var end_year_cell   = tableID.rows[i].cells[2].innerHTML.substring(5,9).toLowerCase().trim();
+    var genre_cell      = tableID.rows[i].cells[3].innerHTML.toLowerCase();
+    var cast_cell       = tableID.rows[i].cells[4].innerHTML.toLowerCase();
+    var language_cell   = tableID.rows[i].cells[5].innerHTML.toLowerCase();
+
+    // Discard row if rating is empty or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (year_min_query !== '' && start_year_cell !== '' && (parseInt(start_year_cell) < parseInt(year_min_query))) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (year_max_query !== '' && ((end_year_cell === '') || (end_year_cell !== '' && (parseInt(end_year_cell) > parseInt(year_max_query))))) {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
+        tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
+      tableID.rows[i].style.display = 'none';
+    }
+    else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
+        tableID.rows[i].style.display = 'none';
+    }
+    else {
+      tableID.rows[i].style.display = '';
+    }
+  }
+
+  // Update the filtered counter in the page header
+  var count = 0;
+  for (j=1; j<tableID.rows.length; j++) {
+    if (tableID.rows[j].style.display !== 'none') {
+      count += 1
+    }
+  }
+
+  var current_count = document.getElementById('results_num');
+  var total_count   = document.getElementById('total_num');
+  var count_spacer  = document.getElementById('mv_seperator');
+
+  current_count.innerHTML = count;
+
+  if (count == total_count.innerHTML) {
+    current_count.style.display = 'none';
+    count_spacer.style.display  = 'none'
+  } else {
+    current_count.style.display = '';
+    current_count.style.color   = '#45d234';
+    count_spacer.style.display  = ''
+  }
+
+  stripe_table();
+};
+
+
+// Return True if any from catagory query list is in item list
+function substrings_in_list(query, item, filter_type) {
+
+  var query_list      = query.split(',');
+  var item_list       = item.split(',');
+  var positive_match  = false;
+  var negative_match  = false;
+
+  // allow genres to be seperated by spaces
+  if (filter_type === "genre" || filter_type === "language") {
+    if (query_list.length === 1 && query.split(' ').length > 1) {
+      query_list = query.split(' ');
+    }
+  }
+
+  // seperate NOT filters from other filters
+  var query_not     = [];
+  var query_match   = [];
+  var current_query = '';
+
+  for(j=0; j<query_list.length; j++) {
+    current_query = query_list[j].trim();
+    if (current_query.length > 1 && current_query[0] === "!"){
+      query_not.push(current_query.substring(1,current_query.length));
+    } else {
+      if (current_query !== '!') { query_match.push(current_query); }
+    }
+  }
+
+  for(k=0; k<query_match.length; k++){
+    positive_match = false;
+
+    for(l=0; l<item_list.length; l++){
+      if (item_list[l].trim().indexOf(query_match[k].trim()) === 0) { positive_match = true; }
+    }
+    if (!positive_match) { return false; }
+  }
+
+  for(m=0; m<query_not.length; m++){
+
+    negative_match = [];
+
+    for(n=0; n<item_list.length; n++){
+      if (!item_list[n].trim().indexOf(query_not[m].trim()) === 0) {
+        negative_match.push(true);
+      } else {
+        negative_match.push(false);
+      }
+    }
+    if (negative_match.indexOf(false) !== -1) { return false; }
+  }
+  return true;
+};
+
 
 // Restripe the table rows after filtering out rows
 function stripe_table() {
@@ -28,6 +236,7 @@ function stripe_table() {
     }
   }
 };
+
 
 // Return string with diactirics removed
 function remove_diacritics(str) {
@@ -156,7 +365,7 @@ function filter_toggle() {
   var filters   = document.getElementById('filters');
   var btn_text  = document.getElementById('filter_toggle_btn');
 
-  if (filters.style.display == '') {
+  if (filters.style.display === '') {
     filters.style.display = 'none';
     btn_text.innerHTML    = 'Show Filter Options';
     window.scroll(0, 0);
