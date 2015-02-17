@@ -6,13 +6,13 @@
     "movies" : {
       "location"      : "/Volumes/3TB-JASON/Movies/",
       "saved_data"    : "./_data/movie_data.json",
-      "index_asset"   : false,
+      "index_asset"   : true,
       "max_assets"    : 9999
     },
     "series" : {
       "location"      : "/Volumes/3TB-JASON/Television/",
       "saved_data"    : "./_data/series_data.json",
-      "index_asset"   : false,
+      "index_asset"   : true,
       "max_assets"    : 9999
     },
     "documentaries" : {

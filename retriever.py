@@ -44,12 +44,12 @@ def get_file_list(path, repo, mediatype):
   filtered_file_list = []
 
   for file in file_list:
+
     # If the extension is in include_extension, or file is a folder not preceded by '_'
-    if ((os.path.isfile(file) and file.split(".")[-1:][0] in config["include_extensions"]) or (os.path.isdir(file) and file[0] != "_")) and file not in config["exclude_files"]: 
-    #(len(file.split(".")) == 1 and file[0] != "_" and file not in config["exclude_files"]):
+    if ((os.path.isfile(path + file) and file.split(".")[-1:][0] in config["include_extensions"]) or (os.path.isdir(path + file) and file[0] != "_")) and file not in config["exclude_files"]: 
 
       # Strip extension from file
-      if os.path.isfile(file):
+      if os.path.isfile(path + file):
         file_title = file.rsplit(".", 1)[0]
       else:
         file_title = file
@@ -64,7 +64,8 @@ def get_file_list(path, repo, mediatype):
 
         # Do not repeat scrape for already acquired title
         if not saved_files.has_key(file_title):
-          print "Now adding: %s" % file_title
+          #print "Now adding: \"%s\"" % file_title
+          print "Now adding: %s : %s" %(path, file_title)
           filtered_file_list.append(file_title)
   return filtered_file_list
 
