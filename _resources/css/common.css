@@ -126,6 +126,14 @@ hr{
 #item-rating{
   display:inline-block;
 }
+#item-awards{
+  padding-top:4px;
+  padding-bottom:4px;
+  margin-top:-10px;
+  border-radius:4px;
+  background-color: #EFE3A4;
+  text-align: center;
+}
 #title_content{
   width:800px;
   margin-left:auto;

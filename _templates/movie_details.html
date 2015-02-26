@@ -51,6 +51,15 @@
           </div>
         </span>
         <hr>
+        {% if movie.has_key('awards') %}
+        <div id="item-awards">
+          {% if movie.has_key('awards_link') %}
+            <a target="_blank" href="{{ movie.awards_link }}">{{ movie.awards}}</a>
+          {% else %}
+            {{ movie.awards }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div id="item-description">
           <p> {{movie.description}} </p>
         </div>

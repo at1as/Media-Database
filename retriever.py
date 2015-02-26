@@ -185,6 +185,19 @@ def get_movie_details(movie, mediatype):
     except IndexError:
       movie_attributes['content_rating'] = ""
     try:
+      movie_attributes['awards'] = movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@itemprop="awards"]/b/text()')[0]
+      if not "oscar" in movie_attributes['awards'].lower():
+        movie_attributes['awards'] = ""
+      else:
+        if movie_attributes['awards'][-1:] == ".":
+          movie_attributes['awards'] = movie_attributes['awards'][:-1]
+        try:
+          movie_attributes['awards_link'] = config['base_url'] + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
+        except IndexError:
+          movie_attributes['awards_link'] = ""
+    except IndexError:
+      movie_attributes['awards'] = ""
+    try:
       movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
       save_image(movie_attributes['image_url'], movie_attributes['filename'])
     except IndexError:
