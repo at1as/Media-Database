@@ -15,12 +15,28 @@ from datetime import datetime
 from unicodedata import normalize
 
 
-# Import Input Environment Configuration
+# Import Input Environment Configuration and Validation
 try:
   with open('conf.json') as config_json:
     config = json.load(config_json)
+  
+  if config["include_extensions"] == []:
+    print "\nWarning: No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes"
+  if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
+    print "\nWarning: base_url, search_path and url_end have been changed from their defaults in conf.json. Proceed at your own risk"
+  
+  for asset_type in config["assets"]:
+    if config["assets"][asset_type]["saved_data"] == "":
+      print "\nError: Please specify a path for the assets.%s.saved_data repository in conf.json" % asset_type
+      raise SystemExit
+    if not type(config["assets"][asset_type]["max_assets"]) is int or config["assets"][asset_type]["max_assets"] < 0:
+      print "\nError: Please specify a valid integer for assets.%s.max_quantity repository in conf.json" % asset_type
+      raise SystemExit  
+    if config["assets"][asset_type]["index_asset"] and config["assets"][asset_type]["location"] == "":
+      print "\nError: \"%s\" is set to index files, but path to directory is not specified in conf.json\n" % asset_type
+      raise SystemExit
 except:
-  print "\nInvalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n"
+  print "\nError: Invalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n"
   raise SystemExit
 
 
@@ -40,7 +56,16 @@ def initialize_asset_repo(base_path, mediatype):
 
 
 def get_file_list(path, repo, mediatype):
-  file_list = os.listdir(path)[0:config["max_assets"]]
+  # TODO: enforce limit per asset (rather than deprecated global limit)
+  try:
+    if not config["max_assets"] == 0:
+      file_list = os.listdir(path)[0:config["max_assets"]]
+    else:
+      file_list = os.listdir(path)
+  except OSError:
+    print "\nError: Path \"%s\" not found. Specify a valid path in conf.json and ensure all directories on this path exist.\n" % path
+    raise SystemExit
+  
   filtered_file_list = []
 
   for file in file_list:
@@ -110,10 +135,10 @@ def get_title_url(asset, mediatype):
                 return config["base_url"] + endpoint
 
     # If not found, return None
-    print "*** SKIPPING: '%s' not found" % asset
+    print "Warn: \"%s\" not found. Skipping." % asset
     return None
   except IndexError:
-    print "*** SKIPPING: '%s' not found" % asset
+    print "Warn: \"%s\" not found. Skipping." % asset
     return None
 
 
@@ -199,7 +224,7 @@ def get_movie_details(movie, mediatype):
       movie_attributes['awards'] = ""
     try:
       movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
-      save_image(movie_attributes['image_url'], movie_attributes['filename'])
+      save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
     except IndexError:
       movie_attributes['image_url'] = ""
     return movie_attributes
@@ -284,7 +309,7 @@ def get_series_details(movie, mediatype):
       movie_attributes['content_rating'] = ""
     try:
       movie_attributes['image_url'] = movie_page.xpath('//*[@id="img_primary"]/div[1]/a[1]/img/@src')[0]
-      save_image(movie_attributes['image_url'], movie_attributes['filename'])
+      save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
     except IndexError:
       movie_attributes['image_url'] = ""
     return movie_attributes
@@ -293,7 +318,8 @@ def get_series_details(movie, mediatype):
 
 
 # If image_url was found, write image to directory
-def save_image(url, name):
+# TODO: image directory per asset type (ex. _output/movies/images, etc)
+def save_image(url, name, mediatype):
   img = requests.get(url, stream=True)
   if img.status_code == 200:
     with open('_output/images/' + name + '.png', 'wb') as f:
