@@ -85,28 +85,28 @@
         <table id="results" class="table table-striped sortable" data-sortable>
           <thead>
             <tr onclick="stripe_table()">
-              <th style="vertical-align:top" class="sorttable_numeric">Rating</th>
+              <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
-              <th style="vertical-align:top">Year</th>
-              <th style="vertical-align:top">Genres</th>
-              <th style="vertical-align:top">Stars</th>
-              <th style="vertical-align:top">Director</th>
-              <th style="vertical-align:top">Languages</th>
+              <th name="year_data" style="vertical-align:top">Year</th>
+              <th name="genres_data" style="vertical-align:top">Genres</th>
+              <th name="stars_data" style="vertical-align:top">Stars</th>
+              <th name="director_data" style="vertical-align:top">Director</th>
+              <th name="languages_data" style="vertical-align:top">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for movie in movie_list %}
               <tr>
-                <td>{{ movie_list[movie].rating }}</td>
+                <td name="rating_data">{{ movie_list[movie].rating }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
                   <!-- ' -->
                 </td>
-                <td>{{ movie_list[movie].year }}</td>
-                <td>{{ movie_list[movie].genre|join(', ') }}</td>
-                <td>{{ movie_list[movie].stars|join(', ') }}</td>
-                <td>{{ movie_list[movie].director }}</td>
-                <td>{{ movie_list[movie].languages|join(', ') }}</td>
+                <td name="year_data">{{ movie_list[movie].year }}</td>
+                <td name="genres_data">{{ movie_list[movie].genre|join(', ') }}</td>
+                <td name="stars_data">{{ movie_list[movie].stars|join(', ') }}</td>
+                <td name="director_data">{{ movie_list[movie].director }}</td>
+                <td name="languages_data">{{ movie_list[movie].languages|join(', ') }}</td>
               </tr>
             {% endfor %}
           </tbody>

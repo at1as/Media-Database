@@ -81,26 +81,26 @@
         <table id="results" class="table table-striped sortable" data-sortable>
           <thead>
             <tr onclick="stripe_table()">
-              <th style="vertical-align:top" class="sorttable_numeric">Rating</th>
+              <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
-              <th style="vertical-align:top" class="sorttable_alpha">Years</th>
-              <th style="vertical-align:top">Genres</th>
-              <th style="vertical-align:top">Stars</th>
-              <th style="vertical-align:top; display:none">Languages</th>
+              <th name="year_data" style="vertical-align:top" class="sorttable_alpha">Years</th>
+              <th name="genre_data" style="vertical-align:top">Genres</th>
+              <th name="stars_data" style="vertical-align:top">Stars</th>
+              <th name="lang_data" style="vertical-align:top; display:none">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for series in series_list %}
               <tr>
-                <td>{{ series_list[series].rating }}</td>
+                <td name="rating_data">{{ series_list[series].rating }}</td>
                 <td sorttable_customkey="{{ series_list[series].title }}">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">{{ series_list[series].title }}</a>
                   <!-- ' -->
                 </td>
-                <td>{{ series_list[series].year }}</td>
-                <td>{{ series_list[series].genre|join(', ') }}</td>
-                <td>{{ series_list[series].stars|join(', ') }}</td>
-                <td style="display:none">{{ series_list[series].languages|join(', ') }}</td>
+                <td name="year_data">{{ series_list[series].year }}</td>
+                <td name="genre_data">{{ series_list[series].genre|join(', ') }}</td>
+                <td name="stars_data">{{ series_list[series].stars|join(', ') }}</td>
+                <td name="langauges_data" style="display:none">{{ series_list[series].languages|join(', ') }}</td>
               </tr>
             {% endfor %}
           </tbody>

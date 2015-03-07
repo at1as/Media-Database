@@ -374,3 +374,13 @@ function filter_toggle() {
     btn_text.innerHTML    = 'Hide Filter Options';
   }
 };
+
+function toggle_column_visibility(column_name) {
+  var column_cells  = document.getElementsByName(column_name);
+  var next_state    = "";
+  column_cells[0].style.display === "none" ? next_state = "" : next_state = "none";
+
+  forEach(column_cells, function(cell) { 
+    cell.style.display = next_state;
+  });
+};
