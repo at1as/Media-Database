@@ -171,7 +171,7 @@ def get_movie_details(movie, mediatype):
       except IndexError:
         movie_attributes['year'] = ""
     try:
-      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]/text()')[0].strip()
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip()
     except IndexError:
       movie_attributes['description'] = ""
     try:
@@ -260,7 +260,7 @@ def get_series_details(movie, mediatype):
       except IndexError:
         movie_attributes['year'] = ""
     try:
-      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]/text()')[0].strip()
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip()
     except IndexError:
       movie_attributes['description'] = ""
     try:
@@ -419,3 +419,4 @@ if __name__ == "__main__":
   series_list = initialize_asset_repo("series", "series")
 
   generate_site(movie_list, series_list)
+
