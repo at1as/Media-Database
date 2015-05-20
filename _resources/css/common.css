@@ -40,7 +40,7 @@ hr{
   width:800px;
 }
 .well{
-  width:600px;
+  max-width:600px;
   margin-left:auto;
   margin-right:auto;
 }
@@ -152,3 +152,4 @@ hr{
 .title-language{
   font-weight:400;
 }
+
