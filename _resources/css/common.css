@@ -62,7 +62,7 @@ hr{
   padding-left:45px;
   padding-right:45px;
   background-color:#444;
-  margin-bottom:20px;
+  margin-bottom:10px;
   color:white;
 }
 .filter-container{
@@ -85,6 +85,17 @@ hr{
 .filter-right{
   max-width:550px;
   float:right
+}
+#random_selection{
+  width:100%;
+  text-align:center;
+  margin-right:auto;
+  margin-left:auto;
+}
+#random_selection_btn{
+  background-color:#444;
+  color:white;
+  margin-bottom:20px;
 }
 
 /* Tables */

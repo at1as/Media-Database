@@ -384,3 +384,41 @@ function toggle_column_visibility(column_name) {
     cell.style.display = next_state;
   });
 };
+
+// Choose Random Item from List
+function random_selection() {
+  var all_items = document.querySelectorAll('.table > tbody > tr').length;
+  var displayed_items = 0;
+
+  /* Traverse table for currently displayed rows */
+  for(var i=0; i<all_items; i++){
+    if (document.querySelectorAll('.table > tbody > tr')[i].style.display !== "none"){
+      displayed_items++;
+    }
+  }
+
+  var random_item = Math.floor(Math.random() * displayed_items);
+  var displayed_item_count = 0;
+  var displayed_item_index = 0;
+
+  /* Find item at index random_item in table (but search through visible rows) */
+  for(var j=0; j<all_items; j++){
+    if (document.querySelectorAll('.table > tbody > tr')[j].style.display !== "none"){
+      
+      if (displayed_item_count === random_item){
+        displayed_item_index = j;
+      }
+      displayed_item_count++;
+    }
+  }
+  
+  /* Find clickable title link for desired item in table */
+  var table_row = document.querySelectorAll('.table > tbody > tr')[displayed_item_index];
+  var table_row_name = table_row.querySelectorAll('td')[1];
+  var table_row_name_link = table_row_name.querySelectorAll('a')[0];
+
+  /* Select a random item only if there are some currently displayed */
+  if (displayed_item_count > 0) {
+    table_row_name_link.click();
+  }
+};

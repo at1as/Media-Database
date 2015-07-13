@@ -32,20 +32,25 @@ $ python remove_entry.py "<movie_title>"
 ## Usage Notes
 
 General Notes
+* View site by opening _output/index.html in your browser
 * All dependencies are listed in retriever.py
 * Script will only search files in the folder specified by asset_location. Will not search subdirectories
-* Movies should, in general, be titled as "Movie Title (YYYY).extension"
-* Only works for movies (documentaries and television entries will be scraped incorrectly)
+* Movies should be titled as "Movie Title (YYYY).extension"
+* Series should be titled as "Series Title (YYYY).extension"
+* Only works for movies, television and documentaries (documentaries will be listed under the movies section)
 * Works best in Firefox/Safari. In Chrome, iFrames will be scrollable, rather than resizing to their full height
 
 Filters
-To use the search filters, items should be comma separated and can be negated with a preceding !
+To use the search filters, items should be comma separated and can be negated with a preceding "!"
 
 For example, in the case of the language input:
 
 * "English, French, German" => Returns movies with languages matching English, French, and German
-* "English, !Klingon, Welsh" => Returns movies with languages matching English and Welsh, without the presence of Klingon
-* "Ger, P" => Returns movies with languages matching Ger... (German), P... (Portuguese, Persian, etc)
+* "English, !Klingon, Welsh" => Returns movies with languages matching both English and Welsh, but without the presence of Klingon
+* "Ger, P" => Returns movies with languages matching Ger... (i.e., German), P... (i.e., Portuguese, Persian, etc)
+
+Removing Items
+For items that are tagged incorrectly, they can be removed by running `remove_entry.py`. See `python remove_entry.py --help` for details
 
 ## Disclaimer
  
