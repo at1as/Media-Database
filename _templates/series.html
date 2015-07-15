@@ -41,30 +41,37 @@
       <div id="filters" class="jumbotron filter-container">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
+            <h4 class="clear-filter" onclick="clear_filter('title-search')">X</h4>
             <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Rating (Min):</h4>
+            <h4 class="clear-filter" onclick="clear_filter('rating-search')">X</h4>
             <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Start Year (Min):</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-min-search')">X</h4>
               <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">End Year (Max):</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-max-search')">X</h4>
               <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Genre:</h4>
+            <h4 class="clear-filter" onclick="clear_filter('genre-search')">X</h4>
             <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Cast:</h4>
+            <h4 class="clear-filter" onclick="clear_filter('cast-search')">X</h4>
             <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Language:</h4>
+            <h4 class="clear-filter" onclick="clear_filter('language-search')">X</h4>
             <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
       </div>

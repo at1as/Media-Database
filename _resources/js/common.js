@@ -422,3 +422,19 @@ function random_selection() {
     table_row_name_link.click();
   }
 };
+
+/* Clear cell in filters */
+function clear_filter(element_id){
+  document.getElementById(element_id).value = "";
+  // search movie or series table, depending on which page called method. Try both.
+  try{
+    search_movie_table(results);
+  } catch(err) {
+    // no action
+  };
+  try {
+    search_series_table(results);
+  } catch(err) {
+    // no action
+  };
+};

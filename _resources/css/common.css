@@ -84,7 +84,15 @@ hr{
 }
 .filter-right{
   max-width:550px;
-  float:right
+  float:right;
+  margin-right:8px;
+}
+.clear-filter{
+  float:right;
+  margin-right:-10px;
+}
+.clear-filter:hover{
+  color:red;
 }
 #random_selection{
   width:100%;
