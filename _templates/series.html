@@ -50,6 +50,11 @@
             <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
+            <h4 class="filter-left">Votes (Min):</h4>
+            <h4 class="clear-filter" onclick="clear_filter('vote-search')">X</h4>
+            <input class="form-control filter-right" id="vote-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+          </div>
+          <div class="filter-section">
               <h4 class="filter-left">Start Year (Min):</h4>
               <h4 class="clear-filter" onclick="clear_filter('year-min-search')">X</h4>
               <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
@@ -94,6 +99,7 @@
           <thead>
             <tr onclick="stripe_table()">
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
+              <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" style="vertical-align:top" class="sorttable_alpha">Years</th>
               <th name="genre_data" style="vertical-align:top">Genres</th>
@@ -105,6 +111,7 @@
             {% for series in series_list %}
               <tr>
                 <td name="rating_data">{{ series_list[series].rating }}</td>
+                <td name="votes_data" style="display:none">{{ series_list[series].votes }}</td>
                 <td sorttable_customkey="{{ series_list[series].title }}">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">{{ series_list[series].title }}</a>
                   <!-- ' -->

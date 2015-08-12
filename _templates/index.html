@@ -50,6 +50,11 @@
             <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
+            <h4 class="filter-left">Votes (Min):</h4>
+            <h4 class="clear-filter" onclick="clear_filter('vote-search')">X</h4>
+            <input class="form-control filter-right" id="vote-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
+          </div>
+          <div class="filter-section">
               <h4 class="filter-left">Year (Min):</h4>
               <h4 class="clear-filter" onclick="clear_filter('year-min-search')">X</h4>
               <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
@@ -99,6 +104,7 @@
           <thead>
             <tr onclick="stripe_table()">
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
+              <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" style="vertical-align:top">Year</th>
               <th name="genres_data" style="vertical-align:top">Genres</th>
@@ -111,6 +117,7 @@
             {% for movie in movie_list %}
               <tr>
                 <td name="rating_data">{{ movie_list[movie].rating }}</td>
+                <td name="vote_data" style="display:none">{{ movie_list[movie].votes }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
                   <!-- ' -->
