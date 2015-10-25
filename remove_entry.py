@@ -30,11 +30,11 @@ HELP = """\nUsage:
             \n[type] : 
             -m, --movie \t\t=> movie
             -s, --series \t\t=> series
-            -d, --documentary \t\t=> documentary
             \nExamples: 
             python remove_entry.py -m "Monty Python and the Holy Grail"
             python remove_entry.py --series "Six Feet Under"
-            python remove_entry.py -d "Citizenfour"\n"""
+            \nNote:
+            Use single quotes around title if it contains special characters (such as '!')\n"""
 
 
 def remove_file(filetype, asset_name):

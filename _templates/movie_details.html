@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color:#EEE">
   <head>
     <title>Local Movie Database</title>
     <link href="../../_resources/css/bootstrap.css" rel="stylesheet" type="text/css" />
@@ -28,7 +28,11 @@
           <div style="margin-left:10px">
             <h5>
               <span id="item-content-rating">
-                {{movie.content_rating[0]}}
+                {% if movie.content_rating is string %} 
+                  {{movie.content_rating}}
+                {% else %}
+                  {{movie.content_rating[0]}}
+                {% endif %}
               </span> &mdash;
               <span id="item-running-time">{{movie.running_time}}</span> &mdash;
               <span style="margin-left:10px">

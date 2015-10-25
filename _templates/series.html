@@ -41,42 +41,42 @@
       <div id="filters" class="jumbotron filter-container">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('title-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('title-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Rating (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('rating-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('rating-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Votes (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('vote-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('vote-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="vote-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Start Year (Min):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-min-search')">X</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-min-search'); search_series_table(results)">X</h4>
               <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">End Year (Max):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-max-search')">X</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-max-search'); search_series_table(results)">X</h4>
               <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Genre:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('genre-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('genre-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Cast:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('cast-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('cast-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Language:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('language-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('language-search'); search_series_table(results)">X</h4>
             <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
           </div>
       </div>
@@ -113,7 +113,13 @@
                 <td name="rating_data">{{ series_list[series].rating }}</td>
                 <td name="votes_data" style="display:none">{{ series_list[series].votes }}</td>
                 <td sorttable_customkey="{{ series_list[series].title }}">
-                  <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">{{ series_list[series].title }}</a>
+                  <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)"
+                    {% if series_list[series].has_key('alternative_title') %}
+                      title="{{ series_list[series].alternative_title|replace('\"', '') }} (Alternative Title)"
+                    {% endif %}
+                  >
+                    {{ series_list[series].title }}
+                  </a>
                   <!-- ' -->
                 </td>
                 <td name="year_data">{{ series_list[series].year }}</td>

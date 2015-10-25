@@ -41,47 +41,47 @@
       <div id="filters" class="jumbotron filter-container">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('title-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('title-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Rating (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('rating-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('rating-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Votes (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('vote-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('vote-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="vote-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Year (Min):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-min-search')">X</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-min-search'); search_movie_table(results)">X</h4>
               <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
               <h4 class="filter-left">Year (Max):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-max-search')">X</h4>
+              <h4 class="clear-filter" onclick="clear_filter('year-max-search'); search_movie_table(results)">X</h4>
               <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Genre:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('genre-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('genre-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Cast:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('cast-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('cast-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Director:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('director-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('director-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="director-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
           <div class="filter-section">
             <h4 class="filter-left">Language:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('language-search')">X</h4>
+            <h4 class="clear-filter" onclick="clear_filter('language-search'); search_movie_table(results)">X</h4>
             <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_movie_table(results)" spellcheck="false">
           </div>
       </div>
@@ -119,7 +119,13 @@
                 <td name="rating_data">{{ movie_list[movie].rating }}</td>
                 <td name="vote_data" style="display:none">{{ movie_list[movie].votes }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
-                  <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">{{ movie_list[movie].title }}</a>
+                  <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)"
+                    {% if movie_list[movie].has_key('alternative_title') %}
+                      title="{{ movie_list[movie].alternative_title|replace('\"', '') }} (Alternative Title)"
+                    {% endif %}
+                  >
+                    {{ movie_list[movie].title }}
+                  </a>
                   <!-- ' -->
                 </td>
                 <td name="year_data">{{ movie_list[movie].year }}</td>

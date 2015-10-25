@@ -28,7 +28,11 @@
           <div style="margin-left:10px">
             <h5>
               <span id="item-content-rating">
-                {{series.content_rating[0]}}
+                {% if series.content_rating is string %} 
+                  {{series.content_rating}}
+                {% else %}
+                  {{series.content_rating[0]}}
+                {% endif %}
               </span> &mdash;
               <span id="item-running-time">{{series.running_time}}</span> &mdash;
               <span style="margin-left:10px">

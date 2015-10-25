@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-from __future__ import unicode_literals
 
-import requests
-import lxml.html
-import os
-import jinja2
-import json
-import simplejson
-import shutil
-import urllib
-import time
+from __future__ import unicode_literals
 from datetime import datetime
 from unicodedata import normalize
+import jinja2
+import json
+import lxml.html
+import os
+import pdb
+import requests
+import simplejson
+import shutil
+import time
+import urllib
 
+# Change User Agent header from Requests to Mozilla for requests made to IMDB
+headers={ "User-Agent": "Mozilla/5.0",
+          "Accept-Language": "en-US,en;q=0.8"}
 
 # Import Input Environment Configuration and Validation
 try:
@@ -42,7 +46,7 @@ except:
 
 # Create empty datafiles if not present
 def initialize_asset_repo(base_path, mediatype):
-
+  
   if not os.path.isfile(config['assets'][base_path]['saved_data']):
     with open(config['assets'][base_path]['saved_data'], 'w+') as item_feed:
       json.dump({}, item_feed)
@@ -110,7 +114,7 @@ def get_title_url(asset, mediatype):
     valid_results = ["(TV Series)", "(TV Mini-Series)"]
 
   search_url = construct_search_url(asset)
-  page = lxml.html.document_fromstring(requests.get(search_url).content)
+  page = lxml.html.document_fromstring(requests.get(search_url, headers=headers).content)
 
   try:
     for index, section in enumerate(page.xpath('//*[@id="main"]/div[1]/div')):
@@ -131,8 +135,11 @@ def get_title_url(asset, mediatype):
             # Series in list are tagged
             elif mediatype == "series":
               if any(x in list_title.text_content() for x in valid_results):
-                endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                return config["base_url"] + endpoint
+
+                # Some items listed as "TV Episode" also contain a link with the term "TV Series" below
+                if "(TV Episode)" not in list_title.text_content():
+                  endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+                  return config["base_url"] + endpoint
 
     # If not found, return None
     print "Warn: \"%s\" not found. Skipping." % asset
@@ -148,7 +155,7 @@ def get_movie_details(movie, mediatype):
   movie_url = get_title_url(movie, mediatype)
 
   if movie_url != None:
-    movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
+    movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=headers).content)
 
     movie_attributes['url'] = movie_url
     movie_attributes['filename'] = movie
@@ -157,6 +164,10 @@ def get_movie_details(movie, mediatype):
       movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
     except IndexError:
       movie_attributes['title'] = ""
+    try:
+      movie_attributes['alternative_title'] = movie_page.xpath('//*[@class="title-extra"]/text()')[0].strip()
+    except IndexError:
+      movie_attributes['alternative_title'] = ""
     try:
       if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() != "(":
         if movie_page.xpath('//*[@id="overview-top"]/h1/span[2]/text()')[0].strip() not in ["(I)", "(II)", "(III)", "(IV)", "(V)"]:
@@ -179,23 +190,23 @@ def get_movie_details(movie, mediatype):
     except IndexError:
       movie_attributes['director'] = ""
     try:
-      movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[6]/a/span/text()')
+      movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[@itemprop="actors"]/a/span/text()')
     except IndexError:
       movie_attributes['stars'] = ""
     try:
-      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/a/span/text()')
+      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[@class="infobar"]/a/span/text()')
     except IndexError:
       movie_attributes['genre'] = ""
     try:
-      movie_attributes['rating'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/strong/span/text()')[0]
+      movie_attributes['rating'] = movie_page.xpath('//span[@itemprop="ratingValue"]/text()')[0].strip()
     except IndexError:
       movie_attributes['rating'] = ""
     try:
-      movie_attributes['votes'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/div[3]/a[1]/span/text()')[0].strip()
+      movie_attributes['votes'] = movie_page.xpath('//span[@itemprop="ratingCount"]/text()')[0].strip()
     except IndexError:
       movie_attributes['votes'] = ""
     try:
-      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/time/text()')[0].strip()
+      movie_attributes['running_time'] = movie_page.xpath('//time[@itemprop="duration"]/text()')[0].strip()
     except IndexError:
       movie_attributes['running_time'] = ""
     try:
@@ -206,7 +217,7 @@ def get_movie_details(movie, mediatype):
     except IndexError:
       movie_attributes['languages'] = ""
     try:
-      movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/span[1]/@content')
+      movie_attributes['content_rating'] = movie_page.xpath('//meta[@itemprop="contentRating"]')[0].attrib['content'].strip()
     except IndexError:
       movie_attributes['content_rating'] = ""
     try:
@@ -237,7 +248,7 @@ def get_series_details(movie, mediatype):
   movie_url = get_title_url(movie, mediatype)
 
   if movie_url != None:
-    movie_page = lxml.html.document_fromstring(requests.get(movie_url).content)
+    movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=headers).content)
 
     movie_attributes['url'] = movie_url
     movie_attributes['filename'] = movie
@@ -277,11 +288,11 @@ def get_series_details(movie, mediatype):
         movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[4]/a/span/text()')
     except IndexError:
       try:
-        movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[3]/a/span/text()')
+        movie_attributes['stars'] = movie_page.xpath('//*[@id="overview-top"]/div[@itemprop="actors"]/a/span/text()')
       except IndexError:
         movie_attributes['stars'] = ""
     try:
-      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[1]/a/span/text()')
+      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/a/span/text()')
     except IndexError:
       movie_attributes['genre'] = ""
     try:
@@ -289,11 +300,11 @@ def get_series_details(movie, mediatype):
     except IndexError:
       movie_attributes['rating'] = ""
     try:
-      movie_attributes['votes'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/div[3]/a[1]/span/text()')[0].strip()
+      movie_attributes['votes'] = movie_page.xpath('//*[@itemprop="ratingCount"]/text()')[0].strip()
     except IndexError:
       movie_attributes['votes'] = ""
     try:
-      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[1]/time/text()')[0].strip()
+      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/time/text()')[0].strip()
     except IndexError:
       movie_attributes['running_time'] = ""
     try:
@@ -304,7 +315,7 @@ def get_series_details(movie, mediatype):
     except IndexError:
       movie_attributes['languages'] = ""
     try:
-      movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/span[1]/@content') # HELP
+      movie_attributes['content_rating'] = movie_page.xpath('//*[@class="infobar"]/meta[1]/@content')[0].strip()
     except IndexError:
       movie_attributes['content_rating'] = ""
     try:
@@ -320,7 +331,7 @@ def get_series_details(movie, mediatype):
 # If image_url was found, write image to directory
 # TODO: image directory per asset type (ex. _output/movies/images, etc)
 def save_image(url, name, mediatype):
-  img = requests.get(url, stream=True)
+  img = requests.get(url, headers=headers, stream=True)
   if img.status_code == 200:
     with open('_output/images/' + name + '.png', 'wb') as f:
       img.raw.decode_content = True
