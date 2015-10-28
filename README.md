@@ -55,4 +55,4 @@ For example, in the case of the language input:
  
 * This product works by scraping the IMDB website. Therefore, problems may arise due to even minor changes to the website layout
 * Retrieval is only as good as your movie titles, and IMDB search. Meticulously named files will almost all be correct, but there are still likely to be some misses
-* IMDB-Scrape was written and tested on Python 2.7.6 on OS X (10.10)
+* IMDB-Scrape was written and tested on Python 2.7.6 on OS X (10.11)

@@ -14,12 +14,6 @@
       "saved_data"    : "./_data/series_data.json",
       "index_asset"   : true,
       "max_assets"    : 9999
-    },
-    "documentaries" : {
-      "location"      : "/Volumes/3TB-JASON/Documentaries/",
-      "saved_data"    : "./_data/documentary_data.json",
-      "index_asset"   : false,
-      "max_assets"    : 9999
     }
   },
   "max_assets"        : 9999,
