@@ -15,9 +15,18 @@
   </head>
 
   <body role="document">
-    <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-collapse collapse">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        
+        
+        <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="./index.html">Movies 
               <span class="badge">
@@ -31,16 +40,15 @@
                 <span>{{ number_of_series }}</span>
               </span>
             </a></li>
-            <!--<li><a href="./documentaries.html">Documentaries <span class="badge"></span></a></li>-->
             <li><a href="./about.html">About</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
-    </div>
+    </nav>
     <div class="container theme-showcase body-container" role="main">
 
       <!-- Filters -->
-      <div id="filters" class="jumbotron filter-container">
+      <div id="filters" class="jumbotron filter-container col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1 col-sm-10 col-sm-offset-1 col-xs-12">
           <div class="filter-section">
             <h4 class="filter-left">Title:</h4>
             <h4 class="clear-filter" onclick="clear_filter('title-search'); search_movie_table(results)">X</h4>

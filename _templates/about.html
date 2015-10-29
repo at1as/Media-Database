@@ -12,9 +12,17 @@
   </head>
 
   <body role="document">
-    <div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-collapse collapse">
+    <nav role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>                        
+          </button>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="./index.html">Movies <span class="badge">{{ number_of_movies }}</span></a></li>
             <li><a href="./series.html">Series <span class="badge">{{ number_of_series }}</span></a></li>
@@ -23,18 +31,22 @@
           </ul>
         </div><!--/.nav-collapse -->
       </div>
-    </div>
+    </nav>
 
     <div class="container theme-showcase body-container" role="main">
       <div class="well">
         <p>
           <b>IMDB-Scrape</b> creates a local movie database containing information related to your movie collection.
-          Webpages are staticly generated and uploaded to the _output directory. Rerun the script every
+          Webpages are staticly generated and uploaded to the <i>_output/</i> directory. Rerun the script every
           time a new file is added to the directory
         </p>
-        <p>
+        <p style="margin-top:25px">
           <b>Homepage :</b>
           <a href="https://github.com/at1as/IMDB-Scrape">https://github.com/at1as/IMDB-Scrape</a>
+        </p>
+        <p>
+          <b>Bugs :</b>
+          <a href="https://github.com/at1as/IMDB-Scrape/issues">https://github.com/at1as/IMDB-Scrape/issues</a>
         </p>
         <p>
           <b>Created by :</b> <a href="http://www.jasonwillems.com">Jason M. Willems</a>
@@ -44,7 +56,7 @@
         </p>
         <hr>
         <p style="text-align:center">
-          <b>Last Report Generated :</b> {{ time }}
+          <b>Last Report Generated :</b> <span style="display:block">{{ time }}</span>
         </p>
       </div>
     </div>
