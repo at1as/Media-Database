@@ -356,7 +356,7 @@ function load_details(movie) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
-  document.getElementById('modal-content').innerHTML    = "<iframe id='frame' style='width:800px; min-height:560px; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+  document.getElementById('modal-content').innerHTML    = "<iframe id='frame' class='centered' style='max-width:800px; width:100%; min-height:560px; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
 };
 
 function close_details() {

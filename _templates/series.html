@@ -49,47 +49,61 @@
 
       <!-- Filters -->
       <div id="filters" class="jumbotron filter-container col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
-          <div class="form-group filter-section">
-            <h4 class="filter-left col-md-3">Title:</h4>
-            <div class="btn-group col-md-9">
-              <input class="form-control filter-right" id="title-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+          <div class="filter-section">
+            <h4>Title:</h4>
+            <div style="display:flex">
+              <input class="form-control" id="title-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
               <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('title-search'); search_series_table(results)"></span>
             </div>
           </div>
           <div class="filter-section">
-            <h4 class="filter-left">Rating (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('rating-search'); search_series_table(results)">X</h4>
-            <input class="form-control filter-right" id="rating-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Rating (Min):</h4>
+            <div style="display:flex">
+              <input class="form-control" id="rating-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('rating-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-            <h4 class="filter-left">Votes (Min):</h4>
-            <h4 class="clear-filter" onclick="clear_filter('vote-search'); search_series_table(results)">X</h4>
-            <input class="form-control filter-right" id="vote-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Votes (Min):</h4>
+            <div style="display:flex">
+              <input class="form-control" id="vote-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('vote-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-              <h4 class="filter-left">Start Year (Min):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-min-search'); search_series_table(results)">X</h4>
-              <input class="form-control filter-right" id="year-min-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Start Year (Min):</h4>
+            <div style="display:flex">
+              <input class="form-control" id="year-min-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('year-min-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-              <h4 class="filter-left">End Year (Max):</h4>
-              <h4 class="clear-filter" onclick="clear_filter('year-max-search'); search_series_table(results)">X</h4>
-              <input class="form-control filter-right" id="year-max-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>End Year (Max):</h4>
+            <div style="display:flex">
+              <input class="form-control" id="year-max-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('year-max-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-            <h4 class="filter-left">Genres:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('genre-search'); search_series_table(results)">X</h4>
-            <input class="form-control filter-right" id="genre-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Genres:</h4>
+            <div style="display:flex">
+              <input class="form-control" id="genre-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('genre-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-            <h4 class="filter-left">Cast:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('cast-search'); search_series_table(results)">X</h4>
-            <input class="form-control filter-right" id="cast-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Cast:</h4>
+            <div style="display:flex">
+              <input class="form-control" id="cast-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('cast-search'); search_series_table(results)"></span>
+            </div>
           </div>
           <div class="filter-section">
-            <h4 class="filter-left">Language:</h4>
-            <h4 class="clear-filter" onclick="clear_filter('language-search'); search_series_table(results)">X</h4>
-            <input class="form-control filter-right" id="language-search" type="text" onkeyup="search_series_table(results)" spellcheck="false">
+            <h4>Language:</h4>
+            <div style="display:flex">
+              <input class="form-control" id="language-search" type="search" onkeyup="search_series_table(results)" spellcheck="false">
+              <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('language-search'); search_series_table(results)"></span>
+            </div>
           </div>
       </div>
 
@@ -107,7 +121,7 @@
 
       <!-- Results Table -->
       <div style="width:100%">
-        <table id="results" class="table table-striped sortable" data-sortable>
+        <table id="results" class="table table-striped table-bordered sortable" data-sortable>
           <thead>
             <tr onclick="stripe_table()">
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
@@ -122,7 +136,7 @@
           <tbody>
             {% for series in series_list %}
               <tr>
-                <td name="rating_data">{{ series_list[series].rating }}</td>
+                <td name="rating_data" style="text-align:center">{{ series_list[series].rating }}</td>
                 <td name="votes_data" style="display:none">{{ series_list[series].votes }}</td>
                 <td sorttable_customkey="{{ series_list[series].title }}">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)"
