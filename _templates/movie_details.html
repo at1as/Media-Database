@@ -8,19 +8,24 @@
     <script src="../../_resources/js/jquery-2.1.4.min.js"></script>
     <script src="../../_resources/js/bootstrap.min.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body role="document" class="title-body">
 
     <div class="container theme-showcase" role="main" style="margin:0px; padding:0px; width:100%">
       <div id="title_content" class="jumbotron">
+
+        <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
+          
         <span style="vertical-align:top">
           <a href="../images/{{movie.filename}}.png">
-            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/{{movie.filename}}.png">
+            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/movies/{{movie.filename}}.png">
           </a>
         </span>
+        
         <span id="title-header">
-
-          <h2> {{movie.title}} ({{movie.year}}) </h2>
 
           <div class="form-group">
             <span id="star">&#9733; </span>

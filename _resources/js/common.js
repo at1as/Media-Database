@@ -234,12 +234,14 @@ function stripe_table() {
     if (even_row === false) {
       for (m=0; m<visible_cells.length; m++) {
         visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
+        visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
         visible_cells[m].className += " stripe-on";
       }
       even_row = true;
 
     } else {
       for (m=0; m<visible_cells.length; m++) {
+        visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
         visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
         visible_cells[m].className += " stripe-off";
       }
@@ -358,19 +360,27 @@ function load_details(movie) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
-  document.getElementById('modal-content').innerHTML    = "<iframe id='frame' class='centered' style='max-width:800px; width:100%; min-height:560px; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+  document.getElementById('modal-alert').innerHTML    = "<iframe id='frame' style='z-index: 12; max-width:800px; height:100%; width:100%; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+ 
+  /* iFrame won't scroll on Desktop Safari unless this state is toggled */
+  var ua = navigator.userAgent.toLowerCase(); 
+  if (ua.indexOf('safari') != -1) { 
+    if (ua.indexOf('chrome') > -1) {
+      // Chrome
+    } else {
+      // Safari
+      if (!( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+        // Desktop Safari
+        document.getElementById('modal-alert').style.overflow = "hidden";
+      }
+    }
+  }
 };
 
 function close_details() {
   document.getElementById('backdrop').style.display = 'none';
   document.getElementById('modal-alert').style.display = 'none';
 };
-
-function resize_frame(obj) {
-  // Firefox & Safari
-  obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-};
-
 
 // Toggle Display of Search Filters
 function filter_toggle() {

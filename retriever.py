@@ -332,8 +332,15 @@ def get_series_details(movie, mediatype):
 # TODO: image directory per asset type (ex. _output/movies/images, etc)
 def save_image(url, name, mediatype):
   img = requests.get(url, headers=headers, stream=True)
+  
   if img.status_code == 200:
-    with open('_output/images/' + name + '.png', 'wb') as f:
+    
+    if mediatype == "movie":
+      media_dir = "movies"
+    elif mediatype == "series":
+      media_dir = "series"
+    
+    with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
       img.raw.decode_content = True
       shutil.copyfileobj(img.raw, f)
 
