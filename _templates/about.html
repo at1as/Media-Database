@@ -2,13 +2,16 @@
 <html lang="en">
   <head>
     <title>Local Movie Database</title>
+    <script src="../_resources/js/jquery-2.1.4.min.js"></script>
+    <script src="../_resources/js/bootstrap.min.js"></script>
     <link href="../_resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
-    <script src="../_resources/js/jquery-2.1.4.min.js"></script>
-    <script src="../_resources/js/bootstrap.min.js"></script>
     <link href="../_resources/favicon.png" rel="shotcut icon" type="image/png"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width; initial-scale=1; minimum-scale=1; maximum-scale=1; user-scalable=yes;" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
 
   <body role="document">
@@ -34,7 +37,7 @@
     </nav>
 
     <div class="container theme-showcase body-container" role="main">
-      <div class="well">
+      <div class="well col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
         <p>
           <b>IMDB-Scrape</b> creates a local movie database containing information related to your movie collection.
           Webpages are staticly generated and uploaded to the <i>_output/</i> directory. Rerun the script every

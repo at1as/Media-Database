@@ -233,13 +233,15 @@ function stripe_table() {
 
     if (even_row === false) {
       for (m=0; m<visible_cells.length; m++) {
-        visible_cells[m].className = "stripe-on";
+        visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
+        visible_cells[m].className += " stripe-on";
       }
       even_row = true;
 
     } else {
       for (m=0; m<visible_cells.length; m++) {
-        visible_cells[m].className = "stripe-off";
+        visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
+        visible_cells[m].className += " stripe-off";
       }
       even_row = false;
 
