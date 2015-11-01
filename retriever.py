@@ -109,7 +109,7 @@ def construct_search_url(title):
 def get_title_url(asset, mediatype):
   
   if mediatype == "movie":
-    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)"]
+    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"]
   elif mediatype =="series":
     valid_results = ["(TV Series)", "(TV Mini-Series)"]
 
@@ -292,7 +292,7 @@ def get_series_details(movie, mediatype):
       except IndexError:
         movie_attributes['stars'] = ""
     try:
-      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/a/span/text()')
+      movie_attributes['genre'] = movie_page.xpath('//*[@id="overview-top"]/div[@class="infobar"]/a/span/text()')
     except IndexError:
       movie_attributes['genre'] = ""
     try:
@@ -304,7 +304,7 @@ def get_series_details(movie, mediatype):
     except IndexError:
       movie_attributes['votes'] = ""
     try:
-      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[2]/time/text()')[0].strip()
+      movie_attributes['running_time'] = movie_page.xpath('//*[@id="overview-top"]/div[@class="infobar"]/time/text()')[0].strip()
     except IndexError:
       movie_attributes['running_time'] = ""
     try:

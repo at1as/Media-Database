@@ -18,6 +18,9 @@
       <div id="title_content" class="jumbotron">
 
         <h2 class="title-title"> {{series.title}} ({{series.year}}) </h2>
+        {% if series.alternative_title %}
+        <div><b>Alternative Title : </b> {{ series.alternative_title }}</div>
+        {% endif %}
         
         <span style="vertical-align:top">
           <a href="../images/{{series.filename}}.png">
@@ -33,17 +36,26 @@
 
           <div style="margin-left:10px">
             <h5>
-              <span id="item-content-rating">
-                {% if series.content_rating is string %} 
+              {% if not series.content_rating %} 
+              {% elif series.content_rating is string %} 
+                <span id="item-content-rating">
                   {{series.content_rating}}
-                {% else %}
+                </span> &mdash;
+              {% else %}
+                <span id="item-content-rating">
                   {{series.content_rating[0]}}
-                {% endif %}
-              </span> &mdash;
+                </span> &mdash;
+              {% endif %}
+
+              {% if series.running_time %}
               <span id="item-running-time">{{series.running_time}}</span> &mdash;
+              {% endif %}
+
+              {% if series.genre %}
               <span style="margin-left:10px">
                 {% for item in series.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
               </span>
+              {% endif %}
           </div>
 
           <h4 style="padding-top:10px">Cast:</h4>
@@ -66,7 +78,8 @@
         </div>
         <p id="title-url"><a href="{{series.url}}" target="_blank">Go to IMDB</a></p>
         <div id="data-retrieved">
-          Data Retrieved: {{series.info_retrieved}}
+          <div>Data Retrieved: {{series.info_retrieved}}</div>
+          <div>Directory Name: &quot;{{series.filename}}&quot;</div>
         </div>
       </div>
     </div>

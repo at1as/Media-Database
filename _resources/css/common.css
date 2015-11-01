@@ -130,11 +130,9 @@ hr{
 /* Tables */
 .table-striped > tbody > tr > td.stripe-on{
   background-color: #F9F9F9;
-  !important
 }
 .table-striped > tbody > tr > td.stripe-off{
   background-color: #FFFFFF;
-  !important
 }
 #table_header{
   color:white;

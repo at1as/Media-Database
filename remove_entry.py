@@ -22,8 +22,7 @@ except:
 
 
 DATA = [config['assets']['movies']['saved_data'], 
-        config['assets']['series']['saved_data'], 
-        config['assets']['documentaries']['saved_data']]
+        config['assets']['series']['saved_data']]
 
 HELP = """\nUsage: 
             python remove_entry.py [type] "<filename>"
@@ -43,8 +42,6 @@ def remove_file(filetype, asset_name):
     filename = DATA[0]
   elif filetype in ['-s', '--series']:
     filename = DATA[1]
-  elif filetype in ['-d', '--documentary']:
-    filename = DATA[2]
   else:
     print HELP
     return

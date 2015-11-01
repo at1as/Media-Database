@@ -360,7 +360,7 @@ function load_details(movie) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
-  document.getElementById('modal-alert').innerHTML    = "<iframe id='frame' style='z-index: 12; max-width:800px; height:100%; width:100%; border:none; border-radius:3px' frameborder='0' scrolling='yes' onload='resize_frame(this)' src='" + movie_details + "'></iframe>";
+  document.getElementById('modal-alert').innerHTML    = "<iframe id='frame' style='z-index: 12; max-width:800px; height:100%; width:100%; border:none; border-radius:3px' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
  
   /* iFrame won't scroll on Desktop Safari unless this state is toggled */
   var ua = navigator.userAgent.toLowerCase(); 

@@ -18,7 +18,10 @@
       <div id="title_content" class="jumbotron">
 
         <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
-          
+        {% if movie.alternative_title %}
+        <div><b>Alternative Title : </b> {{ movie.alternative_title }}</div>
+        {% endif %}
+
         <span style="vertical-align:top">
           <a href="../images/{{movie.filename}}.png">
             <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/movies/{{movie.filename}}.png">
@@ -34,17 +37,26 @@
 
           <div style="margin-left:10px">
             <h5>
-              <span id="item-content-rating">
-                {% if movie.content_rating is string %} 
+              {% if not movie.content_rating %} 
+              {% elif movie.content_rating is string %} 
+                <span id="item-content-rating">
                   {{movie.content_rating}}
-                {% else %}
+                </span> &mdash;
+              {% else %}
+                <span id="item-content-rating">
                   {{movie.content_rating[0]}}
-                {% endif %}
-              </span> &mdash;
+                </span> &mdash;
+              {% endif %}
+            
+              {% if movie.running_time %}
               <span id="item-running-time">{{movie.running_time}}</span> &mdash;
+              {% endif %}
+              
+              {% if movie.genre %}
               <span style="margin-left:10px">
                 {% for item in movie.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
               </span>
+              {% endif %}
           </div>
 
           <h4 style="padding-top:10px">Cast:</h4>
@@ -80,7 +92,8 @@
         </div>
         <p id="title-url"><a href="{{movie.url}}" target="_blank">Go to IMDB</a></p>
         <div id="data-retrieved">
-          Data Retrieved: {{movie.info_retrieved}}
+          <div>Data Retrieved: {{movie.info_retrieved}}</div>
+          <div>File / Directory Name: &quot;{{movie.filename}}&quot;</div>
         </div>
       </div>
     </div>
