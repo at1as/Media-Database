@@ -44,8 +44,8 @@ except:
   raise SystemExit
 
 
-# Create empty datafiles if not present
 def initialize_asset_repo(base_path, mediatype):
+# Create empty datafiles if not present
   
   if not os.path.isfile(config['assets'][base_path]['saved_data']):
     with open(config['assets'][base_path]['saved_data'], 'w+') as item_feed:
@@ -93,20 +93,21 @@ def get_file_list(path, repo, mediatype):
 
         # Do not repeat scrape for already acquired title
         if not saved_files.has_key(file_title):
-          #print "Now adding: \"%s\"" % file_title
           print "Now adding: %s : %s" %(path, file_title)
           filtered_file_list.append(file_title)
+  
   return filtered_file_list
 
 
-# Construct search results url for specified title
 def construct_search_url(title):
+  # Construct search results url for specified title
+  
   safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
   return config["base_url"] + config["search_path"] + safe_title + config["url_end"]
 
 
-# Return the URL corresponding to particular title
 def get_title_url(asset, mediatype):
+  # Return the URL corresponding to particular title
   
   if mediatype == "movie":
     invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"]
@@ -149,8 +150,9 @@ def get_title_url(asset, mediatype):
     return None
 
 
-# Scrape movie page for attributes specified below
 def get_movie_details(movie, mediatype):
+  # Scrape movie page for attributes specified below
+  
   movie_attributes = {}
   movie_url = get_title_url(movie, mediatype)
 
@@ -242,8 +244,9 @@ def get_movie_details(movie, mediatype):
   else:
     return None
 
-# Scrape series page for attributes specified below
 def get_series_details(movie, mediatype):
+  # Scrape series page for attributes specified below
+  
   movie_attributes = {}
   movie_url = get_title_url(movie, mediatype)
 
@@ -328,9 +331,9 @@ def get_series_details(movie, mediatype):
     return None
 
 
-# If image_url was found, write image to directory
-# TODO: image directory per asset type (ex. _output/movies/images, etc)
 def save_image(url, name, mediatype):
+  # If image_url was found, write image to directory
+  
   img = requests.get(url, headers=headers, stream=True)
   
   if img.status_code == 200:
