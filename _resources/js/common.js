@@ -170,7 +170,7 @@ function substrings_in_list(query, item, filter_type) {
   var positive_match  = false;
   var negative_match  = false;
 
-  // allow genres to be seperated by spaces
+  // allow genres and langugaes to be seperated by spaces (cast must be comma seperated)
   if (filter_type === "genre" || filter_type === "language") {
     if (query_list.length === 1 && query.split(' ').length > 1) {
       query_list = query.split(' ');
@@ -182,7 +182,8 @@ function substrings_in_list(query, item, filter_type) {
   var query_match   = [];
   var current_query = '';
 
-  for(j=0; j<query_list.length; j++) {
+  // Separate queries into 'match' and 'not' queries
+  for(var j=0; j<query_list.length; j++) {
     current_query = query_list[j].trim();
     if (current_query.length > 1 && current_query[0] === "!"){
       query_not.push(current_query.substring(1,current_query.length));
@@ -190,8 +191,9 @@ function substrings_in_list(query, item, filter_type) {
       if (current_query !== '!') { query_match.push(current_query); }
     }
   }
-
-  for(k=0; k<query_match.length; k++){
+  
+  // If any 'match' queries are not present in item list return false
+  for(var k=0; k<query_match.length; k++){
     positive_match = false;
 
     for(l=0; l<item_list.length; l++){
@@ -199,19 +201,25 @@ function substrings_in_list(query, item, filter_type) {
     }
     if (!positive_match) { return false; }
   }
-
-  for(m=0; m<query_not.length; m++){
+  
+  // If any 'not' queries are present in item list return false
+  for(var m=0; m<query_not.length; m++){
 
     negative_match = [];
 
-    for(n=0; n<item_list.length; n++){
-      if (!item_list[n].trim().indexOf(query_not[m].trim()) === 0) {
+    // Compare each 'not' query (outer loop) to each item in list (inner loop)
+    // If item in item_list begins with text of the current query, negative match is true
+    for(var n=0; n<item_list.length; n++){
+      if (item_list[n].trim().indexOf(query_not[m].trim()) === 0) {
         negative_match.push(true);
       } else {
         negative_match.push(false);
       }
     }
-    if (negative_match.indexOf(false) !== -1) { return false; }
+    
+    if (negative_match.indexOf(true) !== -1) { 
+      return false; 
+    }
   }
   return true;
 };
