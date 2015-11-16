@@ -468,3 +468,11 @@ function clear_filter(element_id){
     // no action
   };
 };
+
+
+/* Called on Document Load */
+// Stylized Tooltips
+$(document).ready(function(){
+  $("a.tooltip-info").tooltip();
+});
+

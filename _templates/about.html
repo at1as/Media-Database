@@ -58,6 +58,28 @@
           <b>License :</b> <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE">MIT License</a>
         </p>
         <hr>
+
+        <p><b>Search Filter Usage</b></p>
+        <p> 
+        Genres, Cast, and Language fields support multiple comma-separated queries:
+        <br><br>-&gt;<b> "Sci-Fi, Action" </b>
+        <br>
+        -&gt; Returns titles that are both Sci-Fi and Action
+        <br><br>
+        
+        As well as negative queries:
+        <br><br>-&gt;<b> "Sci-Fi, Action, !Drama" </b>
+        <br>
+        -&gt; Returns titles that are marked as both Sci-Fi and Action while not being marked as Drama
+        <br><br>
+
+        Search queries do a match on the start of the string:
+        <br><br>-&gt;<b> "Po" </b>
+        <br>
+        -&gt; Returns titles marked as Portuguese, Polish, etc
+        </p>
+
+        <hr>
         <p style="text-align:center">
           <b>Last Report Generated :</b> <span style="display:block">{{ time }}</span>
         </p>

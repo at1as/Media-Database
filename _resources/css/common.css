@@ -101,12 +101,23 @@ hr{
 .clear-filter{
   top:7px;
   height:14px;
-  margin-left:-25px;
+  margin-left:-50px;
   font-size:20px;
   cursor:pointer;
   color:#666;
 }
 .clear-filter:hover{
+  color:red;
+}
+.question-filter{
+  top:7px;
+  height:14px;
+  padding-left:5px;
+  font-size:20px;
+  cursor:pointer;
+  color:#666;
+}
+.question-filter:hover{
   color:red;
 }
 .input-group-addon{
@@ -141,6 +152,9 @@ hr{
 .scalable_table{
   word-wrap:break-word;
   max-width:none;
+}
+th{
+  font-weight:400 !important;
 }
 
 /* Individual Title Page */
