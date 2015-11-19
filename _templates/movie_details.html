@@ -94,6 +94,9 @@
         <div id="data-retrieved">
           <div>Data Retrieved: {{movie.info_retrieved}}</div>
           <div>File / Directory Name: &quot;{{movie.filename}}&quot;</div>
+          {% if movie.extension %}
+            <div>File Extension: &quot;{{movie.extension}}&quot;</div>
+          {% endif %}
         </div>
       </div>
     </div>

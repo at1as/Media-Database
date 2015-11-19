@@ -45,7 +45,7 @@ except:
 
 
 def initialize_asset_repo(base_path, mediatype):
-# Create empty datafiles if not present
+  # Create empty datafiles if not present
   
   if not os.path.isfile(config['assets'][base_path]['saved_data']):
     with open(config['assets'][base_path]['saved_data'], 'w+') as item_feed:
@@ -79,22 +79,22 @@ def get_file_list(path, repo, mediatype):
 
       # Strip extension from file
       if os.path.isfile(path + file):
-        file_title = file.rsplit(".", 1)[0]
+        file_details = {'name': file.rsplit(".", 1)[0], 'extension': file.rsplit('.', 1)[1]}
       else:
-        file_title = file
+        file_details = {'name': file, 'extension': None}
 
       # Drop prepending "._" from files on external drives
-      if file_title[0:2] == "._":
-        file_title = file_title[2:]
+      if file_details['name'][0:2] == "._":
+        file_details['name'] = file_details['name'][2:]
 
       # Add the file if it is not already in
       with open(repo, 'r') as saved_file_list:
         saved_files = json.load(saved_file_list)
 
         # Do not repeat scrape for already acquired title
-        if not saved_files.has_key(file_title):
-          print "Now adding: %s : %s" %(path, file_title)
-          filtered_file_list.append(file_title)
+        if not saved_files.has_key(file_details['name']):
+          print "Now adding: %s : %s" %(path, file_details['name'])
+          filtered_file_list.append(file_details)
   
   return filtered_file_list
 
@@ -154,13 +154,14 @@ def get_movie_details(movie, mediatype):
   # Scrape movie page for attributes specified below
   
   movie_attributes = {}
-  movie_url = get_title_url(movie, mediatype)
+  movie_url = get_title_url(movie['name'], mediatype)
 
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=headers).content)
 
     movie_attributes['url'] = movie_url
-    movie_attributes['filename'] = movie
+    movie_attributes['filename'] = movie['name']
+    movie_attributes['extension'] = movie['extension']
     movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
     try:
       movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
@@ -248,13 +249,14 @@ def get_series_details(movie, mediatype):
   # Scrape series page for attributes specified below
   
   movie_attributes = {}
-  movie_url = get_title_url(movie, mediatype)
+  movie_url = get_title_url(movie['name'], mediatype)
 
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=headers).content)
 
     movie_attributes['url'] = movie_url
-    movie_attributes['filename'] = movie
+    movie_attributes['filename'] = movie['name']
+    movie_attributes['extension'] = movie['extension']
     movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
     try:
       movie_attributes['title'] = movie_page.xpath('//*[@id="overview-top"]/h1/span[1]/text()')[0].strip()
@@ -351,12 +353,12 @@ def save_image(url, name, mediatype):
 def compile_file_list(path, repo, mediatype):
   file_attributes_list = []
 
-  for file in get_file_list(path, repo, mediatype):
+  for file_details in get_file_list(path, repo, mediatype):
 
     if mediatype == "movie":
-      file_attributes = get_movie_details(file, "movie")
+      file_attributes = get_movie_details(file_details, "movie")
     elif mediatype == "series":
-      file_attributes = get_series_details(file, "series")
+      file_attributes = get_series_details(file_details, "series")
     
     if file_attributes != None:
       file_attributes_list.append(file_attributes)
