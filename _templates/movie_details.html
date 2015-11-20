@@ -97,6 +97,10 @@
           {% if movie.extension %}
             <div>File Extension: &quot;{{movie.extension}}&quot;</div>
           {% endif %}
+          
+          {% if movie.extension == "mp4" and location %}
+            <video src="{{location}}{{movie.filename}}.mp4" controls style="width:100%; margin-top:20px"></video>
+          {% endif %}
         </div>
       </div>
     </div>

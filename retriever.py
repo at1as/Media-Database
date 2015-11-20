@@ -386,6 +386,13 @@ def write_scraped_data(base_path, additional_assets):
 
 
 def generate_site(additional_movies, additional_series):
+  
+  try:
+    with open('conf.json') as config_json:
+      movie_location = json.load(config_json)['assets']['movies']['location']
+  except:
+    movie_location = None
+
 
   saved_movies  = write_scraped_data("movies", additional_movies)
   saved_series  = write_scraped_data("series", additional_series)
@@ -422,7 +429,7 @@ def generate_site(additional_movies, additional_series):
   # Individual Movie Pages
   for item in saved_movies:
     output_dir = "_output/movies/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
-    movie_page = movie_details.render(number_of_movies = num_movies, movie = saved_movies[item], number_of_series = num_series)
+    movie_page = movie_details.render(number_of_movies = num_movies, movie = saved_movies[item], number_of_series = num_series, location = movie_location)
     h = open(output_dir, "w")
     h.write(movie_page.encode('utf-8'))
     h.close
