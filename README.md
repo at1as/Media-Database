@@ -2,6 +2,10 @@
 
 Gathers information about movies stored in a local directory and compiles it into a searchable and sortable HTML document
 
+## Demo
+
+Script output loaded with some randomly chosen sample data is available [here](http://www.jasonwillems.com/sites/mediadatabase/output/). I've tried to include several foreign titles to ensure that they're tagged correctly. Commit used for these reports is a few behind.
+
 ## Screenshots
 
 #### List of Content
@@ -9,17 +13,13 @@ Gathers information about movies stored in a local directory and compiles it int
 #### Movie Details
 ![Screenshot](http://at1as.github.io/github_repo_assets/imdb-scrape2.jpg)
 
-## Demo
-
-Script output loaded with some randomly chosen sample data is available [here](http://www.jasonwillems.com/sites/mediadatabase/output/). I've tried to include several foreign titles to ensure that they're tagged correctly.
-
 
 ## Usage
 
 Download the repository here, set the appropriate permissions and launch IMDB-Scrape via:
 ```bash
-$ git clone https://github.com/at1as/Website-Diff.git
-$ cd Website-Diff
+$ git clone https://github.com/at1as/IMDB-Scrape.git
+$ cd IMDB-Scrape
 $ vim conf.json
 $ python retriever.py
 ```
@@ -30,7 +30,7 @@ Set your environment in conf.json:
 * *max_quantity* [Integer] => the maximum number of entries to retrieve from IMDB
 * *asset_location* [String] => the absolute path to the folder containing the files
 * *exclude_files* [Array of Strings] => Exclude these files from retrieval (even if their extensions are included)
-* *include_extensions* [Array of Strings] => files will these extensions (or folders) will be retrieved from IMDB
+* *include_extensions* [Array of Strings] => files will these extensions (or folders) will be retrieved from IMDB. These should all be lower case
 
 ##### Removing Entries
 
