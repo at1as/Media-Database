@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+from  __future__ import unicode_literals
 from retriever import *
 
 def get_movie_details(movie, mediatype):
@@ -35,7 +39,7 @@ def get_movie_details(movie, mediatype):
       except IndexError:
         movie_attributes['year'] = ""
     try:
-      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip().replace('See full summary »', '')
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip().replace('See full summary', '')
     except IndexError:
       movie_attributes['description'] = ""
     try:
@@ -127,7 +131,7 @@ def get_series_details(movie, mediatype):
       except IndexError:
         movie_attributes['year'] = ""
     try:
-      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip().replace('See full summary »', '')
+      movie_attributes['description'] = movie_page.xpath('//*[@id="overview-top"]/p[2]')[0].text_content().strip().replace('See full summary', '')
     except IndexError:
       movie_attributes['description'] = ""
     try:
