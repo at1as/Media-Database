@@ -17,15 +17,18 @@ with open('conf.json') as configuration:
 with open('_data/movie_data.json') as movie_details:
   movies = json.load(movie_details)
 
-
+item_count = 0
+skipped = []
 all_files = os.listdir(location)
 extension_count = {}
 
 for file in all_files:
+  item_count += 1
 
   # Skip hidden files or files slated to 
   if file.startswith('.') or file in exclude:
     print "Skipping Excluded file %s" % file
+    skipped.append(file)
     continue
 
   try:
@@ -47,6 +50,7 @@ for file in all_files:
       else:
         extension_count[extension] = 1
   except:
+    skipped.append(file)
     print "Skipping file %s. Not found" %(file)
     continue
 
@@ -60,3 +64,5 @@ with open('tmp-file', 'w+') as tmp:
 
 # Ensure extension count is accurate
 print extension_count
+print "Skip List %s" % skipped
+print "Total Files %s"  % item_count
