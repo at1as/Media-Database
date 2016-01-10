@@ -9,9 +9,9 @@ Script output loaded with some randomly chosen sample data is available [here](h
 ## Screenshots
 
 #### List of Content
-![Screenshot](http://at1as.github.io/github_repo_assets/imdb-scrape.jpg)
+<img src="http://at1as.github.io/github_repo_assets/imdb-scrape.jpg" width="600px">
 #### Movie Details
-![Screenshot](http://at1as.github.io/github_repo_assets/imdb-scrape2.jpg)
+<img src="http://at1as.github.io/github_repo_assets/imdb-scrape2.jpg" width="600px">
 
 
 ## Usage
