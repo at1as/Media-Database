@@ -27,11 +27,11 @@
             <span class="icon-bar"></span>
           </button>
         </div>
-        
-        
+
+
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="./index.html">Movies 
+            <li class="active"><a href="./index.html">Movies
               <span class="badge">
                 <span id="results_num" style="display:none">{{ movie_list|length }}</span>
                 <span id="mv_seperator" style="display:none"> / </span>
@@ -52,7 +52,7 @@
 
       <!-- Filters -->
       <div id="filters" class="jumbotron filter-container col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-12 col-xs-12">
-        
+
         <div class="filter-section">
           <div class="col-md-3" style="padding-left:0px">
             <h4>Title:</h4>
@@ -139,7 +139,7 @@
         </div>
         <div class="filter-section">
           <div class="col-md-3" style="padding-left:0px">
-            <h4>Director:</h4>
+            <h4>Directors:</h4>
           </div>
           <div style="display:flex">
             <input class="form-control" id="director-search" type="search" onkeyup="search_movie_table(results)" spellcheck="false">
@@ -172,7 +172,7 @@
       <div id="random_selection">
         <button id="random_selection_btn" class="btn btn-small" onclick="random_selection()">
           Choose Random from Selection
-        </button> 
+        </button>
       </div>
 
       <!-- Results Table -->
@@ -208,7 +208,12 @@
                 <td name="year_data">{{ movie_list[movie].year }}</td>
                 <td name="genres_data" class="hidden-sm hidden-xs">{{ movie_list[movie].genre|join(', ') }}</td>
                 <td name="stars_data" class="hidden-sm hidden-xs">{{ movie_list[movie].stars|join(', ') }}</td>
-                <td name="director_data" class="hidden-sm hidden-xs">{{ movie_list[movie].director }}</td>
+                {% if movie_list[movie].director is string %}
+                  <!-- legacy code for when only one director was listed -->
+                  <td name="director_data" class="hidden-sm hidden-xs">{{ movie_list[movie].director }}</td>
+                {% else %}
+                  <td name="director_data" class="hidden-sm hidden-xs">{{ movie_list[movie].director|join(', ') }}</td>
+                {% endif %}
                 <td name="languages_data" class="hidden-sm hidden-xs">{{ movie_list[movie].languages|join(', ') }}</td>
               </tr>
             {% endfor %}

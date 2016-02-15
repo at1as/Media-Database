@@ -8,7 +8,8 @@ import json
 import lxml.html
 import os
 import requests
-from   scraper import * 
+import pdb
+from   scraper import *
 import simplejson
 import shutil
 import time
@@ -17,28 +18,28 @@ import urllib
 
 
 # Change User Agent header from Requests to Mozilla for requests made to IMDB
-headers = { 
-          "User-Agent":      "Mozilla/5.0",
-          "Accept-Language": "en-US,en;q=0.8"
-        }
+headers = {
+            "User-Agent":      "Mozilla/5.0",
+            "Accept-Language": "en-US,en;q=0.8"
+          }
 
 # Import Input Environment Configuration and Validation
 try:
   with open('conf.json') as config_json:
     config = json.load(config_json)
-  
+
   if config["include_extensions"] == []:
     print "\nWarning: No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes"
   if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
     print "\nWarning: base_url, search_path and url_end have been changed from their defaults in conf.json. Proceed at your own risk"
-  
+
   for asset_type in config["assets"]:
     if config["assets"][asset_type]["saved_data"] == "":
       print "\nError: Please specify a path for the assets.%s.saved_data repository in conf.json" % asset_type
       raise SystemExit
     if not type(config["assets"][asset_type]["max_assets"]) is int or config["assets"][asset_type]["max_assets"] < 0:
       print "\nError: Please specify a valid integer for assets.%s.max_quantity repository in conf.json" % asset_type
-      raise SystemExit  
+      raise SystemExit
     if config["assets"][asset_type]["index_asset"] and config["assets"][asset_type]["location"] == "":
       print "\nError: \"%s\" is set to index files, but path to directory is not specified in conf.json\n" % asset_type
       raise SystemExit
@@ -49,13 +50,13 @@ except:
 
 def initialize_asset_repo(base_path, mediatype):
   # Create empty datafiles if not present
-  
+
   if not os.path.isfile(config['assets'][base_path]['saved_data']):
     with open(config['assets'][base_path]['saved_data'], 'w+') as item_feed:
       json.dump({}, item_feed)
 
   if config['assets'][base_path]['index_asset']:
-    item_list = compile_file_list(config['assets'][base_path]['location'], config['assets'][base_path]['saved_data'], mediatype)    
+    item_list = compile_file_list(config['assets'][base_path]['location'], config['assets'][base_path]['saved_data'], mediatype)
   else:
     item_list = []
 
@@ -72,13 +73,13 @@ def get_file_list(path, repo, mediatype):
   except OSError:
     print "\nError: Path \"%s\" not found. Specify a valid path in conf.json and ensure all directories on this path exist.\n" % path
     raise SystemExit
-  
+
   filtered_file_list = []
 
   for file in file_list:
 
     # If the extension is in include_extension, or file is a folder not preceded by '_'
-    if ((os.path.isfile(path + file) and file.split(".")[-1:][0].lower() in config["include_extensions"]) or (os.path.isdir(path + file) and file[0] != "_")) and file not in config["exclude_files"]: 
+    if ((os.path.isfile(path + file) and file.split(".")[-1:][0].lower() in config["include_extensions"]) or (os.path.isdir(path + file) and file[0] != "_")) and file not in config["exclude_files"]:
 
       # Strip extension from file
       if os.path.isfile(path + file):
@@ -98,20 +99,20 @@ def get_file_list(path, repo, mediatype):
         if not saved_files.has_key(file_details['name']):
           print "Now adding: %s : %s" %(path, file_details['name'])
           filtered_file_list.append(file_details)
-  
+
   return filtered_file_list
 
 
 def construct_search_url(title):
   # Construct search results url for specified title
-  
+
   safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
   return config["base_url"] + config["search_path"] + safe_title + config["url_end"]
 
 
 def get_title_url(asset, mediatype):
   # Return the URL corresponding to particular title
-  
+
   if mediatype == "movie":
     invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"]
   elif mediatype =="series":
@@ -135,7 +136,7 @@ def get_title_url(asset, mediatype):
               if not any(x in list_title.text_content() for x in invalid_results):
                 endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
                 return config["base_url"] + endpoint
-            
+
             # Series in list are tagged
             elif mediatype == "series":
               if any(x in list_title.text_content() for x in valid_results):
@@ -155,16 +156,18 @@ def get_title_url(asset, mediatype):
 
 def save_image(url, name, mediatype):
   # If image_url was found, write image to directory
-  
-  img = requests.get(url, headers=headers, stream=True)
-  
+  try:
+    img = requests.get(url, headers=headers, stream=True)
+  except:
+    return None
+
   if img.status_code == 200:
-    
+
     if mediatype == "movie":
       media_dir = "movies"
     elif mediatype == "series":
       media_dir = "series"
-    
+
     with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
       img.raw.decode_content = True
       shutil.copyfileobj(img.raw, f)
@@ -179,21 +182,21 @@ def compile_file_list(path, repo, mediatype):
       file_attributes = get_movie_details(file_details, "movie")
     elif mediatype == "series":
       file_attributes = get_series_details(file_details, "series")
-    
+
     if file_attributes != None:
       file_attributes_list.append(file_attributes)
-   
+
   return file_attributes_list
 
 
 def write_scraped_data(base_path, additional_assets):
-  
+
   # Import Data from JSON file
   with open(config['assets'][base_path]['saved_data'], 'r') as asset_feed:
     saved_assets = json.load(asset_feed)
 
   if additional_assets != []:
-    
+
     # Add new saved assets to JSON file
     for asset in additional_assets:
       saved_assets[asset['filename']] = asset
@@ -201,12 +204,12 @@ def write_scraped_data(base_path, additional_assets):
     # Write combined asset contents to JSON file
     with open(config['assets'][base_path]['saved_data'], 'w+') as asset_feed:
       json.dump(saved_assets, asset_feed, encoding="utf-8")
-  
+
   return saved_assets
 
 
 def generate_site(additional_movies, additional_series):
-  
+
   try:
     with open('conf.json') as config_json:
       movie_location = json.load(config_json)['assets']['movies']['location']
@@ -243,7 +246,7 @@ def generate_site(additional_movies, additional_series):
   j.close
 
   # About Page
-  about_page = about.render(number_of_movies = num_movies, 
+  about_page = about.render(number_of_movies = num_movies,
                             number_of_series = num_series,
                             time = str(datetime.now()))
   g = open("_output/about.html", "w")
@@ -278,4 +281,3 @@ if __name__ == "__main__":
   series_list = initialize_asset_repo("series", "series")
 
   generate_site(movie_list, series_list)
-
