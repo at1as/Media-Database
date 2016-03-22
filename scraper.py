@@ -86,7 +86,7 @@ def get_alternative_title(xml_doc):
 
 def get_description(xml_doc):
   try:
-    return xml_doc.xpath('//div[@class="summary_text"]/text()')[0].strip().replace('See full summary', '')
+    return xml_doc.xpath('//div[@class="summary_text"]')[0].text_content().strip().replace('See full summary', '')
   except IndexError:
     return ''
 
@@ -129,7 +129,6 @@ def get_content_rating(xml_doc):
 def get_stars(xml_doc):
   try:
     return xml_doc.xpath('//div[@class="title-overview"]//*[@itemprop="actors"]/a/span/text()')
-    #return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[4]/span/a/span/text()') ## DELETE ME
   except IndexError:
     try:
       return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[3]/span/a/span/text()')
