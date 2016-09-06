@@ -114,7 +114,7 @@ def get_title_url(asset, mediatype):
   # Return the URL corresponding to particular title
 
   if mediatype == "movie":
-    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"]
+    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video)"]
   elif mediatype =="series":
     valid_results = ["(TV Series)", "(TV Mini-Series)"]
 

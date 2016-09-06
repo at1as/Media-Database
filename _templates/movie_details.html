@@ -18,8 +18,10 @@
       <div id="title_content" class="jumbotron">
 
         <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
-        {% if movie.alternative_title %}
+        {% if movie.alternative_title and movie.alternative_title is string %}
         <div><b>Alternative Title : </b> {{ movie.alternative_title }}</div>
+        {% else %}
+        <div><b>Alternative Title : </b> {{ movie.alternative_title[0] }}</div>
         {% endif %}
 
         <span style="vertical-align:top">
