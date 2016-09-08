@@ -64,10 +64,11 @@ def initialize_asset_repo(base_path, mediatype):
 
 
 def get_file_list(path, repo, mediatype):
-  # TODO: enforce limit per asset (rather than deprecated global limit)
+  asset_type = "movies" if mediatype == "movie" else mediatype
   try:
-    if not config["max_assets"] == 0:
-      file_list = os.listdir(path)[0:config["max_assets"]]
+    # Enforce per asset type limit
+    if not config["assets"][asset_type]["max_assets"] == 0:
+      file_list = os.listdir(path)[0:config["assets"][asset_type]["max_assets"]]
     else:
       file_list = os.listdir(path)
   except OSError:

@@ -4,19 +4,18 @@
   "url_end"           : "&s=all",
   "assets" : {
     "movies" : {
-      "location"      : "/Volumes/3TB-JASON/Movies/",
+      "location"      : "/Volumes/5TB-MEDIA/Movies/",
       "saved_data"    : "./_data/movie_data.json",
       "index_asset"   : true,
       "max_assets"    : 9999
     },
     "series" : {
-      "location"      : "/Volumes/3TB-JASON/Television/",
+      "location"      : "/Volumes/5TB-MEDIA/Television/",
       "saved_data"    : "./_data/series_data.json",
       "index_asset"   : true,
       "max_assets"    : 9999
     }
   },
-  "max_assets"        : 9999,
   "exclude_files"     : ["LICENSE", ".DS_Store", "Thumbs.db"],
   "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
 }
