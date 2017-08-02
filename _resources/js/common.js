@@ -12,7 +12,7 @@ function search_movie_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (i=1; i<tableID.rows.length; i++) {
+  for (let i=1; i<tableID.rows.length; i++) {
     var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
     var vote_cell     = tableID.rows[i].cells[1].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell    = tableID.rows[i].cells[2].children[0].innerHTML.toLowerCase();
@@ -29,7 +29,7 @@ function search_movie_table(tableID) {
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
       tableID.rows[i].style.display = 'none';
     }
-    else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
+    else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
       tableID.rows[i].style.display = 'none';
     }
     else if (year_min_query !== '' && year_cell !== '' && (parseInt(year_cell) < parseInt(year_min_query))) {
@@ -44,7 +44,7 @@ function search_movie_table(tableID) {
     else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
       tableID.rows[i].style.display = 'none';
     }
-    else if (director_cell.indexOf(director_query) === -1 && remove_diacritics(director_cell).indexOf(director_query) && director_query !== '') {
+    else if (!title_match(director_query, director_cell) && !title_match(director_query, remove_diacritics(director_cell)) && director_query !== '') {
       tableID.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
@@ -57,7 +57,7 @@ function search_movie_table(tableID) {
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (j=1; j<tableID.rows.length; j++) {
+  for (let j=1; j<tableID.rows.length; j++) {
     if (tableID.rows[j].style.display !== 'none') {
       count += 1;
     }
@@ -137,7 +137,7 @@ function search_series_table(tableID) {
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (j=1; j<tableID.rows.length; j++) {
+  for (let j=1; j<tableID.rows.length; j++) {
     if (tableID.rows[j].style.display !== 'none') {
       count += 1
     }
@@ -183,7 +183,7 @@ function substrings_in_list(query, item, filter_type) {
   var current_query = '';
 
   // Separate queries into 'match' and 'not' queries
-  for(var j=0; j<query_list.length; j++) {
+  for(let j=0; j<query_list.length; j++) {
     current_query = query_list[j].trim();
     if (current_query.length > 1 && current_query[0] === "!"){
       query_not.push(current_query.substring(1,current_query.length));
@@ -193,7 +193,7 @@ function substrings_in_list(query, item, filter_type) {
   }
   
   // If any 'match' queries are not present in item list return false
-  for(var k=0; k<query_match.length; k++){
+  for(let k=0; k<query_match.length; k++){
     positive_match = false;
 
     for(l=0; l<item_list.length; l++){
@@ -203,7 +203,7 @@ function substrings_in_list(query, item, filter_type) {
   }
   
   // If any 'not' queries are present in item list return false
-  for(var m=0; m<query_not.length; m++){
+  for(let m=0; m<query_not.length; m++){
 
     negative_match = [];
 
@@ -224,6 +224,24 @@ function substrings_in_list(query, item, filter_type) {
   return true;
 };
 
+// Search for "||" separated query list for any entry to match listing
+function title_match(query, listing){
+  // Split query string at '||' and remove empty elements from array, or partial search string
+  // (trailing '|' or trailing ' ')
+  queries = query.split('||').map(function(x){ 
+    return x.trim().replace(/\|/, '').trim();
+  }).filter(function(x){ 
+    return x !== '';
+  });
+  
+  for(var i=0; i<query.length; i++){
+    // TODO: Strip more than just the ':' (such as '-', '.', etc)
+    if (listing.replace(':', '').indexOf(queries[i] ? queries[i].replace(':','') : queries[i]) !== -1){
+      return true;
+    }
+  }
+  return false;
+}
 
 // Restripe the table rows after filtering out rows
 function stripe_table() {
