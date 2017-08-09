@@ -12,7 +12,7 @@ function search_movie_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (let i=1; i<tableID.rows.length; i++) {
+  for (var i=1; i<tableID.rows.length; i++) {
     var rating_cell   = tableID.rows[i].cells[0].innerHTML.toLowerCase();
     var vote_cell     = tableID.rows[i].cells[1].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell    = tableID.rows[i].cells[2].children[0].innerHTML.toLowerCase();
@@ -57,7 +57,7 @@ function search_movie_table(tableID) {
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (let j=1; j<tableID.rows.length; j++) {
+  for (var j=1; j<tableID.rows.length; j++) {
     if (tableID.rows[j].style.display !== 'none') {
       count += 1;
     }
@@ -95,7 +95,7 @@ function search_series_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (i=1; i<tableID.rows.length; i++) {
+  for (var i=1; i<tableID.rows.length; i++) {
     var rating_cell     = tableID.rows[i].cells[0].innerHTML.toLowerCase();
     var vote_cell       = tableID.rows[i].cells[1].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell      = tableID.rows[i].cells[2].children[0].innerHTML.toLowerCase();
@@ -137,7 +137,7 @@ function search_series_table(tableID) {
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (let j=1; j<tableID.rows.length; j++) {
+  for (var j=1; j<tableID.rows.length; j++) {
     if (tableID.rows[j].style.display !== 'none') {
       count += 1
     }
@@ -183,7 +183,7 @@ function substrings_in_list(query, item, filter_type) {
   var current_query = '';
 
   // Separate queries into 'match' and 'not' queries
-  for(let j=0; j<query_list.length; j++) {
+  for(var j=0; j<query_list.length; j++) {
     current_query = query_list[j].trim();
     if (current_query.length > 1 && current_query[0] === "!"){
       query_not.push(current_query.substring(1,current_query.length));
@@ -193,7 +193,7 @@ function substrings_in_list(query, item, filter_type) {
   }
   
   // If any 'match' queries are not present in item list return false
-  for(let k=0; k<query_match.length; k++){
+  for(var k=0; k<query_match.length; k++){
     positive_match = false;
 
     for(l=0; l<item_list.length; l++){
@@ -203,7 +203,7 @@ function substrings_in_list(query, item, filter_type) {
   }
   
   // If any 'not' queries are present in item list return false
-  for(let m=0; m<query_not.length; m++){
+  for(var m=0; m<query_not.length; m++){
 
     negative_match = [];
 
@@ -249,16 +249,16 @@ function stripe_table() {
   var visible_rows  = []
   var even_row      = false;
 
-  for(n=0; n<all_rows.length; n++){
+  for(var n=0; n<all_rows.length; n++){
     if (all_rows[n].style.display !== "none") { visible_rows.push(all_rows[n]) }
   }
 
-  for(k=0; k<visible_rows.length; k++){
+  for(var k=0; k<visible_rows.length; k++){
 
     var visible_cells = visible_rows[k].children;
 
     if (even_row === false) {
-      for (m=0; m<visible_cells.length; m++) {
+      for (var m=0; m<visible_cells.length; m++) {
         visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
         visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
         visible_cells[m].className += " stripe-on";
@@ -266,7 +266,7 @@ function stripe_table() {
       even_row = true;
 
     } else {
-      for (m=0; m<visible_cells.length; m++) {
+      for (var m=0; m<visible_cells.length; m++) {
         visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
         visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
         visible_cells[m].className += " stripe-off";
