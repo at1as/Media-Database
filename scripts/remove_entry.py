@@ -12,12 +12,18 @@ import json
 from unicodedata import normalize
 
 
+def relative_path(file_path):
+  # Get path relative to this file
+  current_dir = os.path.dirname(__file__)
+  return os.path.join(current_dir, file_path)
+
+
 # Import Environment Configuration
 try:
-  with open('conf.json') as config_json:
+  with open(relative_path('../conf.json')) as config_json:
     config = json.load(config_json)
-except:
-  print "\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n"
+except Exception as e:
+  print "\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance %s\n" % e
   raise SystemExit
 
 
@@ -47,11 +53,11 @@ def remove_file(filetype, asset_name):
     return
 
 
-  if os.path.isfile(filename):
+  if os.path.isfile(relative_path('../' + filename)):
     found = False
 
     # Read contents of JSON file
-    with open(filename, 'r') as saved_asset_list:
+    with open(relative_path('../' + filename), 'r') as saved_asset_list:
       saved_assets = json.load(saved_asset_list)
 
     # Delete entry
@@ -69,7 +75,7 @@ def remove_file(filetype, asset_name):
       return
 
     # Write contents to JSON file
-    with open(filename, 'w+') as asset_feed:
+    with open(relative_path('../' + filename), 'w+') as asset_feed:
       json.dump(saved_assets, asset_feed, encoding="utf-8")
   
     print "\nEntry deleted: \"%s\" from \"%s\"\n" % (asset_name, filename)

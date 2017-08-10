@@ -21,7 +21,7 @@ Download the repository here, set the appropriate permissions and launch IMDB-Sc
 $ git clone https://github.com/at1as/IMDB-Scrape.git
 $ cd IMDB-Scrape
 $ vim conf.json
-$ python retriever.py
+$ python run.py
 ```
 
 ##### Environment Configuration

@@ -2,35 +2,38 @@
 # -*- coding: utf8 -*-
 
 from __future__ import unicode_literals
-from retriever import *
+from helpers import get_config_file, HEADERS
+import lxml.html
+import requests
+import time
 
-def get_movie_details(movie, mediatype):
+
+def get_movie_details(movie, mediatype, movie_url):
   # Scrape movie page for attributes specified below
-
-  movie_attributes = {}
-  movie_url = get_title_url(movie['name'], mediatype)
 
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=HEADERS).content)
 
-    movie_attributes['url'] = movie_url
-    movie_attributes['filename'] = movie['name']
-    movie_attributes['extension'] = movie['extension']
-    movie_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
-    movie_attributes['title'] = get_title(movie_page)
-    movie_attributes['alternative_title'] = get_alternative_title(movie_page)
-    movie_attributes['year'] = get_movie_year(movie_page)
-    movie_attributes['description'] = get_description(movie_page)
-    movie_attributes['director'] = get_director(movie_page)
-    movie_attributes['stars'] = get_stars(movie_page)
-    movie_attributes['genre'] = get_genres(movie_page)
-    movie_attributes['rating'] = get_rating(movie_page)
-    movie_attributes['votes'] = get_votes(movie_page)
-    movie_attributes['running_time'] = get_running_time(movie_page)
-    movie_attributes['languages'] = get_languages(movie_page)
-    movie_attributes['content_rating'] = get_content_rating(movie_page)
-    movie_attributes['awards'] = get_awards(movie_page)
-    movie_attributes['image_url'] = get_image_url(movie_page)
+    movie_attributes = {
+      'url':                movie_url,
+      'filename':           movie['name'],
+      'extension':          movie['extension'],
+      'info_retrieved':     time.strftime("%Y-%m-%d"),
+      'title':              get_title(movie_page),
+      'alternative_title':  get_alternative_title(movie_page),
+      'year':               get_movie_year(movie_page),
+      'description':        get_description(movie_page),
+      'director':           get_director(movie_page),
+      'stars':              get_stars(movie_page),
+      'genre':              get_genres(movie_page),
+      'rating':             get_rating(movie_page),
+      'votes':              get_votes(movie_page),
+      'running_time':       get_running_time(movie_page),
+      'languages':          get_languages(movie_page),
+      'content_rating':     get_content_rating(movie_page),
+      'awards':             get_awards(movie_page),
+      'image_url':          get_image_url(movie_page),
+    }
     try:    save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
     except: pass
 
@@ -39,31 +42,30 @@ def get_movie_details(movie, mediatype):
     return None
 
 
-def get_series_details(series, mediatype):
+def get_series_details(series, mediatype, series_url):
   # Scrape series page for attributes specified below
-
-  series_attributes = {}
-  series_url = get_title_url(series['name'], mediatype)
 
   if series_url != None:
     series_page = lxml.html.document_fromstring(requests.get(series_url, headers=HEADERS).content)
 
-    series_attributes['url'] = series_url
-    series_attributes['filename'] = series['name']
-    series_attributes['extension'] = series['extension']
-    series_attributes['info_retrieved'] = time.strftime("%Y-%m-%d")
-    series_attributes['title'] = get_title(series_page)
-    series_attributes['year'] = get_series_year(series_page)
-    series_attributes['description'] = get_description(series_page)
-    series_attributes['creator'] = get_creator(series_page)
-    series_attributes['stars'] = get_stars(series_page)
-    series_attributes['genre'] = get_genres(series_page)
-    series_attributes['rating'] = get_rating(series_page)
-    series_attributes['votes'] = get_votes(series_page)
-    series_attributes['running_time'] = get_running_time(series_page)
-    series_attributes['languages'] = get_languages(series_page)
-    series_attributes['content_rating'] = get_content_rating(series_page)
-    series_attributes['image_url'] = get_image_url(series_page)
+    series_attributes = {
+      'url':            series_url,
+      'filename':       series['name'],
+      'extension':      series['extension'],
+      'info_retrieved': time.strftime("%Y-%m-%d"),
+      'title':          get_title(series_page),
+      'year':           get_series_year(series_page),
+      'description':    get_description(series_page),
+      'creator':        get_creator(series_page),
+      'stars':          get_stars(series_page),
+      'genre':          get_genres(series_page),
+      'rating':         get_rating(series_page),
+      'votes':          get_votes(series_page),
+      'running_time':   get_running_time(series_page),
+      'languages':      get_languages(series_page),
+      'content_rating': get_content_rating(series_page),
+      'image_url':      get_image_url(series_page),
+    }
     try:    save_image(series_attributes['image_url'], series_attributes['filename'], mediatype)
     except: pass
 
@@ -166,7 +168,7 @@ def get_awards(xml_doc):
       if awards[-1:] == ".":
         return ' '.join(xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@itemprop="awards"]/b/text()')[0].strip().split())
       try:
-        return config['base_url'] + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
+        return get_config_file()['base_url'] + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
       except IndexError:
         return ''
   except IndexError:
