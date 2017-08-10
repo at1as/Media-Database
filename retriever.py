@@ -10,43 +10,68 @@ import os
 import requests
 import pdb
 from   scraper import *
+import pymediainfo
 import simplejson
 import shutil
+import sys
 import time
 from   unicodedata import normalize
 import urllib
 
-
 # Change User Agent header from Requests to Mozilla for requests made to IMDB
-headers = {
-            "User-Agent":      "Mozilla/5.0",
-            "Accept-Language": "en-US,en;q=0.8"
-          }
+HEADERS = {
+  "User-Agent":      "Mozilla/5.0",
+  "Accept-Language": "en-US,en;q=0.8"
+}
 
-# Import Input Environment Configuration and Validation
-try:
-  with open('conf.json') as config_json:
-    config = json.load(config_json)
+config = None
 
-  if config["include_extensions"] == []:
-    print "\nWarning: No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes"
-  if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
-    print "\nWarning: base_url, search_path and url_end have been changed from their defaults in conf.json. Proceed at your own risk"
 
-  for asset_type in config["assets"]:
-    if config["assets"][asset_type]["saved_data"] == "":
-      print "\nError: Please specify a path for the assets.%s.saved_data repository in conf.json" % asset_type
-      raise SystemExit
-    if not type(config["assets"][asset_type]["max_assets"]) is int or config["assets"][asset_type]["max_assets"] < 0:
-      print "\nError: Please specify a valid integer for assets.%s.max_quantity repository in conf.json" % asset_type
-      raise SystemExit
-    if config["assets"][asset_type]["index_asset"] and config["assets"][asset_type]["location"] == "":
-      print "\nError: \"%s\" is set to index files, but path to directory is not specified in conf.json\n" % asset_type
-      raise SystemExit
-except:
-  print "\nError: Invalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n"
-  raise SystemExit
+class message:
+  GREEN  = '\033[92m'
+  YELLOW = '\033[93m'
+  RED    = '\033[91m'
+  CLEAR  = '\033[0m'
 
+  @staticmethod
+  def warn(text):
+    print message.YELLOW + '\nWarning: ' + message.CLEAR + text
+  
+  @staticmethod
+  def error(text):
+    print message.RED + '\nError: ' + message.CLEAR + text
+
+
+def get_config_file():
+  # Import Input Environment Configuration and Validation
+  try:
+    with open('conf.json') as config_json:
+      config = json.load(config_json)
+
+    if config["include_extensions"] == []:
+      message.warn("No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes")
+    
+    if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
+      message.warn("base_url, search_path and url_end have been changed from their defaults in conf.json. Proceed at your own risk")
+
+    for asset_type in config["assets"]:
+      if config["assets"][asset_type]["saved_data"] == "":
+        message.error("Error: Please specify a path for the assets.{}.saved_data repository in conf.json".format(asset_type))
+        raise SystemExit
+
+      if not type(config["assets"][asset_type]["max_assets"]) is int or config["assets"][asset_type]["max_assets"] < 0:
+        message.error("Please specify a valid integer for assets.{}.max_quantity repository in conf.json".format(asset_type))
+        raise SystemExit
+      
+      if config["assets"][asset_type]["index_asset"] and config["assets"][asset_type]["location"] == "":
+        message.error("\"{}\" is set to index files, but path to directory is not specified in conf.json\n".format(asset_type))
+        raise SystemExit
+
+  except:
+    message.error("Invalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n")
+    raise SystemExit
+
+  return config
 
 def initialize_asset_repo(base_path, mediatype):
   # Create empty datafiles if not present
@@ -56,7 +81,11 @@ def initialize_asset_repo(base_path, mediatype):
       json.dump({}, item_feed)
 
   if config['assets'][base_path]['index_asset']:
-    item_list = compile_file_list(config['assets'][base_path]['location'], config['assets'][base_path]['saved_data'], mediatype)
+    item_list = compile_file_list(
+      config['assets'][base_path]['location'],
+      config['assets'][base_path]['saved_data'],
+      mediatype
+    )
   else:
     item_list = []
 
@@ -65,6 +94,7 @@ def initialize_asset_repo(base_path, mediatype):
 
 def get_file_list(path, repo, mediatype):
   asset_type = "movies" if mediatype == "movie" else mediatype
+
   try:
     # Enforce per asset type limit
     if not config["assets"][asset_type]["max_assets"] == 0:
@@ -116,11 +146,12 @@ def get_title_url(asset, mediatype):
 
   if mediatype == "movie":
     invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video)"]
+  
   elif mediatype =="series":
     valid_results = ["(TV Series)", "(TV Mini-Series)"]
 
   search_url = construct_search_url(asset)
-  page = lxml.html.document_fromstring(requests.get(search_url, headers=headers).content)
+  page = lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
 
   try:
     for index, section in enumerate(page.xpath('//*[@id="main"]/div[1]/div')):
@@ -148,17 +179,16 @@ def get_title_url(asset, mediatype):
                   return config["base_url"] + endpoint
 
     # If not found, return None
-    print "Warn: \"%s\" not found. Skipping." % asset
-    return None
+    print message.warn("\"{}\" not found. Skipping.".format(asset))
+  
   except IndexError:
-    print "Warn: \"%s\" not found. Skipping." % asset
-    return None
+    print message.warn("\"{}\" not found. Skipping.".format(asset))
 
 
 def save_image(url, name, mediatype):
   # If image_url was found, write image to directory
   try:
-    img = requests.get(url, headers=headers, stream=True)
+    img = requests.get(url, headers=HEADERS, stream=True)
   except:
     return None
 
@@ -166,6 +196,7 @@ def save_image(url, name, mediatype):
 
     if mediatype == "movie":
       media_dir = "movies"
+    
     elif mediatype == "series":
       media_dir = "series"
 
@@ -204,7 +235,7 @@ def write_scraped_data(base_path, additional_assets):
 
     # Write combined asset contents to JSON file
     with open(config['assets'][base_path]['saved_data'], 'w+') as asset_feed:
-      json.dump(saved_assets, asset_feed, encoding="utf-8")
+      json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
 
   return saved_assets
 
@@ -276,9 +307,16 @@ def generate_site(additional_movies, additional_series):
     k.close
 
 
-if __name__ == "__main__":
-
+def main():
+  # TODO: refactor above methods into class and purge this global
+  global config
+  config = get_config_file()
+  
   movie_list  = initialize_asset_repo("movies", "movie")
   series_list = initialize_asset_repo("series", "series")
 
   generate_site(movie_list, series_list)
+
+if __name__ == "__main__":
+  main()
+

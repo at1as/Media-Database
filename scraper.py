@@ -11,7 +11,7 @@ def get_movie_details(movie, mediatype):
   movie_url = get_title_url(movie['name'], mediatype)
 
   if movie_url != None:
-    movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=headers).content)
+    movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=HEADERS).content)
 
     movie_attributes['url'] = movie_url
     movie_attributes['filename'] = movie['name']
@@ -46,7 +46,7 @@ def get_series_details(series, mediatype):
   series_url = get_title_url(series['name'], mediatype)
 
   if series_url != None:
-    series_page = lxml.html.document_fromstring(requests.get(series_url, headers=headers).content)
+    series_page = lxml.html.document_fromstring(requests.get(series_url, headers=HEADERS).content)
 
     series_attributes['url'] = series_url
     series_attributes['filename'] = series['name']
