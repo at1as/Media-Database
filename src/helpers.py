@@ -1,12 +1,18 @@
-from message import Message
 import json
-import pdb
+from message import Message
+import os
 
 # Change User Agent header from Requests to Mozilla for requests made to IMDB
 HEADERS = {
   "User-Agent":      "Mozilla/5.0",
   "Accept-Language": "en-US,en;q=0.8"
 }
+
+
+def relative_path(file_path):
+  # Get path relative to this file location
+  current_dir = os.path.dirname(__file__)
+  return os.path.join(current_dir, file_path)
 
 
 def verify_config_file():
@@ -18,7 +24,7 @@ def verify_config_file():
       Message.warn("No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes")
     
     if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
-      Message.warn("base_url, search_path and url_end have been changed from their defaults in conf.json. Proceed at your own risk")
+      Message.warn("base_url, search_path or url_end have been changed from their defaults in conf.json. Proceed at your own risk")
 
     for asset_type in config["assets"]:
       if config["assets"][asset_type]["saved_data"] == "":
@@ -33,7 +39,7 @@ def verify_config_file():
         Message.error("\"{}\" is set to index files, but path to directory is not specified in conf.json\n".format(asset_type))
         raise SystemExit
 
-  except:
+  except Exception as e:
     Message.error("Invalid JSON body in conf.json.\nSee: http://jsonformatter.curiousconcept.com/ for assistance\n")
     raise SystemExit
 
@@ -41,7 +47,7 @@ def verify_config_file():
 
 
 def get_config_file():
-  with open('conf.json') as config_json:
-    config = json.load(config_json)
+  # Read configuration file. Raises exception if not found
+  with open(relative_path('../conf.json')) as config_json:
+    return json.load(config_json)
 
-  return config

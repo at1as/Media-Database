@@ -34,12 +34,13 @@ def get_movie_details(movie, mediatype, movie_url):
       'awards':             get_awards(movie_page),
       'image_url':          get_image_url(movie_page),
     }
-    try:    save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
-    except: pass
 
+    try:
+      save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
+    except:
+      pass
+    
     return movie_attributes
-  else:
-    return None
 
 
 def get_series_details(series, mediatype, series_url):
@@ -66,12 +67,13 @@ def get_series_details(series, mediatype, series_url):
       'content_rating': get_content_rating(series_page),
       'image_url':      get_image_url(series_page),
     }
-    try:    save_image(series_attributes['image_url'], series_attributes['filename'], mediatype)
-    except: pass
+
+    try:
+      save_image(series_attributes['image_url'], series_attributes['filename'], mediatype)
+    except:
+      pass
 
     return series_attributes
-  else:
-    return None
 
 
 def get_title(xml_doc):
@@ -152,7 +154,7 @@ def get_image_url(xml_doc):
   except IndexError:
     return ''
 
-# Movie specific
+# Movie specific functions
 def get_movie_year(xml_doc):
   try:
     return xml_doc.xpath('//*[@class="title_wrapper"]//span[@id="titleYear"]/a/text()')[0]
@@ -174,7 +176,7 @@ def get_awards(xml_doc):
   except IndexError:
     return ''
 
-# Series Specific
+# Series Specific Functions
 def get_series_year(xml_doc):
   try:
     return xml_doc.xpath('//div[@class="title_wrapper"]//div[@class="subtext"]/a/text()')[0].strip().split('(')[-1].split(')')[0].strip()

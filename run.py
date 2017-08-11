@@ -1,3 +1,3 @@
 from src.retriever import Retriever
 
-Retriever.start()
+Retriever().start()
