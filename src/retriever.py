@@ -171,10 +171,13 @@ class Retriever():
       elif mediatype == "series":
         media_dir = "series"
 
+      try:
       # TODO use relative_path helper function
-      with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
-        img.raw.decode_content = True
-        shutil.copyfileobj(img.raw, f)
+        with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
+          img.raw.decode_content = True
+          shutil.copyfileobj(img.raw, f)
+      except:
+        pass
 
 
   def compile_file_list(self, path, repo, mediatype):
@@ -185,10 +188,12 @@ class Retriever():
       if mediatype == "movie":
         movie_url = self.get_title_url(file_details['name'], "movie")
         file_attributes = scraper.get_movie_details(file_details, "movie", movie_url)
+        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
 
       elif mediatype == "series":
         series_url = self.get_title_url(file_details['name'], "series")
         file_attributes = scraper.get_series_details(file_details, "series", series_url)
+        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
 
       if file_attributes != None:
         file_attributes_list.append(file_attributes)

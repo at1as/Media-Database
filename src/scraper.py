@@ -14,7 +14,7 @@ def get_movie_details(movie, mediatype, movie_url):
   if movie_url != None:
     movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=HEADERS).content)
 
-    movie_attributes = {
+    return {
       'url':                movie_url,
       'filename':           movie['name'],
       'extension':          movie['extension'],
@@ -35,13 +35,6 @@ def get_movie_details(movie, mediatype, movie_url):
       'image_url':          get_image_url(movie_page),
     }
 
-    try:
-      save_image(movie_attributes['image_url'], movie_attributes['filename'], mediatype)
-    except:
-      pass
-    
-    return movie_attributes
-
 
 def get_series_details(series, mediatype, series_url):
   # Scrape series page for attributes specified below
@@ -49,7 +42,7 @@ def get_series_details(series, mediatype, series_url):
   if series_url != None:
     series_page = lxml.html.document_fromstring(requests.get(series_url, headers=HEADERS).content)
 
-    series_attributes = {
+    return {
       'url':            series_url,
       'filename':       series['name'],
       'extension':      series['extension'],
@@ -67,13 +60,6 @@ def get_series_details(series, mediatype, series_url):
       'content_rating': get_content_rating(series_page),
       'image_url':      get_image_url(series_page),
     }
-
-    try:
-      save_image(series_attributes['image_url'], series_attributes['filename'], mediatype)
-    except:
-      pass
-
-    return series_attributes
 
 
 def get_title(xml_doc):
