@@ -161,6 +161,35 @@
             </a>
           </div>
         </div>
+
+        <!-- Table column visibility toggle -->
+        <hr/>
+        <div class="table-columns-toggle-section">
+          <label class="checkbox-inline" for="rating_data_checkbox">
+            <input type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
+            Rating 
+          </label>
+          <label class="checkbox-inline" for="year_data_checkbox">
+            <input type="checkbox" id="year_data_checkbox" name="year_data_checkbox" onclick="toggle_column_visibility('year_data')" checked>
+            Year
+          </label>
+          <label class="checkbox-inline" for="genres_data_checkbox">
+            <input type="checkbox" id="genres_data_checkbox" name="genres_data_checkbox" onclick="toggle_column_visibility('genres_data')" checked>
+            Genres
+          </label>
+          <label class="checkbox-inline" for="stars_data_checkbox">
+            <input type="checkbox" id="stars_data_checkbox" name="stars_data_checkbox" onclick="toggle_column_visibility('stars_data')" checked>
+            Stars
+          </label>
+          <label class="checkbox-inline" for="director_data_checkbox"> 
+            <input type="checkbox" id="director_data_checkbox" name="director_data_checkbox" onclick="toggle_column_visibility('director_data')" checked>
+            Director
+          </label>
+          <label class="checkbox-inline" for="languages_data_checkbox">
+            <input type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')" checked>
+            Languages
+          </label>
+        </div>
       </div>
 
       <!-- Show / Hide filter toggle -->
@@ -197,7 +226,7 @@
                 <td name="vote_data" style="display:none">{{ movie_list[movie].votes }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)"
-                    {% if movie_list[movie].has_key('alternative_title') %}
+                    {% if movie_list[movie].has_key('alternative_title') and movie_list[movie]['alternative_title'] != '' %}
                       title="{{ movie_list[movie].alternative_title|replace('\"', '') }} (Alternative Title)"
                     {% endif %}
                   >

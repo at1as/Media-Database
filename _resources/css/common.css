@@ -137,6 +137,13 @@ hr{
   margin-bottom:30px;
   width:280px;
 }
+.table-columns-toggle-section{
+  width:100%;
+  text-align:center;
+  background-color:#bbd6bb;
+  padding:4px;
+  border-radius:6px
+}
 
 /* Tables */
 .table-striped > tbody > tr > td.stripe-on{
