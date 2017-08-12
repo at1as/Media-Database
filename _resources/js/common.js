@@ -95,7 +95,7 @@ function search_series_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (var i=1; i<tableID.rows.length; i++) {
+  for (var i=1; i < tableID.rows.length; i++) {
     var rating_cell     = tableID.rows[i].cells[0].innerHTML.toLowerCase();
     var vote_cell       = tableID.rows[i].cells[1].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell      = tableID.rows[i].cells[2].children[0].innerHTML.toLowerCase();
@@ -401,6 +401,9 @@ function load_details(movie) {
       }
     }
   }
+
+  // Hide all tooltips
+  $(".tooltip").tooltip("hide");
 };
 
 function close_details() {
@@ -491,6 +494,11 @@ function clear_filter(element_id){
 /* Called on Document Load */
 // Stylized Tooltips
 $(document).ready(function(){
+  // Bootstrap doesn't allow html in tooltips without this setting
+  $('[data-toggle="tooltip"]').tooltip({
+    html: true
+  });
+  
   $("a.tooltip-info").tooltip();
 });
 

@@ -144,6 +144,9 @@ hr{
   padding:4px;
   border-radius:6px
 }
+.table-columns-toggle-section > label {
+  font-weight:700;
+}
 
 /* Tables */
 .table-striped > tbody > tr > td.stripe-on{
@@ -225,4 +228,16 @@ th{
 .title-language{
   font-weight:400;
 }
-
+.movie-poster-popup{
+  width:218px;
+  opacity:1.0;
+  background-color:red;
+  padding-top:5px;
+  padding-bottom:5px;
+  margin-top:-3px;
+  margin-bottom:-3px;
+  margin-left:-8px;
+}
+.tooltip-inner{
+  opacity:1.0;
+}

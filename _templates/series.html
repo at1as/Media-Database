@@ -182,10 +182,15 @@
                 <td name="rating_data" style="text-align:center">{{ series_list[series].rating }}</td>
                 <td name="votes_data" style="display:none">{{ series_list[series].votes }}</td>
                 <td sorttable_customkey="{{ series_list[series].title }}">
-                  <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)"
-                    {% if series_list[series].has_key('alternative_title') %}
-                      title="{{ series_list[series].alternative_title|replace('\"', '') }} (Alternative Title)"
-                    {% endif %}
+                  <a 
+                    href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html"
+                    onclick="load_details(this)"
+                    class="tooltip-info"
+                    data-placement="right"
+                    data-toggle="tooltip"
+                    title="<div class='movie-poster-popup'><img src='images/series/{{series_list[series].filename|replace(" ", "%20")}}.png'></div>"
+                    tabindex="-1"
+                    data-html="true"
                   >
                     {{ series_list[series].title }}
                   </a>
