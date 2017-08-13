@@ -63,7 +63,11 @@ def video_dimensions(filepath):
   except:
     return
 
-  if video_track.width == 1920:
+  if video_track.width == 7680:
+    return "8K"
+  elif video_track.width == 3480:
+    return "4K"
+  elif video_track.width == 1920:
     return "1080p"
   elif video_track.width == 1280:
     return "720p"

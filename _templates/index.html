@@ -169,6 +169,10 @@
             <input type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
             Rating 
           </label>
+          <label class="checkbox-inline" for="vote_data_checkbox">
+            <input type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
+            Votes 
+          </label>
           <label class="checkbox-inline" for="year_data_checkbox">
             <input type="checkbox" id="year_data_checkbox" name="year_data_checkbox" onclick="toggle_column_visibility('year_data')" checked>
             Year
@@ -186,7 +190,7 @@
             Director
           </label>
           <label class="checkbox-inline" for="languages_data_checkbox">
-            <input type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')" checked>
+            <input type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
             Languages
           </label>
         </div>
@@ -210,20 +214,20 @@
           <thead>
             <tr id="table_header" onclick="stripe_table()">
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
-              <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
+              <th name="vote_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" style="vertical-align:top">Year</th>
               <th name="genres_data" class="hidden-sm hidden-xs" style="vertical-align:top">Genres</th>
               <th name="stars_data" class="hidden-sm hidden-xs" style="vertical-align:top">Cast</th>
               <th name="director_data" class="hidden-sm hidden-xs" style="vertical-align:top">Director</th>
-              <th name="languages_data" class="hidden-sm hidden-xs" style="vertical-align:top">Languages</th>
+              <th name="languages_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for movie in movie_list %}
               <tr>
                 <td name="rating_data" style="text-align:center">{{ movie_list[movie].rating }}</td>
-                <td name="vote_data" style="display:none">{{ movie_list[movie].votes }}</td>
+                <td name="vote_data" class="hidden-sm hidden-xs" style="display:none">{{ movie_list[movie].votes }}</td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}">
 
                   <a 
@@ -232,7 +236,15 @@
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
-                    title="<div class='movie-poster-popup'><img src='images/movies/{{movie_list[movie].filename|replace(" ", "%20")}}.png'></div>"
+                    title="
+                      <div class='movie-poster-popup'>
+                        <img src='images/movies/{{movie_list[movie].filename|replace(" ", "%20")}}.png'>
+                        {% if movie_list[movie].has_key('resolution') and movie_list[movie].resolution is not none %}
+                        <div class='badge' style='margin-top:4px'>
+                          {{ movie_list[movie].resolution }}
+                        </div>
+                        {% endif %}
+                      </div>"
                     tabindex="-1"
                     data-html="true"
                   >
@@ -249,7 +261,7 @@
                 {% else %}
                   <td name="director_data" class="hidden-sm hidden-xs">{{ movie_list[movie].director|join(', ') }}</td>
                 {% endif %}
-                <td name="languages_data" class="hidden-sm hidden-xs">{{ movie_list[movie].languages|join(', ') }}</td>
+                <td name="languages_data" class="hidden-sm hidden-xs" style="display:none">{{ movie_list[movie].languages|join(', ') }}</td>
               </tr>
             {% endfor %}
           </tbody>
