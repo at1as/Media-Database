@@ -1,6 +1,8 @@
 import json
 from message import Message
 import os
+from pymediainfo import MediaInfo
+import pdb
 
 # Change User Agent header from Requests to Mozilla for requests made to IMDB
 HEADERS = {
@@ -50,4 +52,23 @@ def get_config_file():
   # Read configuration file. Raises exception if not found
   with open(relative_path('../conf.json')) as config_json:
     return json.load(config_json)
+
+
+def video_dimensions(filepath):
+  # Get media file resolution
+  media_info = MediaInfo.parse(filepath)
+  
+  try:
+    video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]
+  except:
+    return
+
+  if video_track.width == 1920:
+    return "1080p"
+  elif video_track.width == 1280:
+    return "720p"
+  elif video_track.width < 1280:
+    return "SD"
+  else:
+    return "{}x{}".format(video_track.width, video_track.height)
 

@@ -3,7 +3,7 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
-from   helpers import HEADERS, verify_config_file
+from   helpers import HEADERS, verify_config_file, video_dimensions
 import jinja2
 import json
 import lxml.html
@@ -81,7 +81,8 @@ class Retriever():
         if os.path.isfile(path + file):
           file_details = {
             'name':      file.rsplit(".", 1)[0],
-            'extension': file.rsplit('.', 1)[1]
+            'extension': file.rsplit('.', 1)[1],
+            'full_path': path + file
           }
 
         else:
@@ -188,6 +189,7 @@ class Retriever():
       if mediatype == "movie":
         movie_url = self.get_title_url(file_details['name'], "movie")
         file_attributes = scraper.get_movie_details(file_details, "movie", movie_url)
+        file_attributes['resolution'] = video_dimensions(file_details['full_path'])
         self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
 
       elif mediatype == "series":
