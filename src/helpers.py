@@ -54,10 +54,46 @@ def get_config_file():
     return json.load(config_json)
 
 
-def video_dimensions(filepath):
+def get_filepath_from_dir(filepath):
+  # Given the path to a directory, try to find the video file in the subdirectory
+  # - Do not descend further into children directories
+  # - function does not verify file is media, but takes a best guess from filtering rules below
   if not filepath:
     return
+  
+  if os.path.isfile(filepath):
+    return filepath
+  
+  if os.path.isdir(filepath):
+    files = os.listdir(filepath)
+    
+    # Create absolute path to file, filter out deeper sub directories
+    files = map(lambda x: "{}/{}".format(filepath.rstrip("/"), x), files)
+    files = filter(lambda x: not os.path.isdir(x), files)
 
+    # Remove non-video extensions. Assume all valid video extensions are 3 or 4 digits
+    files = filter(lambda x: x.lower().split(".")[-1] not in ["srt", "txt", "md", "nfo", "idx", "sub", "ds_store"], files)
+    files = filter(lambda x: len(x.split(".")[-1]) in [3, 4], files)
+
+    # No valid files after filtering
+    if not files:
+      return
+
+    # Try to directly get a video file by a list of common extensions
+    # Otherwise, we'll simply try with first remaining item in the list
+    # TODO : Could return all remaining paths to pass to mediainfo to see if we can find the video file
+    video_files = filter(lambda x: x.lower().split(".")[-1] in ["avi", "mp4", "mpeg", "mpg", "mkv", "wmv", "flv"], files)
+    if video_files:
+      return video_files[0]
+    else:
+      return files[0]
+
+
+def video_dimensions(filepath):
+  # Get media info from file
+  if not filepath:
+    return
+  
   # Get media file resolution
   media_info = MediaInfo.parse(filepath)
   

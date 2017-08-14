@@ -3,7 +3,7 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
-from   helpers import HEADERS, verify_config_file, video_dimensions
+from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir
 import jinja2
 import json
 import lxml.html
@@ -86,10 +86,12 @@ class Retriever():
           }
 
         else:
+          nested_filepath = get_filepath_from_dir(path + file)
+          extension = nested_filepath.split('.')[-1] if nested_filepath else None
           file_details = {
             'name':      file,
-            'extension': None,
-            'full_path': None
+            'extension': extension,
+            'full_path': nested_filepath
           }
 
         # Drop prepending "._" from files on external drives

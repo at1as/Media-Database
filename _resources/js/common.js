@@ -99,8 +99,8 @@ function search_series_table(tableID) {
     var rating_cell     = tableID.rows[i].cells[1].innerHTML.toLowerCase();
     var vote_cell       = tableID.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell      = tableID.rows[i].cells[3].children[0].innerHTML.toLowerCase();
-    var start_year_cell = tableID.rows[i].cells[4].innerHTML.substring(0,4).toLowerCase();
-    var end_year_cell   = tableID.rows[i].cells[4].innerHTML.substring(5,9).toLowerCase().trim();
+    var start_year_cell = tableID.rows[i].cells[4].innerHTML.trim().substring(0,4).toLowerCase().trim();
+    var end_year_cell   = tableID.rows[i].cells[4].innerHTML.trim().substring(5,9).toLowerCase().trim();
     var genre_cell      = tableID.rows[i].cells[5].textContent.toLowerCase();
     var cast_cell       = tableID.rows[i].cells[6].textContent.toLowerCase();
     var language_cell   = tableID.rows[i].cells[7].textContent.toLowerCase();
