@@ -166,8 +166,8 @@
         <hr/>
         <div class="table-columns-toggle-section">
           <label class="checkbox-inline" for="image_data_checkbox">
-            <input type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')">
-            Image 
+            <input type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
+            Image
           </label>
           <label class="checkbox-inline" for="rating_data_checkbox">
             <input type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
@@ -217,7 +217,7 @@
         <table id="results" class="table table-striped table-bordered sortable scalable_table" data-sortable>
           <thead>
             <tr id="table_header" onclick="stripe_table()">
-              <th name="image_data" class="sorttable_nosort" style="vertical-align:top; display:none">Image</th>
+              <th name="image_data" class="sorttable_nosort" style="vertical-align:top;"><!-- Image --></th>
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th name="vote_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
@@ -225,14 +225,14 @@
               <th name="resolution_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Quality</th>
               <th name="genres_data" class="hidden-sm hidden-xs" style="vertical-align:top">Genres</th>
               <th name="stars_data" class="hidden-sm hidden-xs" style="vertical-align:top">Cast</th>
-              <th name="director_data" class="hidden-sm hidden-xs" style="vertical-align:top">Director</th>
+              <th name="director_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Director</th>
               <th name="languages_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for movie in movie_list %}
               <tr>
-                <td name="image_data" class="vertical-row" style="text-align:center; display:none">
+                <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
                     <img src='images/movies/{{movie_list[movie].filename|replace(" ", "%20")}}.png'><!-- ' -->
                   </a>
@@ -273,19 +273,19 @@
                   <span class="badge centered-badge">{{ movie_list[movie].resolution }}</span>
                 </td>
                 <td name="genres_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ movie_list[movie].genre|join(', ') }}
+                  {{ movie_list[movie].genre|join(',<br>') }}
                 </td>
                 <td name="stars_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ movie_list[movie].stars|join(', ') }}
+                  {{ movie_list[movie].stars|join(',<br/>') }}
                 </td>
                 {% if movie_list[movie].director is string %}
                   <!-- legacy code for when only one director was listed -->
-                  <td name="director_data" class="hidden-sm hidden-xs vertical-row">
+                  <td name="director_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
                     {{ movie_list[movie].director }}
                   </td>
                 {% else %}
-                  <td name="director_data" class="hidden-sm hidden-xs vertical-row">
-                    {{ movie_list[movie].director|join(', ') }}
+                  <td name="director_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
+                    {{ movie_list[movie].director|join(',<br>') }}
                   </td>
                 {% endif %}
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">

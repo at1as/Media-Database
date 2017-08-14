@@ -442,7 +442,7 @@ function random_selection() {
   var displayed_items = 0;
 
   /* Traverse table for currently displayed rows */
-  for(var i=0; i<all_items; i++){
+  for(var i = 0; i < all_items; i++){
     if (document.querySelectorAll('.table > tbody > tr')[i].style.display !== "none"){
       displayed_items++;
     }
@@ -453,7 +453,7 @@ function random_selection() {
   var displayed_item_index = 0;
 
   /* Find item at index random_item in table (but search through visible rows) */
-  for(var j=0; j<all_items; j++){
+  for(var j = 0; j < all_items; j++){
     if (document.querySelectorAll('.table > tbody > tr')[j].style.display !== "none"){
       
       if (displayed_item_count === random_item){
@@ -465,7 +465,7 @@ function random_selection() {
   
   /* Find clickable title link for desired item in table */
   var table_row = document.querySelectorAll('.table > tbody > tr')[displayed_item_index];
-  var table_row_name = table_row.querySelectorAll('td')[2];
+  var table_row_name = table_row.querySelectorAll('td')[3];
   var table_row_name_link = table_row_name.querySelectorAll('a')[0];
 
   /* Select a random item only if there are some currently displayed */

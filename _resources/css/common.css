@@ -17,7 +17,7 @@
   margin-right:auto;
 }
 .vertical-row{
-  vertical-align:middle;
+  vertical-align:middle !important;
 }
 
 /* DOM Elements */
