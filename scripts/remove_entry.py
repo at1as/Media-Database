@@ -5,7 +5,6 @@
 # Useful for entries that have been tagged incorrectly
 
 from __future__ import unicode_literals
-
 import os
 import sys
 import json
@@ -31,18 +30,22 @@ DATA = [config['assets']['movies']['saved_data'],
         config['assets']['series']['saved_data']]
 
 HELP = """\nUsage: 
-            python remove_entry.py [type] "<filename>"
+            python remove_entry.py [type] "<filename>" [year]
             \n[type] : 
             -m, --movie \t\t=> movie
             -s, --series \t\t=> series
+            \n[year] :
+            - four digit year
+            - The [year] field is optional. If not passed, first matching title will be deleted
             \nExamples: 
             python remove_entry.py -m "Monty Python and the Holy Grail"
-            python remove_entry.py --series "Six Feet Under"
+            python remove_entry.py --series "Six Feet Under" 2001
             \nNote:
-            Use single quotes around title if it contains special characters (such as '!')\n"""
+            - Use single quotes around title if it contains special characters (such as '!')
+            - The [year] field is optional. If not passed, first matching title will be deleted\n"""
 
 
-def remove_file(filetype, asset_name):
+def remove_file(filetype, asset_name, year):
 
   if filetype in ['-m', '--movie']:
     filename = DATA[0]
@@ -64,11 +67,16 @@ def remove_file(filetype, asset_name):
     try:
       for key in saved_assets:
         if saved_assets[key]['title'].lower() == asset_name.lower():
-          del saved_assets[key]
-          found = True
-          break
+
+          # Find entry matching year if arg is passed, else delete first matching title found
+          if year is None or (saved_assets[key]['year'] == year):
+            del saved_assets[key]
+            found = True
+            break
+
       if not found:
-        print "\nEntry not found: \"%s\" in \"%s\"\n" % (asset_name, filename)
+        year_arg = year or "any year"
+        print "\nEntry not found: \"%s\" for %s in \"%s\"\n" % (asset_name, year or "any year", filename)
         return
     except KeyError:
       print "\nEntry not found: \"%s\" in \"%s\"\n" % (asset_name, filename)
@@ -76,7 +84,7 @@ def remove_file(filetype, asset_name):
 
     # Write contents to JSON file
     with open(relative_path('../' + filename), 'w+') as asset_feed:
-      json.dump(saved_assets, asset_feed, encoding="utf-8")
+      json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
   
     print "\nEntry deleted: \"%s\" from \"%s\"\n" % (asset_name, filename)
     return
@@ -91,6 +99,10 @@ if __name__ == "__main__":
     if sys.argv[1] in ["-h", "--help", "--h", " "]:
       print HELP
     else:
-      remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')))
+      if len(sys.argv) == 4:
+        remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), sys.argv[3])
+      else:
+        # Year arg was passed
+        remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), None)
   except IndexError:
     print HELP
