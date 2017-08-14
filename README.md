@@ -79,3 +79,5 @@ For example, in the case of the language input:
 
 * FIXME: locally stored glyphicons won't render in Firefox unless they're stored in the same directory
 * Generalize Scraper to work with other sites (themoviedb, etc)
+* Search by Alternative Title
+* Write tests

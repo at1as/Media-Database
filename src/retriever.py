@@ -3,7 +3,7 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
-from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir
+from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir, path_of_depth
 import jinja2
 import json
 import lxml.html
@@ -75,23 +75,27 @@ class Retriever():
     for file in file_list:
 
       # If the extension is in include_extension, or file is a folder not preceded by '_'
-      if ((os.path.isfile(path + file) and file.split(".")[-1:][0].lower() in self.config["include_extensions"]) or (os.path.isdir(path + file) and file[0] != "_")) and file not in self.config["exclude_files"]:
+      if (((os.path.isfile(path + file) and file.split(".")[-1:][0].lower() in self.config["include_extensions"]) or
+           (os.path.isdir(path + file) and file[0] != "_")) and
+           file not in self.config["exclude_files"]):
 
         # Strip extension from file
         if os.path.isfile(path + file):
           file_details = {
-            'name':      file.rsplit(".", 1)[0],
-            'extension': file.rsplit('.', 1)[1],
-            'full_path': path + file
+            'name':           file.rsplit(".", 1)[0],
+            'extension':      file.rsplit('.', 1)[1],
+            'full_path':      path + file,
+            'relative_path':  file
           }
 
         else:
           nested_filepath = get_filepath_from_dir(path + file)
           extension = nested_filepath.split('.')[-1] if nested_filepath else None
           file_details = {
-            'name':      file,
-            'extension': extension,
-            'full_path': nested_filepath
+            'name':           file,
+            'extension':      extension,
+            'full_path':      nested_filepath,
+            'relative_path':  path_of_depth(nested_filepath, 2)
           }
 
         # Drop prepending "._" from files on external drives
@@ -199,8 +203,9 @@ class Retriever():
         series_url = self.get_title_url(file_details['name'], "series")
         file_attributes = scraper.get_series_details(file_details, "series", series_url)
         self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
-
+        
       if file_attributes != None:
+        file_attributes['relative_path'] = file_details['relative_path']
         file_attributes_list.append(file_attributes)
 
     return file_attributes_list
