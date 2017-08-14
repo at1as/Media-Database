@@ -17,10 +17,10 @@ function search_movie_table(tableID) {
     var vote_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
     var title_cell    = tableID.rows[i].cells[3].children[0].innerHTML.toLowerCase();
     var year_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
-    var genre_cell    = tableID.rows[i].cells[6].innerHTML.toLowerCase();
-    var cast_cell     = tableID.rows[i].cells[7].innerHTML.toLowerCase();
-    var director_cell = tableID.rows[i].cells[8].innerHTML.toLowerCase();
-    var language_cell = tableID.rows[i].cells[9].innerHTML.toLowerCase();
+    var genre_cell    = tableID.rows[i].cells[6].textContent.toLowerCase();
+    var cast_cell     = tableID.rows[i].cells[7].textContent.toLowerCase();
+    var director_cell = tableID.rows[i].cells[8].textContent.toLowerCase();
+    var language_cell = tableID.rows[i].cells[9].textContent.toLowerCase();
 
     // Discard row if rating is empty or less than query
     if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
@@ -95,15 +95,15 @@ function search_series_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (var i=1; i < tableID.rows.length; i++) {
-    var rating_cell     = tableID.rows[i].cells[0].innerHTML.toLowerCase();
-    var vote_cell       = tableID.rows[i].cells[1].innerHTML.toLowerCase().replace(/\,/g, '');
-    var title_cell      = tableID.rows[i].cells[2].children[0].innerHTML.toLowerCase();
-    var start_year_cell = tableID.rows[i].cells[3].innerHTML.substring(0,4).toLowerCase();
-    var end_year_cell   = tableID.rows[i].cells[3].innerHTML.substring(5,9).toLowerCase().trim();
-    var genre_cell      = tableID.rows[i].cells[4].innerHTML.toLowerCase();
-    var cast_cell       = tableID.rows[i].cells[5].innerHTML.toLowerCase();
-    var language_cell   = tableID.rows[i].cells[6].innerHTML.toLowerCase();
+  for (var i = 1; i < tableID.rows.length; i++) {
+    var rating_cell     = tableID.rows[i].cells[1].innerHTML.toLowerCase();
+    var vote_cell       = tableID.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
+    var title_cell      = tableID.rows[i].cells[3].children[0].innerHTML.toLowerCase();
+    var start_year_cell = tableID.rows[i].cells[4].innerHTML.substring(0,4).toLowerCase();
+    var end_year_cell   = tableID.rows[i].cells[4].innerHTML.substring(5,9).toLowerCase().trim();
+    var genre_cell      = tableID.rows[i].cells[5].textContent.toLowerCase();
+    var cast_cell       = tableID.rows[i].cells[6].textContent.toLowerCase();
+    var language_cell   = tableID.rows[i].cells[7].textContent.toLowerCase();
 
     // Discard row if rating is empty or less than query
     if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {

@@ -234,7 +234,7 @@
               <tr>
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
-                    <img height="300px" src='images/movies/{{movie_list[movie].filename|replace(" ", "%20")}}.png'><!-- ' -->
+                    <img height="300px" src="images/movies/{{movie_list[movie].filename}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -250,7 +250,7 @@
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
-                    title="{{ movie_list[movie].description }}"
+                    title="{{ movie_list[movie].description|replace('"', '&quot;') }}"
                   >
                     {{ movie_list[movie].title }}
                   </a>

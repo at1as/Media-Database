@@ -77,6 +77,4 @@ For example, in the case of the language input:
 
 ### TODO
 
-* FIXME: Tooltip styling for image hover is not quite right
 * FIXME: locally stored glyphicons won't render in Firefox unless they're stored in the same directory
-* TODO: Use pymediainfo to display resolution

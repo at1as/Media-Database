@@ -88,7 +88,8 @@ class Retriever():
         else:
           file_details = {
             'name':      file,
-            'extension': None
+            'extension': None,
+            'full_path': None
           }
 
         # Drop prepending "._" from files on external drives

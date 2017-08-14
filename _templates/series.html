@@ -148,6 +148,19 @@
               </a>
             </div>
           </div>
+          
+        <!-- Table column visibility toggle -->
+        <hr/>
+        <div class="table-columns-toggle-section">
+          <label class="checkbox-inline" for="image_data_checkbox">
+            <input type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
+            Image
+          </label>
+          <label class="checkbox-inline hidden-sm hidden-xs" for="languages_data_checkbox">
+            <input type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
+            Languages
+          </label>
+        </div>
       </div>
 
       <!-- Show / Hide filter toggle -->
@@ -167,28 +180,38 @@
         <table id="results" class="table table-striped table-bordered sortable scalable_table" data-sortable>
           <thead>
             <tr id="table_header" onclick="stripe_table()">
+              <th name="image_data" class="sorttable_nosort" style="vertical-align:top;"><!-- Image --></th>
               <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
               <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" class="hidden-sm hidden-xs" style="vertical-align:top" class="sorttable_alpha">Years</th>
               <th name="genre_data" style="vertical-align:top">Genres</th>
               <th name="stars_data" class="hidden-sm hidden-xs" style="vertical-align:top">Cast</th>
-              <th name="lang_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Languages</th>
+              <th name="languages_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Languages</th>
             </tr>
           </thead>
           <tbody>
             {% for series in series_list %}
               <tr>
-                <td name="rating_data" style="text-align:center">{{ series_list[series].rating }}</td>
-                <td name="votes_data" style="display:none">{{ series_list[series].votes }}</td>
-                <td sorttable_customkey="{{ series_list[series].title }}">
+                <td name="image_data" class="vertical-row" style="text-align:center;">
+                  <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">
+                    <img height="300px" src="images/series/{{series_list[series].filename}}.png"><!-- ' -->
+                  </a>
+                </td>
+                <td name="rating_data" class="vertical-row" style="text-align:center">
+                  {{ series_list[series].rating }}
+                </td>
+                <td name="votes_data" class="vertical-row" style="display:none">
+                  {{ series_list[series].votes }}
+                </td>
+                <td sorttable_customkey="{{ series_list[series].title }}" class="vertical-row">
                   <a 
                     href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html"
                     onclick="load_details(this)"
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
-                    title="<div class='movie-poster-popup'><img src='images/series/{{series_list[series].filename|replace(" ", "%20")}}.png'></div>"
+                    title="{{series_list[series].description|replace('"', '&quot;')}}"
                     tabindex="-1"
                     data-html="true"
                   >
@@ -196,10 +219,18 @@
                   </a>
                   <!-- ' -->
                 </td>
-                <td name="year_data" class="hidden-sm hidden-xs">{{ series_list[series].year }}</td>
-                <td name="genre_data">{{ series_list[series].genre|join(', ') }}</td>
-                <td name="stars_data" class="hidden-sm hidden-xs">{{ series_list[series].stars|join(', ') }}</td>
-                <td name="langauges_data" class="hidden-sm hidden-xs" style="display:none">{{ series_list[series].languages|join(', ') }}</td>
+                <td name="year_data" class="hidden-sm hidden-xs vertical-row">
+                  {{ series_list[series].year }}
+                </td>
+                <td name="genre_data" class="vertical-row">
+                  {{ series_list[series].genre|join(',<br/>') }}
+                </td>
+                <td name="stars_data" class="hidden-sm hidden-xs vertical-row">
+                  {{ series_list[series].stars|join(',</br>') }}
+                </td>
+                <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
+                  {{ series_list[series].languages|join(', ') }}
+                </td>
               </tr>
             {% endfor %}
           </tbody>

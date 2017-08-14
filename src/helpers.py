@@ -55,6 +55,9 @@ def get_config_file():
 
 
 def video_dimensions(filepath):
+  if not filepath:
+    return
+
   # Get media file resolution
   media_info = MediaInfo.parse(filepath)
   
