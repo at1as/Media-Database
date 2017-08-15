@@ -1,5 +1,7 @@
 // Refine Movie Table based on current filters
-function search_movie_table(tableID) {
+function search_movie_table(table_id) {
+  var movie_table = document.getElementById(table_id);
+
   // Get queries from each search field
   var rating_query    = document.getElementById('rating-search').value.toLowerCase();
   var vote_query      = document.getElementById('vote-search').value.toLowerCase().replace(/\,/g, '');
@@ -12,53 +14,53 @@ function search_movie_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (var i=1; i<tableID.rows.length; i++) {
-    var rating_cell   = tableID.rows[i].cells[1].innerHTML.toLowerCase();
-    var vote_cell     = tableID.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
-    var title_cell    = tableID.rows[i].cells[3].children[0].innerHTML.toLowerCase();
-    var year_cell     = tableID.rows[i].cells[4].innerHTML.toLowerCase();
-    var genre_cell    = tableID.rows[i].cells[6].textContent.toLowerCase();
-    var cast_cell     = tableID.rows[i].cells[7].textContent.toLowerCase();
-    var director_cell = tableID.rows[i].cells[8].textContent.toLowerCase();
-    var language_cell = tableID.rows[i].cells[9].textContent.toLowerCase();
+  for (var i = 1; i < movie_table.rows.length; i++) {
+    var rating_cell   = movie_table.rows[i].cells[1].innerHTML.toLowerCase();
+    var vote_cell     = movie_table.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
+    var title_cell    = movie_table.rows[i].cells[3].children[0].innerHTML.toLowerCase();
+    var year_cell     = movie_table.rows[i].cells[4].innerHTML.toLowerCase();
+    var genre_cell    = movie_table.rows[i].cells[6].textContent.toLowerCase();
+    var cast_cell     = movie_table.rows[i].cells[7].textContent.toLowerCase();
+    var director_cell = movie_table.rows[i].cells[8].textContent.toLowerCase();
+    var language_cell = movie_table.rows[i].cells[9].textContent.toLowerCase();
 
     // Discard row if rating is empty or less than query
     if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (year_min_query !== '' && year_cell !== '' && (parseInt(year_cell) < parseInt(year_min_query))) {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (year_max_query !== '' && year_cell !== '' && (parseInt(year_cell) > parseInt(year_max_query))) {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
-        tableID.rows[i].style.display = 'none';
+        movie_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (!title_match(director_query, director_cell) && !title_match(director_query, remove_diacritics(director_cell)) && director_query !== '') {
-      tableID.rows[i].style.display = 'none';
+      movie_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
-        tableID.rows[i].style.display = 'none';
+        movie_table.rows[i].style.display = 'none';
     }
     else {
-      tableID.rows[i].style.display = '';
+      movie_table.rows[i].style.display = '';
     }
   }
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (var j=1; j<tableID.rows.length; j++) {
-    if (tableID.rows[j].style.display !== 'none') {
+  for (var j=1; j<movie_table.rows.length; j++) {
+    if (movie_table.rows[j].style.display !== 'none') {
       count += 1;
     }
   }
@@ -83,7 +85,9 @@ function search_movie_table(tableID) {
 
 
 // Refine Series Table based on current filters
-function search_series_table(tableID) {
+function search_series_table(table_id) {
+  var series_table = document.getElementById(table_id);
+  
   // Get queries from each search field
   var rating_query    = document.getElementById('rating-search').value.toLowerCase();
   var vote_query      = document.getElementById('vote-search').value.toLowerCase().replace(/\,/g, '');
@@ -95,50 +99,50 @@ function search_series_table(tableID) {
   var language_query  = document.getElementById('language-search').value.toLowerCase();
 
   // Traverse each row and cell. Hide rows whose content fails to match query
-  for (var i = 1; i < tableID.rows.length; i++) {
-    var rating_cell     = tableID.rows[i].cells[1].innerHTML.toLowerCase();
-    var vote_cell       = tableID.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
-    var title_cell      = tableID.rows[i].cells[3].children[0].innerHTML.toLowerCase();
-    var start_year_cell = tableID.rows[i].cells[4].innerHTML.trim().substring(0,4).toLowerCase().trim();
-    var end_year_cell   = tableID.rows[i].cells[4].innerHTML.trim().substring(5,9).toLowerCase().trim();
-    var genre_cell      = tableID.rows[i].cells[5].textContent.toLowerCase();
-    var cast_cell       = tableID.rows[i].cells[6].textContent.toLowerCase();
-    var language_cell   = tableID.rows[i].cells[7].textContent.toLowerCase();
+  for (var i = 1; i < series_table.rows.length; i++) {
+    var rating_cell     = series_table.rows[i].cells[1].innerHTML.toLowerCase();
+    var vote_cell       = series_table.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
+    var title_cell      = series_table.rows[i].cells[3].children[0].innerHTML.toLowerCase();
+    var start_year_cell = series_table.rows[i].cells[4].innerHTML.trim().substring(0,4).toLowerCase().trim();
+    var end_year_cell   = series_table.rows[i].cells[4].innerHTML.trim().substring(5,9).toLowerCase().trim();
+    var genre_cell      = series_table.rows[i].cells[5].textContent.toLowerCase();
+    var cast_cell       = series_table.rows[i].cells[6].textContent.toLowerCase();
+    var language_cell   = series_table.rows[i].cells[7].textContent.toLowerCase();
 
     // Discard row if rating is empty or less than query
     if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if (year_min_query !== '' && start_year_cell !== '' && (parseInt(start_year_cell) < parseInt(year_min_query))) {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if (year_max_query !== '' && ((end_year_cell === '') || (end_year_cell !== '' && (parseInt(end_year_cell) > parseInt(year_max_query))))) {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
-        tableID.rows[i].style.display = 'none';
+        series_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
-      tableID.rows[i].style.display = 'none';
+      series_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
-        tableID.rows[i].style.display = 'none';
+        series_table.rows[i].style.display = 'none';
     }
     else {
-      tableID.rows[i].style.display = '';
+      series_table.rows[i].style.display = '';
     }
   }
 
   // Update the filtered counter in the page header
   var count = 0;
-  for (var j=1; j<tableID.rows.length; j++) {
-    if (tableID.rows[j].style.display !== 'none') {
+  for (var j = 1; j < series_table.rows.length; j++) {
+    if (series_table.rows[j].style.display !== 'none') {
       count += 1
     }
   }
