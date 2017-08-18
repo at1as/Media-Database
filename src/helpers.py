@@ -90,7 +90,7 @@ def get_filepath_from_dir(filepath):
     # Try to directly get a video file by a list of common extensions
     # Otherwise, we'll simply try with first remaining item in the list
     # TODO : Could return all remaining paths to pass to mediainfo to see if we can find the video file
-    video_files = filter(lambda x: x.lower().split(".")[-1] in ["avi", "mp4", "mpeg", "mpg", "mkv", "wmv", "flv"], files)
+    video_files = filter(lambda x: x.lower().split(".")[-1] in ["avi", "mp4", "mpeg", "mpg", "mkv", "wmv", "flv", "m4v"], files)
     if video_files:
       return video_files[0]
     else:
@@ -98,7 +98,7 @@ def get_filepath_from_dir(filepath):
 
 
 def video_dimensions(filepath):
-  # Get media info from file
+  # Get media video dimensions info from file path
   if not filepath:
     return
   
@@ -114,12 +114,35 @@ def video_dimensions(filepath):
     return "8K"
   elif video_track.width == 3480:
     return "4K"
-  elif video_track.width == 1920:
+  elif video_track.width in range(1915, 1925):
     return "1080p"
-  elif video_track.width == 1280:
+  elif video_track.width in range(1275, 1285):
     return "720p"
-  elif video_track.width < 1280:
+  elif video_track.width < 1275:
     return "SD"
   else:
     return "{}x{}".format(video_track.width, video_track.height)
+
+
+def get_nested_directory_contents(filepath):
+  # Translate the following directory structure:
+  #
+  # Doctor Who Season 1/
+  #   Doctor Who S01E01.mp4
+  #   Doctor Who S01E02.avi
+  # Doctor Who Season 2/
+  #   Doctor Who S02E01.m4a
+  #   Doctor Who S02E02.mp4
+  #
+  # To:
+  #
+  #   [["Doctor Who S01E01", "Doctor Who S01E02"] , ["Doctor Who S02E01", "Doctor Who S02E02"]]
+
+  try: 
+    return [
+      [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d)) if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))]
+      for d in os.listdir(filepath) if os.path.isdir("{}/{}".format(filepath, d))
+    ]
+  except:
+    return []
 

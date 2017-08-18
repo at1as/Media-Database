@@ -3,7 +3,7 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
-from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir, path_of_depth
+from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir, path_of_depth, get_nested_directory_contents
 import jinja2
 import json
 import lxml.html
@@ -12,6 +12,7 @@ import os
 import requests
 import pdb
 import scraper
+#import pdb
 import pymediainfo
 import shutil
 import sys
@@ -189,6 +190,12 @@ class Retriever():
 
 
   def compile_file_list(self, path, repo, mediatype):
+    # path          -> top level directory starting from asset directory in conf file
+    #     ex. DoctorWho/
+    #
+    # relative_path -> complete file path starting at "/"
+    #     ex. /Volumes/Media/Series/DoctorWho/
+    
     file_attributes_list = []
 
     for file_details in self.get_file_list(path, repo, mediatype):
@@ -197,14 +204,17 @@ class Retriever():
         movie_url = self.get_title_url(file_details['name'], "movie")
         file_attributes = scraper.get_movie_details(file_details, "movie", movie_url)
         file_attributes['resolution'] = video_dimensions(file_details['full_path'])
-        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
 
       elif mediatype == "series":
+        pdb.set_trace()
         series_url = self.get_title_url(file_details['name'], "series")
         file_attributes = scraper.get_series_details(file_details, "series", series_url)
-        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
+        file_attributes['episodes'] = get_nested_directory_contents(
+          "{}/{}".format(path, file_details['name']).replace('//', '/')
+        )
         
       if file_attributes != None:
+        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
         file_attributes['relative_path'] = file_details['relative_path']
         file_attributes_list.append(file_attributes)
 
