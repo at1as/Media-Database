@@ -248,3 +248,17 @@ th{
 .tooltip-inner{
   opacity:1.0;
 }
+.season-container{
+
+}
+.episode-container{
+  text-align:center;
+}
+.season-header{
+  text-align: center;
+  background-color: #504949;
+  color: white;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  padding: 4px;
+}

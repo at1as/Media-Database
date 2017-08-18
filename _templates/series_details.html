@@ -7,6 +7,7 @@
     <link href="../../_resources/css/common.css" rel="stylesheet" type="text/css" />
     <script src="../../_resources/js/jquery-2.1.4.min.js"></script>
     <script src="../../_resources/js/bootstrap.min.js"></script>
+    <script src="../../_resources/js/series.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -72,11 +73,27 @@
             {% endfor %}
           </div>
         </span>
+        
         <hr>
         <div id="item-description">
           <p> {{series.description}} </p>
         </div>
         <p id="title-url"><a href="{{series.url}}" target="_blank">Go to IMDB</a></p>
+        
+        <hr>
+        <div style="margin-bottom:30px">
+          {% for season in series.episodes %}
+          <div class="season-header" onclick="toggle_visibility('season-{{loop.index}}-container')">
+            Season {{loop.index}}
+          </div>
+            <div class="season-container" id="season-{{loop.index}}-container" style="display:none">
+              {% for episode in season %}
+                <div class="episode-container">{{episode}}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+        
         <div id="data-retrieved">
           <div>Data Retrieved: {{series.info_retrieved}}</div>
           <div>Directory Name: &quot;{{series.filename}}&quot;</div>
