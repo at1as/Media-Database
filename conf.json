@@ -16,6 +16,6 @@
       "max_assets"    : 9999
     }
   },
-  "exclude_files"     : ["LICENSE", ".DS_Store", "Thumbs.db"],
-  "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv"]
+  "exclude_files"     : ["LICENSE", ".DS_Store", "Thumbs.db"]
+  "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv", "m4v"]
 }
