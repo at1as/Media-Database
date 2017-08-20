@@ -74,6 +74,18 @@
               <h5 class="title-language"> {{item}} </h5>
             {% endfor %}
           </div>
+
+          <h4 style="padding-top:10px">Media Details:</h4>
+          {% if movie.resolution %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">Resolution: <span style="font-weight:800">{{movie.resolution}}</span></h5>
+            </div>
+          {% endif %}
+          {% if movie.extension %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">File Extension: <span style="font-weight:800">{{movie.extension}}</span></h5>
+            </div>
+          {% endif %}
         </span>
         <hr>
         

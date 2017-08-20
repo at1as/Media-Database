@@ -12,7 +12,6 @@ import os
 import requests
 import pdb
 import scraper
-#import pdb
 import pymediainfo
 import shutil
 import sys
@@ -199,21 +198,24 @@ class Retriever():
     file_attributes_list = []
 
     for file_details in self.get_file_list(path, repo, mediatype):
+      
+      media_url = self.get_title_url(file_details['name'], mediatype)
 
       if mediatype == "movie":
-        movie_url = self.get_title_url(file_details['name'], "movie")
-        file_attributes = scraper.get_movie_details(file_details, "movie", movie_url)
-        file_attributes['resolution'] = video_dimensions(file_details['full_path'])
+        file_attributes = scraper.get_movie_details(file_details, "movie", media_url)
 
       elif mediatype == "series":
-        pdb.set_trace()
-        series_url = self.get_title_url(file_details['name'], "series")
-        file_attributes = scraper.get_series_details(file_details, "series", series_url)
-        file_attributes['episodes'] = get_nested_directory_contents(
-          "{}/{}".format(path, file_details['name']).replace('//', '/')
-        )
+        file_attributes = scraper.get_series_details(file_details, "series", media_url)
         
       if file_attributes != None:
+        if mediatype == "movie":
+          file_attributes['resolution'] = video_dimensions(file_details['full_path'])
+
+        elif mediatype == "series":
+          file_attributes['episodes'] = get_nested_directory_contents(
+            "{}/{}".format(path, file_details['name']).replace('//', '/')
+          )
+
         self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
         file_attributes['relative_path'] = file_details['relative_path']
         file_attributes_list.append(file_attributes)
