@@ -18,9 +18,7 @@
       <div id="title_content" class="jumbotron">
 
         <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
-        {% if movie.alternative_title and movie.alternative_title is string %}
-        <div><b>Alternative Title : </b> {{ movie.alternative_title }}</div>
-        {% elif movie.alternative_title %}
+        {% if movie.alternative_title %}
         <div><b>Alternative Title : </b> {{ movie.alternative_title[0] }}</div>
         {% endif %}
 
@@ -108,9 +106,6 @@
         <div id="data-retrieved">
           <div>Data Retrieved: {{movie.info_retrieved}}</div>
           <div>File / Directory Name: &quot;{{movie.filename}}&quot;</div>
-          {% if movie.extension %}
-            <div>File Extension: &quot;{{movie.extension}}&quot;</div>
-          {% endif %}
           
           {% if movie.extension == "mp4" and location %}
             <video src="{{location}}{{movie.filename}}.mp4" controls style="width:100%; margin-top:20px"></video>
