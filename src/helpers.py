@@ -107,7 +107,10 @@ def video_media_details(filepath):
   
   try:
     video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]
-    subtitles = list(set([t.language for t in media_info.tracks if t.track_type == 'Text']))
+    subtitles = filter(
+        lambda x: x!= None,
+        list(set([t.language for t in media_info.tracks if t.track_type == 'Text']))
+    )
   except:
     return
 
