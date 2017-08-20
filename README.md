@@ -9,10 +9,10 @@ Script output loaded with some randomly chosen sample data is available [here](h
 ## Screenshots
 *As of 20 August 2017*
 
-#### List of Content
+### List of Content
 <img src="http://at1as.github.io/github_repo_assets/imdb-scrape3.png" width="700px">
 
-#### Movie Details
+### Movie Details
 <img src="http://at1as.github.io/github_repo_assets/imdb-scrape4.png" width="700px">
 
 
@@ -28,6 +28,12 @@ $ python run.py
 
 Titles will be fetched from IMDB the first time the script is run, and then be saved in `_data/movie_data.json`, which the templates are built from. On subsequent runs, only newly added items to the directory will have their data fetched from IMDB.
 
+#### Dry Run
+
+Run with the `--dry-run` flag to rebuild site from an existing json dump in `_data/movie_data.json`, without adding new entries or needing access to the physical files.
+```bash
+$ python run --dry-run
+```
 
 #### Environment Configuration
 
@@ -49,6 +55,11 @@ $ python scripts/remove_entry.py --series "<series_title>" "<YYYY>"
 Year is optional. If not provided, first entry with a matching name will removed.
 
 See `$ python scripts/remove_entry.py --help` for more details
+
+
+#### Playback
+
+Some movie listing pages will show an embedded video player. This currently only works in Safari with H264 content which is not a subdirectory
 
 
 #### Apache
@@ -115,9 +126,10 @@ For example, in the case of the language input:
 
 ### TODO
 
-* FIXME: locally stored glyphicons won't render in Firefox unless they're stored in the same directory
+* FIXME: locally stored glyphicons won't render in Firefox unless they're stored in a child directory
 * Generalize Scraper to work with other sites (themoviedb, etc)
 * Search by Alternative Title
 * Write tests
 * Save media info of each series episode
-* Add a `--dry-run` flag to skip searching the asset directory and just rebuild site from dumped data
+* Modify movie_data.json data model to have media_info as its own nested object
+* Play media that is stored in a subdirectory

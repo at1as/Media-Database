@@ -26,12 +26,15 @@ class Retriever():
     self.config = verify_config_file()
  
 
-  def start(self):
+  def start(self, dry_run=False):
     script_started = datetime.now()
 
-    movie_list  = self.initialize_asset_repo("movies", "movie")
-    series_list = self.initialize_asset_repo("series", "series")
-    self.generate_site(movie_list, series_list)
+    if dry_run:
+      self.generate_site([], [])
+    else:
+      movie_list  = self.initialize_asset_repo("movies", "movie")
+      series_list = self.initialize_asset_repo("series", "series")
+      self.generate_site(movie_list, series_list)
 
     Message.success("Script completed after {} seconds\n".format((datetime.now() - script_started).seconds))
 
