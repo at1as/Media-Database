@@ -1,5 +1,9 @@
 import json
 import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import src.helpers as helpers
 
 """
   Will create symlink needed to stream media over apache to other devices on the network
@@ -10,25 +14,22 @@ import os
   The script will then symlink the Movies asset location to IMDB-Scrape so that media can be streamed
   
   n.b. Will currently only work with Safari browser and H264 content
+
+  run me as `python scripts/site_symlinks.py` so the relative path of ./Movies below is correctly built
 """
 
 # Read JSON file with path to asset location
-try:
-  with open('conf.json') as config_json:
-    config = json.load(config_json)
-except Exception as e:
-  print 'Invalid JSON in config.json : %s' %(e)
-  raise SystemExit
+config = helpers.verify_config_file()
 
 # Symlinking only movies because directories are not currently descended
 # Series will always be contained within directories
 destination = config["assets"]["movies"]["location"]
 
 # Symbolic link command for *nix systems
-command = "ln -s %s ./Movies" %(destination)
+command = "ln -s {} ./Movies".format(destination)
 
 try:
   os.system(command)
 except Exception as e:
-  print "Could not execute symlink command : %s" %(e)
+  print "Could not execute symlink command : {}".format(e)
 
