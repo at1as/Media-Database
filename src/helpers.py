@@ -97,7 +97,7 @@ def get_filepath_from_dir(filepath):
       return files[0]
 
 
-def video_dimensions(filepath):
+def video_media_details(filepath):
   # Get media video dimensions info from file path
   if not filepath:
     return
@@ -107,21 +107,38 @@ def video_dimensions(filepath):
   
   try:
     video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]
+    subtitles = list(set([t.language for t in media_info.tracks if t.track_type == 'Text']))
   except:
     return
 
+  file_details = {
+    "format":     video_track.format,
+    "width":      video_track.width,
+    "height":     video_track.height,
+    "bit_depth":  "{} bits".format(video_track.bit_depth) if video_track.bit_depth else None,
+    "bit_rate":   "{} kbps".format(video_track.bit_rate / 1000) if video_track.bit_rate else None,
+    "subtitles":  subtitles
+  }
+
   if video_track.width == 7680:
-    return "8K"
+    file_details["resolution"] = "8K"
+
   elif video_track.width == 3480:
-    return "4K"
+    file_details["resolution"] = "4K"
+  
   elif video_track.width in range(1915, 1925):
-    return "1080p"
+    file_details["resolution"] = "1080p"
+  
   elif video_track.width in range(1275, 1285):
-    return "720p"
+    file_details["resolution"] = "720p"
+  
   elif video_track.width < 1275:
-    return "SD"
+    file_details["resolution"] = "SD"
+  
   else:
-    return "{}x{}".format(video_track.width, video_track.height)
+    file_details["resolution"] = "{}x{}".format(video_track.width, video_track.height)
+  
+  return file_details
 
 
 def get_nested_directory_contents(filepath):

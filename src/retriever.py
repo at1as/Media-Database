@@ -3,7 +3,7 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
-from   helpers import HEADERS, verify_config_file, video_dimensions, get_filepath_from_dir, path_of_depth, get_nested_directory_contents
+from   helpers import HEADERS, verify_config_file, video_media_details, get_filepath_from_dir, path_of_depth, get_nested_directory_contents
 import jinja2
 import json
 import lxml.html
@@ -209,7 +209,8 @@ class Retriever():
         
       if file_attributes != None:
         if mediatype == "movie":
-          file_attributes['resolution'] = video_dimensions(file_details['full_path'])
+          media_details = video_media_details(file_details['full_path'])
+          file_attributes.update(media_details)
 
         elif mediatype == "series":
           file_attributes['episodes'] = get_nested_directory_contents(
