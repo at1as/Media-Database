@@ -117,13 +117,6 @@ class Retriever():
     return filtered_file_list
 
 
-  def construct_search_url(self, title):
-    # Construct search results url for specified title
-
-    safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
-    return self.config["base_url"] + self.config["search_path"] + safe_title + self.config["url_end"]
-
-
   def get_title_url(self, asset, mediatype):
     # Return the URL corresponding to particular title
 
@@ -133,7 +126,7 @@ class Retriever():
     elif mediatype =="series":
       valid_results = ["(TV Series)", "(TV Mini-Series)"]
 
-    search_url = self.construct_search_url(asset)
+    search_url = scraper.construct_search_url(asset)
     page = lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
 
     try:
