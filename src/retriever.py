@@ -24,6 +24,8 @@ class Retriever():
 
   def __init__(self):
     self.config = verify_config_file()
+    self.movie_scraper  = scraper.Scraper("IMDB")
+    self.series_scraper = scraper.Scraper("IMDB")
  
 
   def start(self, dry_run=False):
@@ -122,11 +124,12 @@ class Retriever():
 
     if mediatype == "movie":
       invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video)"]
+      search_url = self.movie_scraper.construct_search_url(asset)
     
     elif mediatype =="series":
       valid_results = ["(TV Series)", "(TV Mini-Series)"]
+      search_url = self.series_scraper.construct_search_url(asset)
 
-    search_url = scraper.construct_search_url(asset)
     page = lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
 
     try:
@@ -198,10 +201,10 @@ class Retriever():
       media_url = self.get_title_url(file_details['name'], mediatype)
 
       if mediatype == "movie":
-        file_attributes = scraper.get_movie_details(file_details, "movie", media_url)
+        file_attributes = self.movie_scraper.get_movie_details(file_details, "movie", media_url)
 
       elif mediatype == "series":
-        file_attributes = scraper.get_series_details(file_details, "series", media_url)
+        file_attributes = self.series_scraper.get_series_details(file_details, "series", media_url)
         
       if file_attributes != None:
         if mediatype == "movie":

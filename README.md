@@ -92,15 +92,17 @@ These pathes are relative to movie location set it `conf.json`
 
 #### Series Asset Locations
 
-Series should be titled as `Firefly (2002)` where the year is the start date of the series in the following format. Subtitles can be stored in the same directory
+* Series should be titled by the name and year, such as `Firefly (2002)` where the year is the start date of the series
+* Subtitles should be stored in the same directory as the episodes and should have the exact same title with a different extension
+* Episodes may optionally contain titles after the series title and episodes number
 
 ```
 Firefly (2002)/
 └── Firefly Season 1
     └── Firefly S01E01.mp4
     └── Firefly S01E01.srt
-    └── Firefly S01E02.mp4
-    └── Firefly S01E02.srt
+    └── Firefly S01E02 The Train Job.mp4
+    └── Firefly S01E02 The Train Job.srt
 ```
 
 These pathes are relative to series location set it `conf.json`
