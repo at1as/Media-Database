@@ -3,13 +3,14 @@
 
 from __future__ import unicode_literals
 from ..helpers import get_config_file, HEADERS
+from base_scraper import BaseScraper
 import lxml.html
 import requests
 import time
 from   unicodedata import normalize
 
 
-class IMDB(object):
+class IMDB(BaseScraper):
 
   def __init__(self):
     pass
