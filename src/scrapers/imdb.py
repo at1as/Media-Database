@@ -165,7 +165,7 @@ class IMDB(BaseScraper):
       }
 
 
-  def get_series_details(self, eries, mediatype, series_url):
+  def get_series_details(self, series, mediatype, series_url):
     # Scrape series page for attributes specified below
 
     if series_url != None:
