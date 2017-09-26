@@ -129,9 +129,8 @@ For example, in the case of the language input:
 ### TODO
 
 * FIXME: locally stored glyphicons won't render in Firefox unless they're stored in a child directory
-* Generalize Scraper to work with other sites (themoviedb, etc)
+* Add support for other clients (themoviedb, etc)
 * Search by Alternative Title
-* Write tests
 * Save media info of each series episode
 * Modify movie_data.json data model to have media_info as its own nested object
 * Play media that is stored in a subdirectory
