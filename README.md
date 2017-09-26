@@ -18,10 +18,10 @@ Script output loaded with some randomly chosen sample data is available [here](h
 
 ## Usage
 
-Download the repository here, set the appropriate permissions and launch IMDB-Scrape via:
+Download the repository here, set the appropriate permissions and launch Media-Database via:
 ```bash
-$ git clone https://github.com/at1as/IMDB-Scrape.git
-$ cd IMDB-Scrape
+$ git clone https://github.com/at1as/Media-Database.git
+$ cd Media-Database
 $ vim conf.json
 $ python run.py
 ```
@@ -64,7 +64,7 @@ Some movie listing pages will show an embedded video player. This currently only
 
 #### Apache
 
-As the generated output is static content, it can easily be set up for access to generated files across an internal network. Symlink the Apache Documents directory to the root of this repo (IMDB-Scrape), and then access the page at <ip>/IMDB-Scrape/_output/index.html. 
+As the generated output is static content, it can easily be set up for access to generated files across an internal network. Symlink the Apache Documents directory to the root of this repo (Media-Database), and then access the page at <ip>/Media-Database/_output/index.html. 
 
 
 ## Usage Notes
@@ -123,7 +123,7 @@ For example, in the case of the language input:
  
 * This product works by scraping the IMDB website. Therefore, problems may arise due to even minor changes to the website layout
 * Retrieval is only as good as your movie titles, and IMDB search. Meticulously named files will virtually always be correct, but there may still be some misses
-* IMDB-Scrape was written and tested on Python 2.7.10 on macOS 10.11
+* Media-Database was written and tested on Python 2.7.10 on macOS 10.11
 
 
 ### TODO
