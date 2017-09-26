@@ -201,10 +201,10 @@ class Retriever():
       media_url = self.get_title_url(file_details['name'], mediatype)
 
       if mediatype == "movie":
-        file_attributes = self.movie_scraper.get_movie_details(file_details, "movie", media_url)
+        file_attributes = self.movie_scraper.get_movie_details(file_details, media_url)
 
       elif mediatype == "series":
-        file_attributes = self.series_scraper.get_series_details(file_details, "series", media_url)
+        file_attributes = self.series_scraper.get_series_details(file_details, media_url)
         
       if file_attributes != None:
         if mediatype == "movie":

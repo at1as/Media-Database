@@ -137,7 +137,7 @@ class IMDB(BaseScraper):
 
   # Full Response Payloads
 
-  def get_movie_details(self, movie, mediatype, movie_url):
+  def get_movie_details(self, movie, movie_url):
     # Scrape movie page for attributes specified below
 
     if movie_url != None:
@@ -165,7 +165,7 @@ class IMDB(BaseScraper):
       }
 
 
-  def get_series_details(self, series, mediatype, series_url):
+  def get_series_details(self, series, series_url):
     # Scrape series page for attributes specified below
 
     if series_url != None:

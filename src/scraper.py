@@ -11,16 +11,21 @@ import time
 
 class Scraper(object):
   
-  sources = ("IMDB",)
+  # IMDB - http://www.imdb.com
+  # TMDB - https://www.themoviedb.org
+  sources = ("IMDB", "TMDB",)
 
   def __new__(cls, source, *args, **kwargs):
     """
-      currently the only supported scraper is IMDB, but more will be added
-      if no supported scraper is set, use IMDB by default
+      If no supported scraper is set, use IMDB by default
     """
 
     if source not in Scraper.sources:
-      return super(Scraper, cls).__new__(IMDB(), *args, **kwargs)
+      return super(Scraper, cls).__new__(IMDB, *args, **kwargs)
+    
     elif source == "IMDB":
       return super(Scraper, cls).__new__(IMDB, *args, **kwargs)
-
+    
+    elif source == "TMDB":
+      # TODO
+      pass
