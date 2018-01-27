@@ -8,3 +8,6 @@ test:
 run:
 		python run.py
 
+dryrun:
+		python run.py --dry-run
+
