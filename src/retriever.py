@@ -3,8 +3,8 @@
 
 from   __future__ import unicode_literals
 from   datetime import datetime
+from   site_generator import SiteGenerator
 from   helpers import HEADERS, verify_config_file, video_media_details, get_filepath_from_dir, path_of_depth, get_nested_directory_contents
-import jinja2
 import json
 import lxml.html
 from   message import Message
@@ -12,21 +12,18 @@ import os
 import requests
 import pdb
 import scraper
-import pymediainfo
 import shutil
 import sys
 import time
-from   unicodedata import normalize
 import urllib
 
 
 class Retriever():
-
   def __init__(self):
     self.config = verify_config_file()
     self.movie_scraper  = scraper.Scraper("IMDB")
     self.series_scraper = scraper.Scraper("IMDB")
- 
+
 
   def start(self, dry_run=False):
     script_started = datetime.now()
@@ -34,15 +31,21 @@ class Retriever():
     if dry_run:
       self.generate_site([], [])
     else:
-      movie_list  = self.initialize_asset_repo("movies", "movie")
-      series_list = self.initialize_asset_repo("series", "series")
-      self.generate_site(movie_list, series_list)
+      added_movies = self.initialize_asset_repo("movies", "movie")
+      added_series = self.initialize_asset_repo("series", "series")
+      saved_movies = self.write_scraped_data("movies", added_movies)
+      saved_series = self.write_scraped_data("series", added_series)
 
-    Message.success("Script completed after {} seconds\n".format((datetime.now() - script_started).seconds))
+      SiteGenerator.build_site(saved_movies, saved_series)
+
+    time_taken = (datetime.now() - script_started).seconds
+    Message.success("Script completed after {} seconds\n".format(time_taken))
 
 
   def initialize_asset_repo(self, base_path, mediatype):
-    # Create empty datafiles if not present
+    """
+      Create empty datafiles if not present
+    """
 
     if not os.path.isfile(self.config['assets'][base_path]['saved_data']):
       with open(self.config['assets'][base_path]['saved_data'], 'w+') as item_feed:
@@ -60,21 +63,17 @@ class Retriever():
 
 
   def get_file_list(self, path, repo, mediatype):
+    """
+      return list of files, for files whose information has not yet been scraped:
+        [
+          { 'name': ..., 'extension': ..., 'full_path': ..., 'relative_path': ... },
+          { 'name': ..., 'extension': ..., 'full_path': ..., 'relative_path': ... },
+          ...
+        ]
+    """
     asset_type = "movies" if mediatype == "movie" else mediatype
 
-    try:
-      # Enforce per asset type limit
-      if not self.config["assets"][asset_type]["max_assets"] == 0:
-        file_list = os.listdir(path)[0:self.config["assets"][asset_type]["max_assets"]]
-      else:
-        file_list = os.listdir(path)
-    
-    except OSError:
-      Message.error(
-        "Path \"{}\" not found. Specify a valid path in conf.json and ensure all directories on this path exist.\n".format(path)
-      )
-      raise SystemExit
-
+    file_list = self.verify_file_list(asset_type, path)
     filtered_file_list = []
 
     for file in file_list:
@@ -119,13 +118,31 @@ class Retriever():
     return filtered_file_list
 
 
+  def verify_file_list(self, asset_type, path):
+    """
+      Return list of files from directoy, or exit if path is invalid_results
+    """
+    try:
+      # Enforce per asset type limit
+      if not self.config["assets"][asset_type]["max_assets"] == 0:
+        return os.listdir(path)[0:self.config["assets"][asset_type]["max_assets"]]
+      else:
+        return os.listdir(path)
+
+    except OSError:
+      Message.error(
+        "Path \"{}\" not found. Specify a valid path in conf.json and ensure all directories on this path exist.\n".format(path)
+      )
+      raise SystemExit
+
+
   def get_title_url(self, asset, mediatype):
     # Return the URL corresponding to particular title
 
     if mediatype == "movie":
-      invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video)"]
+      invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"] #, "(Video)"]
       search_url = self.movie_scraper.construct_search_url(asset)
-    
+
     elif mediatype =="series":
       valid_results = ["(TV Series)", "(TV Mini-Series)"]
       search_url = self.series_scraper.construct_search_url(asset)
@@ -164,22 +181,25 @@ class Retriever():
 
 
   def save_image(self, url, name, mediatype):
-    # If image_url was found, write image to directory
+    """
+      Write image to directory if image was found at URL
+      (Occasionally IMDB has no image for a movie)
+    """
     try:
       img = requests.get(url, headers=HEADERS, stream=True)
     except:
-      return None
+      return
 
     if img.status_code == 200:
 
       if mediatype == "movie":
         media_dir = "movies"
-      
+
       elif mediatype == "series":
         media_dir = "series"
 
       try:
-      # TODO use relative_path helper function
+        # TODO use relative_path helper function
         with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
           img.raw.decode_content = True
           shutil.copyfileobj(img.raw, f)
@@ -188,16 +208,19 @@ class Retriever():
 
 
   def compile_file_list(self, path, repo, mediatype):
-    # path          -> top level directory starting from asset directory in conf file
-    #     ex. DoctorWho/
-    #
-    # relative_path -> complete file path starting at "/"
-    #     ex. /Volumes/Media/Series/DoctorWho/
-    
-    file_attributes_list = []
+    """
+    path          -> top level directory starting from asset directory in conf file
+      ex. DoctorWho/
 
+    relative_path -> complete file path starting at "/"
+        ex. /Volumes/Media/Series/DoctorWho/
+
+      Returns list of
+    """
+
+    file_attributes_list = []
     for file_details in self.get_file_list(path, repo, mediatype):
-      
+
       media_url = self.get_title_url(file_details['name'], mediatype)
 
       if mediatype == "movie":
@@ -205,7 +228,7 @@ class Retriever():
 
       elif mediatype == "series":
         file_attributes = self.series_scraper.get_series_details(file_details, media_url)
-        
+
       if file_attributes != None:
         if mediatype == "movie":
           media_details = video_media_details(file_details['full_path'])
@@ -242,71 +265,3 @@ class Retriever():
         json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
 
     return saved_assets
-
-
-  def generate_site(self, additional_movies, additional_series):
-
-    try:
-      # TODO: use relative path helper
-      with open('conf.json') as config_json:
-        movie_location = json.load(config_json)['assets']['movies']['location']
-    except:
-      movie_location = None
-
-    saved_movies  = self.write_scraped_data("movies", additional_movies)
-    saved_series  = self.write_scraped_data("series", additional_series)
-    num_movies    = len(saved_movies)
-    num_series    = len(saved_series)
-
-    # Output Environment for static html generation
-    env             = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
-    index           = env.get_template("index.html")
-    series          = env.get_template("series.html")
-    about           = env.get_template("about.html")
-    movie_details   = env.get_template("movie_details.html")
-    series_details  = env.get_template("series_details.html")
-
-
-    # Movie Index Page
-    movies_page = index.render(movie_list = saved_movies,
-                               number_of_series = num_series)
-    f = open("_output/index.html", "w")
-    f.write(movies_page.encode('utf-8'))
-    f.close
-
-    # TV Series Page
-    series_page = series.render(series_list = saved_series,
-                                number_of_movies = num_movies)
-    j = open("_output/series.html", "w")
-    j.write(series_page.encode('utf-8'))
-    j.close
-
-    # About Page
-    about_page = about.render(number_of_movies = num_movies,
-                              number_of_series = num_series,
-                              time = str(datetime.now()))
-    g = open("_output/about.html", "w")
-    g.write(about_page.encode('utf-8'))
-    g.close
-
-    # Individual Movie Pages
-    for item in saved_movies:
-      output_dir = "_output/movies/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
-      movie_page = movie_details.render(number_of_movies = num_movies,
-                                        movie = saved_movies[item],
-                                        number_of_series = num_series,
-                                        location = movie_location)
-      h = open(output_dir, "w")
-      h.write(movie_page.encode('utf-8'))
-      h.close
-
-    # Individual Series Page
-    for item in saved_series:
-      output_dir = "_output/series/%s(%s).html" %(saved_series[item]['title'].replace('/', ''), saved_series[item]['year'][0:4])
-      series_page = series_details.render(number_of_series = num_series,
-                                          series = saved_series[item],
-                                          number_of_movies = num_movies)
-      k = open(output_dir, "w")
-      k.write(series_page.encode('utf-8'))
-      k.close
-

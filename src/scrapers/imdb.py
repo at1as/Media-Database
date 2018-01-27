@@ -11,7 +11,6 @@ from   unicodedata import normalize
 
 
 class IMDB(BaseScraper):
-
   def __init__(self):
     pass
 
@@ -189,4 +188,3 @@ class IMDB(BaseScraper):
         'content_rating': self.get_content_rating(series_page),
         'image_url':      self.get_image_url(series_page),
       }
-

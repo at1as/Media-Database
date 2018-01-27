@@ -66,7 +66,7 @@ def remove_file(filetype, asset_name, year):
     # Delete entry
     try:
       for key in saved_assets:
-        if saved_assets[key]['title'].lower().replace(':', '') == asset_name.lower().replace(':', ''):
+        if saved_assets[key]['title'].lower().replace(':', '').strip() == asset_name.lower().replace(':', '').strip():
 
           # Find entry matching year if arg is passed, else delete first matching title found
           if year is None or (saved_assets[key]['year'] == year):

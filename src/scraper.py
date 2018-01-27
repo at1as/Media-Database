@@ -10,7 +10,7 @@ import time
 
 
 class Scraper(object):
-  
+
   # IMDB - http://www.imdb.com
   # TMDB - https://www.themoviedb.org
   sources = ("IMDB", "TMDB",)
@@ -22,10 +22,10 @@ class Scraper(object):
 
     if source not in Scraper.sources:
       return super(Scraper, cls).__new__(IMDB, *args, **kwargs)
-    
+
     elif source == "IMDB":
       return super(Scraper, cls).__new__(IMDB, *args, **kwargs)
-    
+
     elif source == "TMDB":
       # TODO
       pass

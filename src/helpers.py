@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import json
 from message import Message
 import os
@@ -24,6 +25,13 @@ def path_of_depth(file_path, depth):
 
   return "/".join(file_path.split('/')[-depth:])
 
+def get_movie_location():
+  # TODO: use relative path helper
+  try:
+    with open('conf.json') as config_json:
+      return json.load(config_json)['assets']['movies']['location']
+  except:
+    return
 
 def verify_config_file():
   # Import Input Environment Configuration and Validation
@@ -32,7 +40,7 @@ def verify_config_file():
 
     if config["include_extensions"] == []:
       Message.warn("No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes")
-    
+
     if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
       Message.warn("base_url, search_path or url_end have been changed from their defaults in conf.json. Proceed at your own risk")
 
@@ -44,7 +52,7 @@ def verify_config_file():
       if not type(config["assets"][asset_type]["max_assets"]) is int or config["assets"][asset_type]["max_assets"] < 0:
         Message.error("Please specify a valid integer for assets.{}.max_quantity repository in conf.json".format(asset_type))
         raise SystemExit
-      
+
       if config["assets"][asset_type]["index_asset"] and config["assets"][asset_type]["location"] == "":
         Message.error("\"{}\" is set to index files, but path to directory is not specified in conf.json\n".format(asset_type))
         raise SystemExit
@@ -68,13 +76,13 @@ def get_filepath_from_dir(filepath):
   # - function does not verify file is media, but takes a best guess from filtering rules below
   if not filepath:
     return
-  
+
   if os.path.isfile(filepath):
     return filepath
-  
+
   if os.path.isdir(filepath):
     files = os.listdir(filepath)
-    
+
     # Create absolute path to file, filter out deeper sub directories
     files = map(lambda x: "{}/{}".format(filepath.rstrip("/"), x), files)
     files = filter(lambda x: not os.path.isdir(x), files)
@@ -101,10 +109,10 @@ def video_media_details(filepath):
   # Get media video dimensions info from file path
   if not filepath:
     return
-  
+
   # Get media file resolution
   media_info = MediaInfo.parse(filepath)
-  
+
   try:
     video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]
     subtitles = filter(
@@ -128,41 +136,42 @@ def video_media_details(filepath):
 
   elif video_track.width == 3480:
     file_details["resolution"] = "4K"
-  
+
   elif video_track.width in range(1915, 1925):
     file_details["resolution"] = "1080p"
-  
+
   elif video_track.width in range(1275, 1285):
     file_details["resolution"] = "720p"
-  
+
   elif video_track.width < 1275:
     file_details["resolution"] = "SD"
-  
+
   else:
     file_details["resolution"] = "{}x{}".format(video_track.width, video_track.height)
-  
+
   return file_details
 
 
 def get_nested_directory_contents(filepath):
-  # Translate the following directory structure:
-  #
-  # Doctor Who Season 1/
-  #   Doctor Who S01E01.mp4
-  #   Doctor Who S01E02.avi
-  # Doctor Who Season 2/
-  #   Doctor Who S02E01.m4a
-  #   Doctor Who S02E02.mp4
-  #
-  # To:
-  #
-  #   [["Doctor Who S01E01", "Doctor Who S01E02"] , ["Doctor Who S02E01", "Doctor Who S02E02"]]
+  """
+  Translate the following directory structure:
 
-  try: 
+  Doctor Who Season 1/
+     Doctor Who S01E01.mp4
+     Doctor Who S01E02.avi
+  Doctor Who Season 2/
+    Doctor Who S02E01.m4a
+    Doctor Who S02E02.mp4
+
+  To:
+
+     [["Doctor Who S01E01", "Doctor Who S01E02"] , ["Doctor Who S02E01", "Doctor Who S02E02"]]
+  """
+
+  try:
     return [
       [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d)) if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))]
       for d in os.listdir(filepath) if os.path.isdir("{}/{}".format(filepath, d))
     ]
   except:
     return []
-
