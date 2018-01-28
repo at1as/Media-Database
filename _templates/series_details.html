@@ -22,13 +22,13 @@
         {% if series.alternative_title %}
         <div><b>Alternative Title : </b> {{ series.alternative_title }}</div>
         {% endif %}
-        
+
         <span style="vertical-align:top">
-          <a href="../images/series/{{series.filename}}.png">
-            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/series/{{series.filename}}.png">
+          <a href="../images/series/{{series.directory.name}}.png">
+            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/series/{{series.directory.name}}.png">
           </a>
         </span>
-        
+
         <span id="title-header">
           <div>
             <span id="star">&#9733; </span>
@@ -37,8 +37,8 @@
 
           <div style="margin-left:10px">
             <h5>
-              {% if not series.content_rating %} 
-              {% elif series.content_rating is string %} 
+              {% if not series.content_rating %}
+              {% elif series.content_rating is string %}
                 <span id="item-content-rating">
                   {{series.content_rating}}
                 </span> &mdash;
@@ -73,13 +73,13 @@
             {% endfor %}
           </div>
         </span>
-        
+
         <hr>
         <div id="item-description">
           <p> {{series.description}} </p>
         </div>
         <p id="title-url"><a href="{{series.url}}" target="_blank">Go to IMDB</a></p>
-        
+
         <hr>
         <div style="margin-bottom:30px">
           {% for season in series.episodes %}
@@ -93,10 +93,10 @@
             </div>
           {% endfor %}
         </div>
-        
+
         <div id="data-retrieved">
           <div>Data Retrieved: {{series.info_retrieved}}</div>
-          <div>Directory Name: &quot;{{series.filename}}&quot;</div>
+          <div>Directory Name: &quot;{{series.directory.name}}&quot;</div>
         </div>
       </div>
     </div>

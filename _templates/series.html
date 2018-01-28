@@ -27,7 +27,7 @@
             <span class="icon-bar"></span>
           </button>
         </div>
-        
+
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="./index.html">Movies
@@ -148,7 +148,7 @@
               </a>
             </div>
           </div>
-          
+
         <!-- Table column visibility toggle -->
         <hr/>
         <div class="table-columns-toggle-section">
@@ -172,7 +172,7 @@
       <div id="random_selection">
         <button id="random_selection_btn" class="btn btn-small" onclick="random_selection()">
           Choose Random from Selection
-        </button> 
+        </button>
       </div>
 
       <!-- Results Table -->
@@ -195,7 +195,7 @@
               <tr>
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">
-                    <img height="300px" src="images/series/{{series_list[series].filename}}.png"><!-- ' -->
+                    <img height="300px" src="images/series/{{series_list[series].directory.name}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -205,7 +205,7 @@
                   {{ series_list[series].votes }}
                 </td>
                 <td sorttable_customkey="{{ series_list[series].title }}" class="vertical-row">
-                  <a 
+                  <a
                     href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html"
                     onclick="load_details(this)"
                     class="tooltip-info"

@@ -133,4 +133,3 @@ For example, in the case of the language input:
 * Search by Alternative Title
 * Save media info of each series episode
 * Pull extensions for files in directories
-* Add script to delete `n` oldest entries

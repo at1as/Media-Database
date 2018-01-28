@@ -8,6 +8,7 @@ import lxml.html
 import requests
 import time
 from unicodedata import normalize
+import pdb
 
 
 class IMDB(BaseScraper):
@@ -143,6 +144,57 @@ class IMDB(BaseScraper):
     return lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
 
 
+  def get_movie_page_url(self, title):
+    """
+      return URL associated with movie page by parsing search page DOM
+      return None if no results are found
+    """
+    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video Game)"]
+    search_page = self.get_search_page(title)
+
+    try:
+      for index, section in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div')):
+        if len(section.xpath('h3/text()')) > 0:
+
+          # Find the Div associated with Titles (rather than Characters, etc)
+          if section.xpath('h3/text()')[0] == "Titles":
+
+            # Select first in list which doesn't contain invalid_results
+            for index, list_title in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
+              if not any(x in list_title.text_content() for x in invalid_results):
+                endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+                return get_config_file()["base_url"] + endpoint
+    except IndexError:
+      return
+
+
+  def get_series_page_url(self, title):
+    """
+      return URL associated with series page by parsing search page DOM
+      return None if no results are found
+    """
+    valid_results = ["(TV Series)", "(TV Mini-Series)"]
+    search_page = self.get_search_page(title)
+
+    try:
+      for index, section in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div')):
+        if len(section.xpath('h3/text()')) > 0:
+
+          # Find the Div associated with Titles (rather than Characters, etc)
+          if section.xpath('h3/text()')[0] == "Titles":
+
+            # Select first in list which doesn't contain invalid_results
+            for index, list_title in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
+              if any(x in list_title.text_content() for x in valid_results):
+
+                # Some items listed as "TV Episode" also contain a link with the term "TV Series" below
+                if "(TV Episode)" not in list_title.text_content():
+                  endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
+                  return get_config_file()["base_url"] + endpoint
+    except IndexError:
+      return None
+
+
   def get_movie_details(self, movie, movie_url):
     """ Scrape movie page for attributes specified below """
 
@@ -177,8 +229,6 @@ class IMDB(BaseScraper):
 
       return {
         'url':            series_url,
-        'filename':       series['name'],
-        'extension':      series['extension'],
         'info_retrieved': time.strftime("%Y-%m-%d"),
         'title':          self.get_title(series_page),
         'year':           self.get_series_year(series_page),

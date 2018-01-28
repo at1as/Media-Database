@@ -49,7 +49,6 @@ class Worker():
         json.dump({}, item_feed)
 
     if self.config['assets'][base_path]['index_asset']:
-
       return self.compile_file_list(
         self.config['assets'][base_path]['location'],
         self.config['assets'][base_path]['saved_data'],
@@ -83,20 +82,20 @@ class Worker():
         # Strip extension from file
         if os.path.isfile(path + file):
           file_details = {
-            'name':           file.rsplit(".", 1)[0],
-            'extension':      file.rsplit('.', 1)[1],
-            'full_path':      path + file,
-            'relative_path':  file
+            'name':          file.rsplit(".", 1)[0],
+            'extension':     file.rsplit('.', 1)[1],
+            'full_path':     path + file,
+            'relative_path': file
           }
 
         else:
           nested_filepath = get_filepath_from_dir(path + file)
           extension = nested_filepath.split('.')[-1] if nested_filepath else None
           file_details = {
-            'name':           file,
-            'extension':      extension,
-            'full_path':      nested_filepath,
-            'relative_path':  path_of_depth(nested_filepath, 2)
+            'name':          file,
+            'extension':     extension,
+            'full_path':     nested_filepath,
+            'relative_path': path_of_depth(nested_filepath, 2)
           }
 
         # Drop prepending "._" from files on external drives
@@ -135,52 +134,16 @@ class Worker():
 
   def get_title_url(self, asset, mediatype):
     """ Return the complete URL corresponding to particular title """
-    page = self.get_title_page(mediatype, asset)
 
     if mediatype == "movie":
-      invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video Game)"]
+      page_url = self.movie_scraper.get_movie_page_url(asset)
     elif mediatype == "series":
-      valid_results = ["(TV Series)", "(TV Mini-Series)"]
+      page_url = self.series_scraper.get_series_page_url(asset)
 
-    try:
-      for index, section in enumerate(page.xpath('//*[@id="main"]/div[1]/div')):
-        if len(section.xpath('h3/text()')) > 0:
-
-          # Find the Div associated with Titles (rather than Characters, etc)
-          if section.xpath('h3/text()')[0] == "Titles":
-
-            # Select first in list which doesn't contain invalid_results
-            for index, list_title in enumerate(page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
-
-              # Movies in list have no tag
-              if mediatype == "movie":
-                if not any(x in list_title.text_content() for x in invalid_results):
-                  endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                  return self.config["base_url"] + endpoint
-
-              # Series in list are tagged
-              elif mediatype == "series":
-                if any(x in list_title.text_content() for x in valid_results):
-
-                  # Some items listed as "TV Episode" also contain a link with the term "TV Series" below
-                  if "(TV Episode)" not in list_title.text_content():
-                    endpoint = page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                    return self.config["base_url"] + endpoint
-
+    if page_url is None:
       print Message.warn("\"{}\" not found. Skipping.".format(asset))
 
-    except IndexError:
-      print Message.warn("\"{}\" not found. Skipping.".format(asset))
-
-
-  def get_title_page(self, mediatype, asset):
-    """
-      Get the page contents of the search URL, containing all matching entries
-    """
-    if mediatype == "movie":
-      return self.movie_scraper.get_search_page(asset)
-    elif mediatype == "series":
-      return self.series_scraper.get_search_page(asset)
+    return page_url
 
 
   def compile_file_list(self, path, repo, mediatype):
@@ -199,6 +162,9 @@ class Worker():
 
       media_url = self.get_title_url(file_details['name'], mediatype)
 
+      if not media_url:
+        continue
+
       if mediatype == "movie":
         file_attributes = self.movie_scraper.get_movie_details(file_details, media_url)
         file_attributes['file_metadata'] = {}
@@ -209,10 +175,10 @@ class Worker():
 
       elif mediatype == "series":
         file_attributes = self.series_scraper.get_series_details(file_details, media_url)
-        #file_attributes['directory'] = {}
-        #file_attributes['directory']['name'] = file_details['name']
-        #file_attributes['directory']['absolute_path'] = file_details['full_path']
-        #file_attributes['directory']['relative_path'] = file_details['relative_path']
+        file_attributes['directory'] = {}
+        file_attributes['directory']['name'] = file_details['name']
+        file_attributes['directory']['absolute_path'] = file_details['full_path']
+        file_attributes['directory']['relative_path'] = file_details['relative_path']
 
       if file_attributes != None:
         if mediatype == "movie":
@@ -225,7 +191,7 @@ class Worker():
 
         Image.save_remote_image(
           file_attributes['image_url'],
-          file_attributes['file_metadata']['filename'],
+          file_details['name'],
           mediatype
         )
 
@@ -250,7 +216,10 @@ class Worker():
 
       # Add new saved assets to JSON file
       for asset in additional_assets:
-        saved_assets[asset['file_metadata']['filename']] = asset
+        if base_path == "movies":
+          saved_assets[asset['file_metadata']['filename']] = asset
+        else:
+          saved_assets[asset['directory']['name']] = asset
 
       # Write combined asset contents to JSON file
       # TODO: use relative path helper
