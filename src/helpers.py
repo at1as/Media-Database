@@ -167,11 +167,15 @@ def get_nested_directory_contents(filepath):
 
      [["Doctor Who S01E01", "Doctor Who S01E02"] , ["Doctor Who S02E01", "Doctor Who S02E02"]]
   """
+  permitted_extensions = verify_config_file()["include_extensions"]
 
   try:
+    nested_directories = [d for d in natural_sort(os.listdir(filepath)) if os.path.isdir("{}/{}".format(filepath, d))]
     return [
-      [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d)) if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))]
-      for d in natural_sort(os.listdir(filepath)) if os.path.isdir("{}/{}".format(filepath, d))
+      [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d))
+        if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))
+        and f.split(".")[-1] in permitted_extensions]
+      for d in nested_directories
     ]
   except:
     return []

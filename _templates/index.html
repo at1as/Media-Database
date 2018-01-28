@@ -171,15 +171,15 @@
           </label>
           <label class="checkbox-inline" for="rating_data_checkbox">
             <input type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
-            Rating 
+            Rating
           </label>
           <label class="checkbox-inline hidden-sm hidden-xs" for="vote_data_checkbox">
             <input type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
-            Votes 
+            Votes
           </label>
           <label class="checkbox-inline hidden-sm hidden-xs" for="resolution_data_checkbox">
             <input type="checkbox" id="resolution_data_checkbox" name="resolution_data_checkbox" onclick="toggle_column_visibility('resolution_data')">
-            Quality 
+            Quality
           </label>
           <label class="checkbox-inline hidden-sm hidden-xs" for="genres_data_checkbox">
             <input type="checkbox" id="genres_data_checkbox" name="genres_data_checkbox" onclick="toggle_column_visibility('genres_data')" checked>
@@ -187,9 +187,9 @@
           </label>
           <label class="checkbox-inline hidden-sm hidden-xs" for="stars_data_checkbox">
             <input type="checkbox" id="stars_data_checkbox" name="stars_data_checkbox" onclick="toggle_column_visibility('stars_data')" checked>
-            Cast 
+            Cast
           </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="director_data_checkbox"> 
+          <label class="checkbox-inline hidden-sm hidden-xs" for="director_data_checkbox">
             <input type="checkbox" id="director_data_checkbox" name="director_data_checkbox" onclick="toggle_column_visibility('director_data')">
             Director
           </label>
@@ -234,7 +234,7 @@
               <tr>
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
-                    <img height="300px" src="images/movies/{{movie_list[movie].filename}}.png"><!-- ' -->
+                    <img height="300px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -244,7 +244,7 @@
                   {{ movie_list[movie].votes }}
                 </td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}" class="vertical-row">
-                  <a 
+                  <a
                     href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html"
                     onclick="load_details(this)"
                     class="tooltip-info"
@@ -260,7 +260,7 @@
                   {{ movie_list[movie].year }}
                 </td>
                 <td name="resolution_data" class="hidden-sm hidden-xs vertical-row" style="display:none; text-align:center;">
-                  <span class="badge centered-badge">{{ movie_list[movie].resolution }}</span>
+                  <span class="badge centered-badge">{{ movie_list[movie].media.resolution }}</span>
                 </td>
                 <td name="genres_data" class="hidden-sm hidden-xs vertical-row">
                   {{ movie_list[movie].genre|join(',<br>') }}

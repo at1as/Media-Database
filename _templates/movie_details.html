@@ -23,11 +23,11 @@
         {% endif %}
 
         <span style="vertical-align:top">
-          <a href="../images/movies/{{movie.filename}}.png">
-            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/movies/{{movie.filename}}.png">
+          <a href="../images/movies/{{movie.file_metadata.filename}}.png">
+            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/movies/{{movie.file_metadata.filename}}.png">
           </a>
         </span>
-        
+
         <span id="title-header">
 
           <div class="form-group">
@@ -37,8 +37,8 @@
 
           <div style="margin-left:10px">
             <h5>
-              {% if not movie.content_rating %} 
-              {% elif movie.content_rating is string %} 
+              {% if not movie.content_rating %}
+              {% elif movie.content_rating is string %}
                 <span id="item-content-rating">
                   {{movie.content_rating}}
                 </span> &mdash;
@@ -47,11 +47,11 @@
                   {{movie.content_rating[0]}}
                 </span> &mdash;
               {% endif %}
-            
+
               {% if movie.running_time %}
               <span id="item-running-time">{{movie.running_time}}</span> &mdash;
               {% endif %}
-              
+
               {% if movie.genre %}
               <span style="margin-left:10px">
                 {% for item in movie.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
@@ -74,41 +74,41 @@
           </div>
 
           <h4 style="padding-top:10px">Media Details:</h4>
-          {% if movie.resolution %}
+          {% if movie.media.resolution %}
             <div style="margin-left:10px">
               <h5 style="font-weight:400">Resolution:
                 <span style="font-weight:800">
-                  {{movie.resolution}} 
-                  {% if movie.width and movie.height %}
-                    ({{movie.width}}x{{movie.height}})
+                  {{movie.media.resolution}}
+                  {% if movie.media.width and movie.media.height %}
+                    ({{movie.media.width}}x{{movie.media.height}})
                   {% endif %}
                 </span>
               </h5>
             </div>
           {% endif %}
-          {% if movie.format %}
+          {% if movie.media.format %}
             <div style="margin-left:10px">
-              <h5 style="font-weight:400">Format: <span style="font-weight:800">{{movie.format}}</span></h5>
+              <h5 style="font-weight:400">Format: <span style="font-weight:800">{{movie.media.format}}</span></h5>
             </div>
           {% endif %}
-          {% if movie.bit_rate %}
+          {% if movie.media.bit_rate %}
             <div style="margin-left:10px">
-              <h5 style="font-weight:400">Bitrate: <span style="font-weight:800">{{movie.bit_rate}}</span></h5>
+              <h5 style="font-weight:400">Bitrate: <span style="font-weight:800">{{movie.media.bit_rate}}</span></h5>
             </div>
           {% endif %}
-          {% if movie.extension %}
+          {% if movie.file_metadata.extension %}
             <div style="margin-left:10px">
-              <h5 style="font-weight:400">File Extension: <span style="font-weight:800">{{movie.extension}}</span></h5>
+              <h5 style="font-weight:400">File Extension: <span style="font-weight:800">{{movie.file_metadata.extension}}</span></h5>
             </div>
           {% endif %}
-          {% if movie.subtitles %}
+          {% if movie.media.subtitles %}
             <div style="margin-left:10px">
-              <h5 style="font-weight:400">Subtitles: <span style="font-weight:800">{{movie.subtitles|join(', ')}}</span></h5>
+              <h5 style="font-weight:400">Subtitles: <span style="font-weight:800">{{movie.media.subtitles|join(', ')}}</span></h5>
             </div>
           {% endif %}
         </span>
         <hr>
-        
+
         {% if movie.has_key('awards') %}
           {% if movie.has_key('awards_link') %}
             <div id="item-awards">
@@ -120,17 +120,17 @@
             </div>
           {% endif %}
         {% endif %}
-        
+
         <div id="item-description">
           <p> {{movie.description}} </p>
         </div>
         <p id="title-url"><a href="{{movie.url}}" target="_blank">Go to IMDB</a></p>
         <div id="data-retrieved">
           <div>Data Retrieved: {{movie.info_retrieved}}</div>
-          <div>File / Directory Name: &quot;{{movie.filename}}&quot;</div>
-          
-          {% if movie.extension == "mp4" and location %}
-            <video src="{{location}}{{movie.filename}}.mp4" controls style="width:100%; margin-top:20px"></video>
+          <div>File / Directory Name: &quot;{{movie.file_metadata.filename}}&quot;</div>
+
+          {% if movie.file_metadata.extension == "mp4" %}
+            <video src="{{movie.file_metadata.absolute_path}}" controls style="width:100%; margin-top:20px"></video>
           {% endif %}
         </div>
       </div>

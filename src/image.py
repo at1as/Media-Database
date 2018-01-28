@@ -15,7 +15,7 @@ class Image(object):
       if img.status_code == 200:
         return img.raw
     except:
-      return
+      pass
 
   @staticmethod
   def save_remote_image(url, name, mediatype):
@@ -23,9 +23,9 @@ class Image(object):
       Write image to directory if image was found at URL
       (Occasionally IMDB has no image for a movie)
     """
-    image = Image.fetch_remote_image(url)
+    img = Image.fetch_remote_image(url)
 
-    if not image:
+    if not img:
       return
 
     if mediatype == "movie":

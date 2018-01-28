@@ -64,7 +64,7 @@ Some movie listing pages will show an embedded video player. This currently only
 
 #### Apache
 
-As the generated output is static content, it can easily be set up for access to generated files across an internal network. Symlink the Apache Documents directory to the root of this repo (Media-Database), and then access the page at <ip>/Media-Database/_output/index.html. 
+As the generated output is static content, it can easily be set up for access to generated files across an internal network. Symlink the Apache Documents directory to the root of this repo (Media-Database), and then access the page at <ip>/Media-Database/_output/index.html.
 
 
 ## Usage Notes
@@ -120,7 +120,7 @@ For example, in the case of the language input:
 
 
 ## Disclaimer
- 
+
 * This product works by scraping the IMDB website. Therefore, problems may arise due to even minor changes to the website layout
 * Retrieval is only as good as your movie titles, and IMDB search. Meticulously named files will virtually always be correct, but there may still be some misses
 * Media-Database was written and tested on Python 2.7.10 on macOS 10.11
@@ -132,5 +132,5 @@ For example, in the case of the language input:
 * Add support for other clients (themoviedb, etc)
 * Search by Alternative Title
 * Save media info of each series episode
-* Modify movie_data.json data model to have media_info as its own nested object
-* Play media that is stored in a subdirectory
+* Pull extensions for files in directories
+* Add script to delete `n` oldest entries

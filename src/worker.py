@@ -201,14 +201,22 @@ class Worker():
 
       if mediatype == "movie":
         file_attributes = self.movie_scraper.get_movie_details(file_details, media_url)
+        file_attributes['file_metadata'] = {}
+        file_attributes['file_metadata']['filename']  = file_details['name']
+        file_attributes['file_metadata']['extension'] = file_details['extension']
+        file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
+        file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
 
       elif mediatype == "series":
         file_attributes = self.series_scraper.get_series_details(file_details, media_url)
+        #file_attributes['directory'] = {}
+        #file_attributes['directory']['name'] = file_details['name']
+        #file_attributes['directory']['absolute_path'] = file_details['full_path']
+        #file_attributes['directory']['relative_path'] = file_details['relative_path']
 
       if file_attributes != None:
         if mediatype == "movie":
-          media_details = video_media_details(file_details['full_path'])
-          file_attributes.update(media_details)
+          file_attributes['media'] = video_media_details(file_details['full_path'])
 
         elif mediatype == "series":
           file_attributes['episodes'] = helpers.get_nested_directory_contents(
@@ -217,10 +225,10 @@ class Worker():
 
         Image.save_remote_image(
           file_attributes['image_url'],
-          file_attributes['filename'],
+          file_attributes['file_metadata']['filename'],
           mediatype
         )
-        file_attributes['relative_path'] = file_details['relative_path']
+
         file_attributes_list.append(file_attributes)
 
     return file_attributes_list
@@ -242,7 +250,7 @@ class Worker():
 
       # Add new saved assets to JSON file
       for asset in additional_assets:
-        saved_assets[asset['filename']] = asset
+        saved_assets[asset['file_metadata']['filename']] = asset
 
       # Write combined asset contents to JSON file
       # TODO: use relative path helper

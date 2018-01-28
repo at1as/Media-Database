@@ -151,8 +151,6 @@ class IMDB(BaseScraper):
 
       return {
         'url':                movie_url,
-        'filename':           movie['name'],
-        'extension':          movie['extension'],
         'info_retrieved':     time.strftime("%Y-%m-%d"),
         'title':              self.get_title(movie_page),
         'alternative_title':  self.get_alternative_title(movie_page),
