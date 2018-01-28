@@ -2,10 +2,10 @@ from src import helpers
 import unittest
 
 class TestHelpers(unittest.TestCase):
-  
+
   def setUp(self):
     pass
-  
+
   def tearDown(self):
     pass
 
@@ -27,3 +27,9 @@ class TestHelpers(unittest.TestCase):
     except IOError as e:
       self.fail("Exception thrown reading config file. It likely does not exist or has invalid file permissions")
 
+  def test_natural_sort(self):
+    episodes = ["season 10", "season 8", "season 1", "season 02"]
+    self.assertEquals(
+      helpers.natural_sort(episodes),
+      ["season 1", "season 02", "season 8", "season 10"]
+    )

@@ -7,7 +7,7 @@ from base_scraper import BaseScraper
 import lxml.html
 import requests
 import time
-from   unicodedata import normalize
+from unicodedata import normalize
 
 
 class IMDB(BaseScraper):
@@ -15,8 +15,7 @@ class IMDB(BaseScraper):
     pass
 
   def construct_search_url(self, title):
-    # Construct search results url for specified title
-
+    """ Construct search results url for specified title """
     safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
     return get_config_file()["base_url"] + get_config_file()["search_path"] + safe_title + get_config_file()["url_end"]
 
@@ -136,8 +135,16 @@ class IMDB(BaseScraper):
 
   # Full Response Payloads
 
+  def get_search_page(self, asset):
+    """
+      Get search page listing all matching titles (from which the url of the title will be extracted)
+    """
+    search_url = self.construct_search_url(asset)
+    return lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
+
+
   def get_movie_details(self, movie, movie_url):
-    # Scrape movie page for attributes specified below
+    """ Scrape movie page for attributes specified below """
 
     if movie_url != None:
       movie_page = lxml.html.document_fromstring(requests.get(movie_url, headers=HEADERS).content)
@@ -165,7 +172,7 @@ class IMDB(BaseScraper):
 
 
   def get_series_details(self, series, series_url):
-    # Scrape series page for attributes specified below
+    """ Scrape series page for attributes specified below """
 
     if series_url != None:
       series_page = lxml.html.document_fromstring(requests.get(series_url, headers=HEADERS).content)

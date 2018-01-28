@@ -3,7 +3,7 @@ import json
 from message import Message
 import os
 from pymediainfo import MediaInfo
-import pdb
+import re
 
 # Change User Agent header from Requests to Mozilla for requests made to IMDB
 HEADERS = {
@@ -171,7 +171,13 @@ def get_nested_directory_contents(filepath):
   try:
     return [
       [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d)) if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))]
-      for d in os.listdir(filepath) if os.path.isdir("{}/{}".format(filepath, d))
+      for d in natural_sort(os.listdir(filepath)) if os.path.isdir("{}/{}".format(filepath, d))
     ]
   except:
     return []
+
+
+def natural_sort(l):
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=alphanum_key)

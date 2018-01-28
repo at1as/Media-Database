@@ -1,26 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from   __future__ import unicode_literals
-from   datetime import datetime
-from   site_generator import SiteGenerator
-from   helpers import HEADERS, verify_config_file, video_media_details, get_filepath_from_dir, path_of_depth, get_nested_directory_contents
+from __future__ import unicode_literals
+from datetime import datetime
+from site_generator import SiteGenerator
+import helpers
+from helpers import video_media_details, get_filepath_from_dir, path_of_depth
+from image import Image
 import json
-import lxml.html
-from   message import Message
+from message import Message
 import os
-import requests
-import pdb
 import scraper
-import shutil
 import sys
-import time
-import urllib
 
 
-class Retriever():
+class Worker():
   def __init__(self):
-    self.config = verify_config_file()
+    self.config = helpers.verify_config_file()
     self.movie_scraper  = scraper.Scraper("IMDB")
     self.series_scraper = scraper.Scraper("IMDB")
 
@@ -31,8 +27,8 @@ class Retriever():
     if dry_run:
       self.generate_site([], [])
     else:
-      added_movies = self.initialize_asset_repo("movies", "movie")
-      added_series = self.initialize_asset_repo("series", "series")
+      added_movies = self.fetch_new_files("movies", "movie")
+      added_series = self.fetch_new_files("series", "series")
       saved_movies = self.write_scraped_data("movies", added_movies)
       saved_series = self.write_scraped_data("series", added_series)
 
@@ -42,9 +38,10 @@ class Retriever():
     Message.success("Script completed after {} seconds\n".format(time_taken))
 
 
-  def initialize_asset_repo(self, base_path, mediatype):
+  def fetch_new_files(self, base_path, mediatype):
     """
-      Create empty datafiles if not present
+      - Create empty datafiles if not present
+      - Return list of newly added file data
     """
 
     if not os.path.isfile(self.config['assets'][base_path]['saved_data']):
@@ -137,17 +134,13 @@ class Retriever():
 
 
   def get_title_url(self, asset, mediatype):
-    # Return the URL corresponding to particular title
+    """ Return the complete URL corresponding to particular title """
+    page = self.get_title_page(mediatype, asset)
 
     if mediatype == "movie":
-      invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)"] #, "(Video)"]
-      search_url = self.movie_scraper.construct_search_url(asset)
-
-    elif mediatype =="series":
+      invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video Game)"]
+    elif mediatype == "series":
       valid_results = ["(TV Series)", "(TV Mini-Series)"]
-      search_url = self.series_scraper.construct_search_url(asset)
-
-    page = lxml.html.document_fromstring(requests.get(search_url, headers=HEADERS).content)
 
     try:
       for index, section in enumerate(page.xpath('//*[@id="main"]/div[1]/div')):
@@ -180,31 +173,14 @@ class Retriever():
       print Message.warn("\"{}\" not found. Skipping.".format(asset))
 
 
-  def save_image(self, url, name, mediatype):
+  def get_title_page(self, mediatype, asset):
     """
-      Write image to directory if image was found at URL
-      (Occasionally IMDB has no image for a movie)
+      Get the page contents of the search URL, containing all matching entries
     """
-    try:
-      img = requests.get(url, headers=HEADERS, stream=True)
-    except:
-      return
-
-    if img.status_code == 200:
-
-      if mediatype == "movie":
-        media_dir = "movies"
-
-      elif mediatype == "series":
-        media_dir = "series"
-
-      try:
-        # TODO use relative_path helper function
-        with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
-          img.raw.decode_content = True
-          shutil.copyfileobj(img.raw, f)
-      except:
-        pass
+    if mediatype == "movie":
+      return self.movie_scraper.get_search_page(asset)
+    elif mediatype == "series":
+      return self.series_scraper.get_search_page(asset)
 
 
   def compile_file_list(self, path, repo, mediatype):
@@ -235,11 +211,15 @@ class Retriever():
           file_attributes.update(media_details)
 
         elif mediatype == "series":
-          file_attributes['episodes'] = get_nested_directory_contents(
+          file_attributes['episodes'] = helpers.get_nested_directory_contents(
             "{}/{}".format(path, file_details['name']).replace('//', '/')
           )
 
-        self.save_image(file_attributes['image_url'], file_attributes['filename'], mediatype)
+        Image.save_remote_image(
+          file_attributes['image_url'],
+          file_attributes['filename'],
+          mediatype
+        )
         file_attributes['relative_path'] = file_details['relative_path']
         file_attributes_list.append(file_attributes)
 
@@ -247,8 +227,13 @@ class Retriever():
 
 
   def write_scraped_data(self, base_path, additional_assets):
+    """
+      Write newly added assets to json file
+      Return existing and new assets
+      # TODO: this function doesn't belong in this class
+    """
 
-    # Import Data from JSON file
+    # Import all pre-existing data from JSON file
     # TODO use relative path helper
     with open(self.config['assets'][base_path]['saved_data'], 'r') as asset_feed:
       saved_assets = json.load(asset_feed)

@@ -13,21 +13,21 @@ class SiteGenerator(object):
     """
       Generate static HTML files
     """
-    movie_location = helpers.get_movie_asset_location()
+    movie_location = helpers.get_movie_location()
 
     num_movies = len(saved_movies)
     num_series = len(saved_series)
 
     # Output Environment for static html generation
-    env             = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
-    index           = env.get_template("index.html")
-    series_index    = env.get_template("series.html")
-    about           = env.get_template("about.html")
-    movie_details   = env.get_template("movie_details.html")
-    series_details  = env.get_template("series_details.html")
+    env            = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
+    movie_index    = env.get_template("index.html")
+    series_index   = env.get_template("series.html")
+    about          = env.get_template("about.html")
+    movie_details  = env.get_template("movie_details.html")
+    series_details = env.get_template("series_details.html")
 
     # List Pages
-    SiteGenerator.build_movies_index_page(index, saved_movies, num_series)
+    SiteGenerator.build_movies_index_page(movie_index, saved_movies, num_series)
     SiteGenerator.build_series_index_page(series_index, saved_series, num_movies)
 
     # Instance Pages

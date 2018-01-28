@@ -1,7 +1,7 @@
-from src.retriever import Retriever
+from src.worker import Worker
 import sys
 
 if len(sys.argv) > 1 and sys.argv[1] in ["-d", "--dry-run"]:
-  Retriever().start(dry_run=True)
+  Worker().start(dry_run=True)
 else:
-  Retriever().start(dry_run=False)
+  Worker().start(dry_run=False)
