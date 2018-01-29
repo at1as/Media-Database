@@ -161,7 +161,6 @@ class Worker():
     for file_details in self.get_file_list(path, repo, mediatype):
 
       media_url = self.get_title_url(file_details['name'], mediatype)
-
       if not media_url:
         continue
 

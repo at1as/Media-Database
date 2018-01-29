@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from collections import OrderedDict
 import json
 from message import Message
 import os
@@ -127,9 +128,15 @@ def video_media_details(filepath):
     "width":      video_track.width,
     "height":     video_track.height,
     "bit_depth":  "{} bits".format(video_track.bit_depth) if video_track.bit_depth else None,
-    "bit_rate":   "{} kbps".format(video_track.bit_rate / 1000) if video_track.bit_rate else None,
     "subtitles":  subtitles
   }
+
+  try:
+    # In some bizarre cases the bitrate can come back from pymediainfo as '1200000 / 1200000' instead
+    # of a single integer. This is coming from mediainfo directly in this format
+    file_details["bit_rate"] = "{} kbps".format(video_track.bit_rate / 1000) if video_track.bit_rate else None
+  except TypeError:
+    file_details["bit_rate"] = "{} kbps".format(int(video_track.bit_rate.split('/')[0]) / 1000)
 
   if video_track.width == 7680:
     file_details["resolution"] = "8K"
@@ -165,19 +172,31 @@ def get_nested_directory_contents(filepath):
 
   To:
 
-     [["Doctor Who S01E01", "Doctor Who S01E02"] , ["Doctor Who S02E01", "Doctor Who S02E02"]]
+     [
+        {"Doctor Who S01E01": <file_metadata>, "Doctor Who S01E02": <file_metadata>, ...},
+        {"Doctor Who S02E01": <file_metadata>, "Doctor Who S02E02": <file_metadata>, ...}
+     ]
   """
   permitted_extensions = verify_config_file()["include_extensions"]
 
   try:
     nested_directories = [d for d in natural_sort(os.listdir(filepath)) if os.path.isdir("{}/{}".format(filepath, d))]
-    return [
-      [f.rsplit(".", 1)[0] for f in os.listdir("{}/{}".format(filepath, d))
-        if os.path.isfile(os.path.join("{}/{}".format(filepath, d),f))
-        and f.split(".")[-1] in permitted_extensions]
-      for d in nested_directories
-    ]
-  except:
+    directory_contents = []
+
+    for directory in nested_directories:
+      file_contents = {}
+      files = os.listdir("{}/{}".format(filepath, directory))
+
+      for f in files:
+        path_to_item = os.path.join("{}/{}".format(filepath, directory), f)
+        if os.path.isfile(path_to_item) and f.split(".")[-1] in permitted_extensions:
+          file_contents[f.rsplit(".", 1)[0]] = video_media_details(path_to_item)
+
+      if file_contents:
+        directory_contents.append(OrderedDict(sorted(file_contents.items(), key=lambda (x, y): x)))
+
+    return directory_contents
+  except Exception as e:
     return []
 
 

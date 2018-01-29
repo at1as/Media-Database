@@ -131,5 +131,3 @@ For example, in the case of the language input:
 * FIXME: locally stored glyphicons won't render in Firefox unless they're stored in a child directory
 * Add support for other clients (themoviedb, etc)
 * Search by Alternative Title
-* Save media info of each series episode
-* Pull extensions for files in directories
