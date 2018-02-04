@@ -1,7 +1,4 @@
 {
-  "base_url"          : "http://www.imdb.com",
-  "search_path"       : "/find?q=",
-  "url_end"           : "&s=all",
   "assets" : {
     "movies" : {
       "location"      : "/Volumes/5TB-MEDIA/Movies/",
@@ -16,6 +13,6 @@
       "max_assets"    : 9999
     }
   },
-  "exclude_files"     : ["LICENSE", ".DS_Store", "Thumbs.db"],
-  "include_extensions": ["avi", "mp4", "mpg", "mpeg", "mkv", "divx", "ts", "mov", "qt", "rm", "wmv", "m4v"]
+  "exclude_files"     : [],
+  "include_extensions": ["avi", "divx", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ogm", "qt", "rm", "ts", "wmv"]
 }

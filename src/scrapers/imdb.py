@@ -2,23 +2,26 @@
 # -*- coding: utf8 -*-
 
 from __future__ import unicode_literals
-from ..helpers import get_config_file, HEADERS
+from ..helpers import HEADERS
 from base_scraper import BaseScraper
 import lxml.html
 import requests
 import time
 from unicodedata import normalize
-import pdb
 
 
 class IMDB(BaseScraper):
+  BASE_URL = "http://www.imdb.com"
+  SEARCH_PATH = "/find?q="
+  URL_END = "&s=all"
+
   def __init__(self):
     pass
 
   def construct_search_url(self, title):
     """ Construct search results url for specified title """
     safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
-    return get_config_file()["base_url"] + get_config_file()["search_path"] + safe_title + get_config_file()["url_end"]
+    return "{}{}{}{}".format(IMDB.BASE_URL, IMDB.SEARCH_PATH, safe_title, IMDB.URL_END)
 
   def get_title(self, xml_doc):
     try:
@@ -114,7 +117,7 @@ class IMDB(BaseScraper):
         if awards[-1:] == ".":
           return ' '.join(xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@itemprop="awards"]/b/text()')[0].strip().split())
         try:
-          return get_config_file()['base_url'] + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
+          return IMDB.BASE_URL + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
         except IndexError:
           return ''
     except IndexError:
@@ -163,7 +166,7 @@ class IMDB(BaseScraper):
             for index, list_title in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
               if not any(x in list_title.text_content() for x in invalid_results):
                 endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                return get_config_file()["base_url"] + endpoint
+                return IMDB.BASE_URL + endpoint
     except IndexError:
       return
 
@@ -190,7 +193,7 @@ class IMDB(BaseScraper):
                 # Some items listed as "TV Episode" also contain a link with the term "TV Series" below
                 if "(TV Episode)" not in list_title.text_content():
                   endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                  return get_config_file()["base_url"] + endpoint
+                  return IMDB.BASE_URL + endpoint
     except IndexError:
       return None
 

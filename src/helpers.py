@@ -42,9 +42,6 @@ def verify_config_file():
     if config["include_extensions"] == []:
       Message.warn("No extensions specified in include_extensions in conf.json. Will not currently scrape for any filetypes")
 
-    if config["base_url"] != "http://www.imdb.com" or config["search_path"] != "/find?q=" or config["url_end"] != "&s=all":
-      Message.warn("base_url, search_path or url_end have been changed from their defaults in conf.json. Proceed at your own risk")
-
     for asset_type in config["assets"]:
       if config["assets"][asset_type]["saved_data"] == "":
         Message.error("Error: Please specify a path for the assets.{}.saved_data repository in conf.json".format(asset_type))
