@@ -43,43 +43,43 @@ class IMDB(BaseScraper):
 
   def get_director(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[2]/span/a/span/text()')
+      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a'))
     except IndexError:
       return ''
 
   def get_rating(self, xml_doc):
     try:
-      return xml_doc.xpath('//span[@itemprop="ratingValue"]/text()')[0].strip()
+      return xml_doc.xpath('//div[@class="ratingValue"]/strong/span/text()')[0].strip()
     except IndexError:
       return ''
 
   def get_genres(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="title_wrapper"]//div[@class="subtext"]//span[@itemprop="genre"]/text()')
+      return xml_doc.xpath('//div[@class="titleBar"]//div[@class="title_wrapper"]/div[@class="subtext"]/a/text()')[0:-1]
     except IndexError:
       return ''
 
   def get_votes(self, xml_doc):
     try:
-      return xml_doc.xpath('//span[@itemprop="ratingCount"]/text()')[0].strip()
+      return xml_doc.xpath('//div[@class="imdbRating"]/a/span/text()')[0].strip()
     except IndexError:
       return ''
 
   def get_running_time(self, xml_doc):
     try:
-      return xml_doc.xpath('//time[@itemprop="duration"]/text()')[0].strip()
+      return xml_doc.xpath('//div[@class="titleBar"]//div[@class="title_wrapper"]//time/text()')[0].strip()
     except IndexError:
       return ''
 
   def get_content_rating(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="title_wrapper"]/div[@class="subtext"]//*[@itemprop="contentRating"]/@content')
+      return xml_doc.xpath('//div[@class="titleBar"]/div[2]/div[@class="subtext"]/text()')[0].strip()
     except IndexError:
       return ''
 
   def get_stars(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="title-overview"]//*[@itemprop="actors"]/a/span/text()')
+      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a'))[0:-1]
     except IndexError:
       try:
         return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[3]/span/a/span/text()')
