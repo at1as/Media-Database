@@ -3,7 +3,11 @@ class Message():
   YELLOW = '\033[93m'
   RED    = '\033[91m'
   CLEAR  = '\033[0m'
-  
+
+  @staticmethod
+  def info(text):
+    print '\nInfo: ' + text
+
   @staticmethod
   def success(text):
     print Message.GREEN + '\nSuccess: ' + Message.CLEAR + text
