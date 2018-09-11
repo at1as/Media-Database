@@ -110,14 +110,14 @@ class IMDB(BaseScraper):
 
   def get_awards(self, xml_doc):
     try:
-      awards = xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@itemprop="awards"]/b/text()')[0].strip()
+      awards = xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@class="awards-blurb"]/b/text()')[0].strip()
       if not "oscar" in awards.lower():
         return ''
       else:
-        if awards[-1:] == ".":
-          return ' '.join(xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@itemprop="awards"]/b/text()')[0].strip().split())
+        if awards[-1] == ".":
+          return " ".join(xml_doc.xpath('//div[@id="titleAwardsRanks"]//span[@class="awards-blurb"]/b/text()')[0].strip().split())
         try:
-          return IMDB.BASE_URL + movie_page.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
+          return IMDB.BASE_URL + xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
         except IndexError:
           return ''
     except IndexError:
@@ -126,16 +126,21 @@ class IMDB(BaseScraper):
   # Series Specific Functions
   def get_series_year(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="title_wrapper"]//div[@class="subtext"]/a/text()')[0].strip().split('(')[-1].split(')')[0].strip()
+      return xml_doc.xpath('//div[@class="title_wrapper"]//div[@class="subtext"]/a/text()')[-1].strip().split('(')[-1].split(')')[0].strip()
     except IndexError:
       return ''
 
   def get_creator(self, xml_doc):
     try:
-      return xml_doc.xpath('//div[@class="title-overview"]//*[@itemprop="creator"]/a/span/text()')
+      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a'))
     except IndexError:
       return ''
 
+  def get_series_stars(self, xml_doc):
+    try:
+      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
+    except IndexError:
+      return ''
 
   # Full Response Payloads
 
@@ -237,7 +242,7 @@ class IMDB(BaseScraper):
         'year':           self.get_series_year(series_page),
         'description':    self.get_description(series_page),
         'creator':        self.get_creator(series_page),
-        'stars':          self.get_stars(series_page),
+        'stars':          self.get_series_stars(series_page),
         'genre':          self.get_genres(series_page),
         'rating':         self.get_rating(series_page),
         'votes':          self.get_votes(series_page),
