@@ -16,7 +16,7 @@ class TestScraper(unittest.TestCase):
   def setUp(self):
     self.scraper = Scraper("IMDB")
     
-    with codecs.open("./tests/fixtures/imdb_fight_club_movie_page_2017_09_25_minified.html") as f:
+    with codecs.open("./tests/fixtures/imdb_fight_club_movie_page_2018_09_10_minified.html") as f:
       self.movie_page_str = f.read().replace('\n', '')
       self.movie_page_xml = lxml.html.document_fromstring(self.movie_page_str)
   
@@ -39,7 +39,7 @@ class TestScraper(unittest.TestCase):
 
   def test_get_description(self):
     self.assertEquals(
-      'An insomniac office worker, looking for a way to change his life, crosses paths with a devil-may-care soap maker, forming an underground fight club that evolves into something much, much more.',
+      'An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.',
       self.scraper.get_description(self.movie_page_xml)
     )
 
@@ -53,13 +53,13 @@ class TestScraper(unittest.TestCase):
     self.assertEquals(['Drama'], self.scraper.get_genres(self.movie_page_xml))
 
   def test_get_votes(self):
-    self.assertEquals("1,489,789", self.scraper.get_votes(self.movie_page_xml))
+    self.assertEquals("1,595,752", self.scraper.get_votes(self.movie_page_xml))
 
   def test_get_running_time(self):
     self.assertEquals("2h 19min", self.scraper.get_running_time(self.movie_page_xml))
 
   def test_get_content_rating(self):
-    self.assertEquals(['R'], self.scraper.get_content_rating(self.movie_page_xml))
+    self.assertEquals('R', self.scraper.get_content_rating(self.movie_page_xml))
 
   def test_get_stars(self):
     self.assertEquals(
@@ -72,7 +72,7 @@ class TestScraper(unittest.TestCase):
 
   def test_get_image_url(self):
     self.assertEquals(
-      'https://images-na.ssl-images-amazon.com/images/M/MV5BZGY5Y2RjMmItNDg5Yy00NjUwLThjMTEtNDc2OGUzNTBiYmM1XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX182_CR0,0,182,268_AL_.jpg',
+        'https://m.media-amazon.com/images/M/MV5BMjJmYTNkNmItYjYyZC00MGUxLWJhNWMtZDY4Nzc1MDAwMzU5XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_UX182_CR0,0,182,268_AL_.jpg',
       self.scraper.get_image_url(self.movie_page_xml)
     )
 
