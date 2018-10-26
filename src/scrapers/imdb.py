@@ -138,7 +138,13 @@ class IMDB(BaseScraper):
 
   def get_series_stars(self, xml_doc):
     try:
-      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
+      cast = map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
+      if cast:
+        return cast
+      else:
+        # Some series do not list a creator, so cast is the first element in the credit summary pane at the top of the page
+        # The better solution is to search for the <h4> matching the term "Cast" and then take the next 3 elements
+        return xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a/text()')[0:3]
     except IndexError:
       return ''
 
