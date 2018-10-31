@@ -1,4 +1,4 @@
-from   __future__ import unicode_literals
+
 import datetime
 import json
 import os
@@ -29,7 +29,7 @@ with open('_data/series_data.json') as series_details:
 item_count = 0
 skipped = []
 
-print "Script started : {}\n".format(datetime.datetime.now())
+print("Script started : {}\n".format(datetime.datetime.now()))
 
 for title in series:
 
@@ -39,7 +39,7 @@ for title in series:
   )
 
   if indexed_episodes and not episodes_on_disk:
-    print "Warning: Skipping {} as it exists in the index but not on disk".format(title)
+    print("Warning: Skipping {} as it exists in the index but not on disk".format(title))
     continue
 
   if indexed_episodes != episodes_on_disk:
@@ -47,7 +47,7 @@ for title in series:
     eps_in_json = len(sum(indexed_episodes, []) or [])
     episode_delta = eps_on_disk - eps_in_json
 
-    print "Adding {} episodes to {}".format(episode_delta, title)
+    print("Adding {} episodes to {}".format(episode_delta, title))
     series[title]['episodes'] = episodes_on_disk
 
 # Results will be stored in tmp-file and not overwrite _data/series_data.json
@@ -58,5 +58,5 @@ with open('tmp-file-series', 'w+') as tmp:
   json.dump(series, tmp, encoding="utf8", indent=4)
 
 
-print "\nScript completed : {}".format(datetime.datetime.now())
-print "Total Series Processed {}".format(len(series))
+print("\nScript completed : {}".format(datetime.datetime.now()))
+print("Total Series Processed {}".format(len(series)))

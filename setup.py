@@ -4,10 +4,10 @@ from setuptools import setup, find_packages
 
 setup(
   name='movie_database',
-  description='Local Media database sourced from IMDB'
+  description='Local Media database sourced from IMDB',
   author='Jason Willems',
   author_email='hello@jasonwillems.com',
-  url='https://github.com/at1as/IMDB-Scrape'
+  url='https://github.com/at1as/IMDB-Scrape',
   packages=[
     'certifi==2017.7.27.1'
     'chardet==3.0.4'

@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
+
 from datetime import datetime
-from site_generator import SiteGenerator
-import helpers
-from helpers import video_media_details, get_filepath_from_dir, path_of_depth
-from image import Image
+from .site_generator import SiteGenerator
+from . import helpers
+from .helpers import video_media_details, get_filepath_from_dir, path_of_depth
+from .image import Image
 import json
-from message import Message
+from .message import Message
 import os
-import scraper
+from . import scraper
 import sys
 
 
@@ -107,8 +107,8 @@ class Worker():
           saved_files = json.load(saved_file_list)
 
           # Do not repeat scrape for already acquired title
-          if not saved_files.has_key(file_details['name']):
-            print "Now adding: %s : %s" %(path, file_details['name'])
+          if file_details['name'] not in saved_files:
+            print("Now adding: %s : %s" %(path, file_details['name']))
             filtered_file_list.append(file_details)
 
     return filtered_file_list
@@ -141,7 +141,7 @@ class Worker():
       page_url = self.series_scraper.get_series_page_url(asset)
 
     if page_url is None:
-      print Message.warn("\"{}\" not found. Skipping.".format(asset))
+      print(Message.warn("\"{}\" not found. Skipping.".format(asset)))
 
     return page_url
 

@@ -1,8 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-class BaseScraper(object):
-  __metaclass__ = ABCMeta
-  
+class BaseScraper(object, metaclass=ABCMeta):
   def __init__(self):
     pass
 

@@ -1,7 +1,7 @@
-from __future__ import unicode_literals
+
 from collections import OrderedDict
 import json
-from message import Message
+from .message import Message
 import os
 from pymediainfo import MediaInfo
 import re
@@ -82,12 +82,12 @@ def get_filepath_from_dir(filepath):
     files = os.listdir(filepath)
 
     # Create absolute path to file, filter out deeper sub directories
-    files = map(lambda x: "{}/{}".format(filepath.rstrip("/"), x), files)
-    files = filter(lambda x: not os.path.isdir(x), files)
+    files = ["{}/{}".format(filepath.rstrip("/"), x) for x in files]
+    files = [x for x in files if not os.path.isdir(x)]
 
     # Remove non-video extensions. Assume all valid video extensions are 3 or 4 digits
-    files = filter(lambda x: x.lower().split(".")[-1] not in ["srt", "txt", "md", "nfo", "idx", "sub", "ds_store"], files)
-    files = filter(lambda x: len(x.split(".")[-1]) in [3, 4], files)
+    files = [x for x in files if x.lower().split(".")[-1] not in ["srt", "txt", "md", "nfo", "idx", "sub", "ds_store"]]
+    files = [x for x in files if len(x.split(".")[-1]) in [3, 4]]
 
     # No valid files after filtering
     if not files:
@@ -96,7 +96,7 @@ def get_filepath_from_dir(filepath):
     # Try to directly get a video file by a list of common extensions
     # Otherwise, we'll simply try with first remaining item in the list
     # TODO : Could return all remaining paths to pass to mediainfo to see if we can find the video file
-    video_files = filter(lambda x: x.lower().split(".")[-1] in ["avi", "mp4", "mpeg", "mpg", "mkv", "wmv", "flv", "m4v"], files)
+    video_files = [x for x in files if x.lower().split(".")[-1] in ["avi", "mp4", "mpeg", "mpg", "mkv", "wmv", "flv", "m4v"]]
     if video_files:
       return video_files[0]
     else:
@@ -113,10 +113,7 @@ def video_media_details(filepath):
 
   try:
     video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]
-    subtitles = filter(
-        lambda x: x!= None,
-        list(set([t.language for t in media_info.tracks if t.track_type == 'Text']))
-    )
+    subtitles = [x for x in list(set([t.language for t in media_info.tracks if t.track_type == 'Text'])) if x!= None]
   except:
     return
 
@@ -190,7 +187,7 @@ def get_nested_directory_contents(filepath):
           file_contents[f.rsplit(".", 1)[0]] = video_media_details(path_to_item)
 
       if file_contents:
-        directory_contents.append(OrderedDict(sorted(file_contents.items(), key=lambda (x, y): x)))
+        directory_contents.append(OrderedDict(sorted(list(file_contents.items()), key=lambda x_y: x_y[0])))
 
     return directory_contents
   except Exception as e:

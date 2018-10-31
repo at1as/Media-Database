@@ -10,8 +10,8 @@ class TestHelpers(unittest.TestCase):
     pass
 
   def test_path_of_depth(self):
-    self.assertEquals("f/g", helpers.path_of_depth("a/b/c/d/e/f/g", 2))
-    self.assertEquals("a/b/c", helpers.path_of_depth("a/b/c", 100))
+    self.assertEqual("f/g", helpers.path_of_depth("a/b/c/d/e/f/g", 2))
+    self.assertEqual("a/b/c", helpers.path_of_depth("a/b/c", 100))
 
   def test_verify_config_file(self):
     try:
@@ -29,7 +29,7 @@ class TestHelpers(unittest.TestCase):
 
   def test_natural_sort(self):
     episodes = ["season 10", "season 8", "season 1", "season 02"]
-    self.assertEquals(
+    self.assertEqual(
       helpers.natural_sort(episodes),
       ["season 1", "season 02", "season 8", "season 10"]
     )

@@ -1,4 +1,4 @@
-from   __future__ import unicode_literals
+
 import datetime
 import json
 import os
@@ -40,4 +40,4 @@ with open('tmp-series-schema-change', 'w+') as tmp:
 
 
 # Ensure extension count is accurate
-print "\nScript completed : {}".format(datetime.datetime.now())
+print("\nScript completed : {}".format(datetime.datetime.now()))
