@@ -1,5 +1,5 @@
 import requests
-from helpers import HEADERS
+from .helpers import HEADERS
 import shutil
 
 class Image(object):

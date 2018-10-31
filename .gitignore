@@ -1,6 +1,7 @@
 .DS_Store
 movie_data.json
 *.pyc
+*.py.bak
 *.backup
 *.avi
 *.mp4

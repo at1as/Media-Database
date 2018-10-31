@@ -1,4 +1,4 @@
-from   __future__ import unicode_literals
+
 import datetime
 import json
 import os
@@ -26,14 +26,14 @@ item_count = 0
 skipped = []
 all_files = os.listdir(location)
 
-print "Script started : {}\n".format(datetime.datetime.now())
+print("Script started : {}\n".format(datetime.datetime.now()))
 
 for file in movies:
   item_count += 1
 
   # Skip hidden files or files slated to
   if file.startswith('.') or file in exclude:
-    print "Skipping Excluded file {}".format(file)
+    print("Skipping Excluded file {}".format(file))
     skipped.append(file)
     continue
 
@@ -84,7 +84,7 @@ for file in movies:
 
   except Exception as e:
     skipped.append(file)
-    print "{}: Skipping file {}. Not found ({})".format(item_count, file, e)
+    print("{}: Skipping file {}. Not found ({})".format(item_count, file, e))
     continue
 
 
@@ -97,7 +97,7 @@ with open('tmp-file', 'w+') as tmp:
 
 
 # Ensure extension count is accurate
-print "\nScript completed : {}".format(datetime.datetime.now())
+print("\nScript completed : {}".format(datetime.datetime.now()))
 
-print "Skip List {}".format(skipped)
-print "Total Files {}".format(item_count)
+print("Skip List {}".format(skipped))
+print("Total Files {}".format(item_count))

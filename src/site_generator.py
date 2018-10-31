@@ -1,6 +1,6 @@
-from __future__ import unicode_literals
+
 from datetime import datetime
-import helpers
+from . import helpers
 import jinja2
 
 class SiteGenerator(object):

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from helpers import get_config_file, HEADERS
+
+from .helpers import get_config_file, HEADERS
 import lxml.html
 import requests
-from scrapers.imdb import IMDB
+from .scrapers.imdb import IMDB
 import time
 
 

@@ -31,5 +31,5 @@ command = "ln -s {} ./Movies".format(destination)
 try:
   os.system(command)
 except Exception as e:
-  print "Could not execute symlink command : {}".format(e)
+  print("Could not execute symlink command : {}".format(e))
 

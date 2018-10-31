@@ -1,4 +1,4 @@
-from __future__ import unicode_literals  
+  
 import json
 import os
 
@@ -29,7 +29,7 @@ for file in all_files:
 
   # Skip hidden files or files slated to 
   if file.startswith('.') or file in exclude:
-    print "Skipping Excluded file {}".format(file)
+    print("Skipping Excluded file {}".format(file))
     skipped.append(file)
     continue
 
@@ -38,7 +38,7 @@ for file in all_files:
     if file.endswith(')'):
       movies[file]['extension'] = None
 
-      if extension_count.has_key('folder'):
+      if 'folder' in extension_count:
         extension_count['folder'] += 1
       else:
         extension_count['folder'] = 1 
@@ -47,13 +47,13 @@ for file in all_files:
       filename, extension = file.rsplit('.', 1)
       movies[filename]['extension'] = extension
 
-      if extension_count.has_key(extension):
+      if extension in extension_count:
         extension_count[extension] += 1
       else:
         extension_count[extension] = 1
   except:
     skipped.append(file)
-    print "Skipping file {}. Not found".format(file)
+    print("Skipping file {}. Not found".format(file))
     continue
 
 # Results will be stored in tmp-file and not overwrite _data/movie_data.json
@@ -65,6 +65,6 @@ with open('tmp-file_extension-migration', 'w+') as tmp:
 
 
 # Ensure extension count is accurate
-print extension_count
-print "Skip List {}".format(skipped)
-print "Total Files {}".format(item_count)
+print(extension_count)
+print("Skip List {}".format(skipped))
+print("Total Files {}".format(item_count))

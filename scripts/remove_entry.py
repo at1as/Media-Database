@@ -4,7 +4,7 @@
 # Remove saved entries from saved json repositories
 # Useful for entries that have been tagged incorrectly
 
-from __future__ import unicode_literals
+
 import os
 import sys
 import json
@@ -22,7 +22,7 @@ try:
   with open(relative_path('../conf.json')) as config_json:
     config = json.load(config_json)
 except Exception as e:
-  print "\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance %s\n" % e
+  print("\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance %s\n" % e)
   raise SystemExit
 
 
@@ -52,7 +52,7 @@ def remove_file(filetype, asset_name, year):
   elif filetype in ['-s', '--series']:
     filename = DATA[1]
   else:
-    print HELP
+    print(HELP)
     return
 
 
@@ -76,28 +76,28 @@ def remove_file(filetype, asset_name, year):
 
       if not found:
         year_arg = year or "any year"
-        print "\nEntry not found: \"%s\" for %s in \"%s\"\n" % (asset_name, year or "any year", filename)
+        print("\nEntry not found: \"%s\" for %s in \"%s\"\n" % (asset_name, year or "any year", filename))
         return
     except KeyError:
-      print "\nEntry not found: \"%s\" in \"%s\"\n" % (asset_name, filename)
+      print("\nEntry not found: \"%s\" in \"%s\"\n" % (asset_name, filename))
       return
 
     # Write contents to JSON file
     with open(relative_path('../' + filename), 'w+') as asset_feed:
       json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
   
-    print "\nEntry deleted: \"%s\" from \"%s\"\n" % (asset_name, filename)
+    print("\nEntry deleted: \"%s\" from \"%s\"\n" % (asset_name, filename))
     return
 
   else:
-    print "\nFile not found: \"%s\"\n" % filename
+    print("\nFile not found: \"%s\"\n" % filename)
     return
 
 
 if __name__ == "__main__":
   try:
     if sys.argv[1] in ["-h", "--help", "--h", " "]:
-      print HELP
+      print(HELP)
     else:
       if len(sys.argv) == 4:
         remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), sys.argv[3])
@@ -105,4 +105,4 @@ if __name__ == "__main__":
         # Year arg was passed
         remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), None)
   except IndexError:
-    print HELP
+    print(HELP)

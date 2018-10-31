@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from cStringIO import StringIO
+from io import StringIO
 from src.message import Message
 import sys
 import unittest
@@ -33,7 +33,7 @@ class TestMessages(unittest.TestCase):
     with capture(Message.success, text_string) as output:
       expected_output = "{}{}Success: {}{}{}".format(green, newline, clear, text_string, newline)
  
-      self.assertEquals(expected_output, output)
+      self.assertEqual(expected_output, output)
   
   def test_warn_message(self):
     text_string = "hello world"
@@ -44,7 +44,7 @@ class TestMessages(unittest.TestCase):
     with capture(Message.warn, text_string) as output:
       expected_output = "{}{}Warning: {}{}{}".format(yellow, newline, clear, text_string, newline)
  
-      self.assertEquals(expected_output, output)
+      self.assertEqual(expected_output, output)
   
   def test_error_message(self):
     text_string = "hello world"
@@ -55,5 +55,5 @@ class TestMessages(unittest.TestCase):
     with capture(Message.error, text_string) as output:
       expected_output = "{}{}Error: {}{}{}".format(red, newline, clear, text_string, newline)
 
-      self.assertEquals(expected_output, output)
+      self.assertEqual(expected_output, output)
 

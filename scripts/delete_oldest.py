@@ -1,4 +1,4 @@
-from   __future__ import unicode_literals
+
 import json
 import os
 import sys
@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 try:
   limit = int(sys.argv[1]) or 1
 except:
-  print "Usage: python delte_oldest.py [n]  -> Where n is an integer of items to be deleted"
+  print("Usage: python delte_oldest.py [n]  -> Where n is an integer of items to be deleted")
   sys.exit()
 
 # Import data file with all saved entries
@@ -17,11 +17,11 @@ with open('_data/movie_data.json') as movie_details:
   movies = json.load(movie_details)
 
 # Sort by date info was retreived
-oldest_entries = sorted(movies.iteritems(), key=lambda (title, payload): payload['info_retrieved'])[0:limit]
+oldest_entries = sorted(iter(movies.items()), key=lambda title_payload: title_payload[1]['info_retrieved'])[0:limit]
 titles = [x[0] for x in oldest_entries]
 
 # Delete the oldest entries
-print "Deleting the following titles: {}".format(titles)
+print("Deleting the following titles: {}".format(titles))
 for title in titles:
   del movies[title]
 
