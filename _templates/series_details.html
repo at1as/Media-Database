@@ -87,7 +87,7 @@
             Season {{loop.index}}
           </div>
             <div class="season-container" id="season-{{loop.index}}-container" style="display:none">
-              {% for episode in season %}
+              {% for episode in season | sort %}
                 <div class="episode-container">
                   {{episode}}
                   {% if season and season[episode] and 'resolution' in season[episode] %}
