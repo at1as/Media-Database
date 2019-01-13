@@ -25,7 +25,7 @@ class Worker():
     script_started = datetime.now()
 
     if dry_run:
-      self.generate_site([], [])
+      SiteGenerator.build_site([], [])
     else:
       added_movies = self.fetch_new_files("movies", "movie")
       added_series = self.fetch_new_files("series", "series")
