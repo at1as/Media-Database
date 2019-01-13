@@ -2,11 +2,18 @@ from __future__ import unicode_literals
 from datetime import datetime
 import helpers
 import jinja2
+import re
 
 class SiteGenerator(object):
   def __init__(self):
     pass
 
+  @staticmethod
+  def season_filter(episode_name):
+    """
+      Extract 'S01' from "Doctor Who S01E01.mkv"
+    """
+    return re.sub(r".*[sS]([0-9]{2})[eE][0-9]{2}.*", "\\1", episode_name)
 
   @staticmethod
   def build_site(saved_movies, saved_series):
@@ -19,7 +26,9 @@ class SiteGenerator(object):
     num_series = len(saved_series)
 
     # Output Environment for static html generation
-    env            = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
+    env.filters['seasonnumber'] = SiteGenerator.season_filter
+
     movie_index    = env.get_template("index.html")
     series_index   = env.get_template("series.html")
     about          = env.get_template("about.html")
