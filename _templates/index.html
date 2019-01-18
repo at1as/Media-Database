@@ -231,7 +231,7 @@
           </thead>
           <tbody>
             {% for movie in movie_list %}
-              <tr>
+              <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
                     <img height="300px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->

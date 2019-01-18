@@ -131,3 +131,4 @@ For example, in the case of the language input:
 * FIXME: locally stored glyphicons won't render in Firefox unless they're stored in a child directory
 * Add support for other clients (themoviedb, etc)
 * Search by Alternative Title
+* Improvements to Scraper. Currently small schema changes break the scraper. There are some small changes to the XPaths being used to make this slightly more robust (see comments in `src/scrapers/imdb.py`)
