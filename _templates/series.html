@@ -192,7 +192,7 @@
           </thead>
           <tbody>
             {% for series in series_list %}
-              <tr>
+              <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">
                     <img height="300px" src="images/series/{{series_list[series].directory.name}}.png"><!-- ' -->
