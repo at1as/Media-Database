@@ -6,6 +6,7 @@
 
 from __future__ import unicode_literals
 import os
+import re
 import sys
 import json
 from unicodedata import normalize
@@ -21,13 +22,15 @@ def relative_path(file_path):
 try:
   with open(relative_path('../conf.json')) as config_json:
     config = json.load(config_json)
-except Exception as e:
-  print "\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance %s\n" % e
+except Exception as ex:
+  print "\nInvalid JSON body in conf.json\nSee: http://jsonformatter.curiousconcept.com/ for assistance {}\n".format(ex)
   raise SystemExit
 
 
-DATA = [config['assets']['movies']['saved_data'], 
-        config['assets']['series']['saved_data']]
+DATA = [
+  config['assets']['movies']['saved_data'],
+  config['assets']['series']['saved_data']
+]
 
 HELP = """\nUsage: 
             python remove_entry.py [type] "<filename>" [year]
@@ -44,6 +47,8 @@ HELP = """\nUsage:
             - Use single quotes around title if it contains special characters (such as '!')
             - The [year] field is optional. If not passed, first matching title will be deleted\n"""
 
+def sanitize(string):
+  return re.sub("\s{2,}", " ", string.lower().replace(':', '').replace('-', '').strip())
 
 def remove_file(filetype, asset_name, year):
 
@@ -59,14 +64,13 @@ def remove_file(filetype, asset_name, year):
   if os.path.isfile(relative_path('../' + filename)):
     found = False
 
-    # Read contents of JSON file
     with open(relative_path('../' + filename), 'r') as saved_asset_list:
       saved_assets = json.load(saved_asset_list)
 
     # Delete entry
     try:
       for key in saved_assets:
-        if saved_assets[key]['title'].lower().replace(':', '').strip() == asset_name.lower().replace(':', '').strip():
+        if sanitize(saved_assets[key]['title']) == sanitize(asset_name):
 
           # Find entry matching year if arg is passed, else delete first matching title found
           if year is None or (saved_assets[key]['year'] == year):
@@ -106,3 +110,4 @@ if __name__ == "__main__":
         remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), None)
   except IndexError:
     print HELP
+
