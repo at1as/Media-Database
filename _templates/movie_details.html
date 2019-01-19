@@ -2,11 +2,13 @@
 <html lang="en" style="background-color:#EEE">
   <head>
     <title>Local Movie Database</title>
-    <link href="../../_resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../_resources/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
     <link href="../../_resources/css/common.css" rel="stylesheet" type="text/css" />
-    <script src="../../_resources/js/jquery-2.1.4.min.js"></script>
-    <script src="../../_resources/js/bootstrap.min.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -14,7 +16,7 @@
   </head>
   <body role="document" class="title-body">
 
-    <div class="container theme-showcase" role="main" style="margin:0px; padding:0px; width:100%">
+    <div class="container theme-showcase" role="main" style="padding:0px; width:100%">
       <div id="title_content" class="jumbotron">
 
         <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
@@ -32,24 +34,24 @@
 
           <div class="form-group">
             <span id="star">&#9733; </span>
-            <h4 id="item-rating"><b> {{movie.rating}} / 10</b> ({{movie.votes}} votes) </h4>
+            <h4 id="item-rating" style="font-size:1.25rem"><b> {{movie.rating}} / 10</b> ({{movie.votes}} votes) </h4>
           </div>
 
           <div style="margin-left:10px">
-            <h5>
+            <h5 style="border: 1px solid #AAA; border-radius:5px; padding:10px; font-size: 0.8rem; background-color: black;color: white; text-align:center">
               {% if not movie.content_rating %}
               {% elif movie.content_rating is string %}
                 <span id="item-content-rating">
                   {{movie.content_rating}}
-                </span> &mdash;
+                </span> -
               {% else %}
                 <span id="item-content-rating">
                   {{movie.content_rating[0]}}
-                </span> &mdash;
+                </span> -
               {% endif %}
 
               {% if movie.running_time %}
-              <span id="item-running-time">{{movie.running_time}}</span> &mdash;
+              <span id="item-running-time">{{movie.running_time}}</span> -
               {% endif %}
 
               {% if movie.genre %}
@@ -59,21 +61,21 @@
               {% endif %}
           </div>
 
-          <h4 style="padding-top:10px">Cast:</h4>
+          <h4 style="padding-top:25px">Cast:</h4>
           <div style="margin-left:10px">
             {% for item in movie.stars %}
               <h5 style="font-weight:400"> {{item}} </h5>
             {% endfor %}
           </div>
 
-          <h4 style="padding-top:10px">Languages:</h4>
+          <h4 style="padding-top:25px">Languages:</h4>
           <div style="margin-left:10px;">
             {% for item in movie.languages %}
               <h5 class="title-language"> {{item}} </h5>
             {% endfor %}
           </div>
 
-          <h4 style="padding-top:10px">Media Details:</h4>
+          <h4 style="padding-top:25px">Media Details:</h4>
           {% if movie.media.resolution %}
             <div style="margin-left:10px">
               <h5 style="font-weight:400">Resolution:
