@@ -40,7 +40,7 @@ hr{
   max-width:1200px;
 }
 .title-body{
-  background-color:#EEE;
+  background-color:#e9ecef;
 }
 #navbarSupportedContent{
   margin-left:auto;
@@ -232,7 +232,7 @@ th{
   display:inline-block;
   padding-left:30px;
   margin-top:5px;
-  max-width:555px;
+  max-width:475px;
 }
 #title-title{
   margin-left:5px;
