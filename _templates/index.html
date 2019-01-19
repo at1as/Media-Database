@@ -2,11 +2,13 @@
 <html lang="en">
   <head>
     <title>Local Movie Database</title>
-    <script src="../_resources/js/jquery-2.1.4.min.js"></script>
-    <script src="../_resources/js/bootstrap.min.js"></script>
-    <link href="../_resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/css/sortable-theme-minimal.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/favicon.png" rel="shotcut icon" type="image/png"/>
     <script src="../_resources/js/sorttable.min.js" type="text/javascript"></script>
@@ -18,185 +20,193 @@
   </head>
 
   <body role="document">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
+    <nav class="navbar navbar-expand-lg navbar-fixed-top navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="./index.html">Movies
-              <span class="badge">
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link active" href="./index.html">Movies
+             <span class="badge badge-secondary">
                 <span id="results_num" style="display:none">{{ movie_list|length }}</span>
                 <span id="mv_seperator" style="display:none"> / </span>
                 <span id="total_num">{{ movie_list|length }}</span>
               </span>
-            </a></li>
- 	          <li><a href="./series.html">Series
-              <span class="badge">
+							<span class="sr-only">(current)</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="./series.html">Series
+              <span class="badge badge-secondary">
                 <span>{{ number_of_series }}</span>
               </span>
-            </a></li>
-            <li><a href="./about.html">About</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="./about.html">About</a>
+					</li>
+				</ul>
+			</div>
     </nav>
     <div class="container-fluid theme-showcase body-container" role="main">
 
       <!-- Filters -->
-      <div id="filters" class="jumbotron filter-container col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-12 col-xs-12">
+      <div id="filters" class="mx-auto jumbotron filter-container ml-5 mr-5">
 
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Title:</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="title-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('title-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
-          </div>
-        </div>
-        <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Rating (Min):</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="rating-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('rating-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2 col-form-label">Title</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="title-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('title-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Votes (Min):</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="vote-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('vote-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2 col-form-label">Rating (Min)</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="rating-search" type="number" min="0" max="10.0" step="0.1" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('rating-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Year (Min):</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="year-min-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('year-min-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2 col-form-label">Votes (Min)</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="vote-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
+               <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('vote-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Year (Max):</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="year-max-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('year-max-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Year (Min)</label>
+            <div class="col-md-10" style="display:flex">
+              <input class="form-control" id="year-min-search" type="number" step="1" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-min-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Genres:</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="genre-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('genre-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Drama, Action, !Comedy']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Year (Max)</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="year-max-search" type="number" step="1" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-max-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Cast:</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="cast-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('cast-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Genres</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="genre-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('genre-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Drama, Action, !Comedy']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Directors:</h4>
-          </div>
-          <div style="display:flex">
-            <input class="form-control" id="director-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('director-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Cast</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="cast-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('cast-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
+
         <div class="filter-section">
-          <div class="col-md-3" style="padding-left:0px">
-            <h4>Languages:</h4>
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Directors</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="director-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('director-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
-          <div style="display:flex">
-            <input class="form-control" id="language-search" type="search"  onkeyup="search_movie_table('results')" spellcheck="false">
-            <span class="glyphicon glyphicon-remove clear-filter" onclick="clear_filter('language-search'); search_movie_table('results')"></span>
-            <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'German, !Dutch']" tabindex="-1">
-              <i class="glyphicon glyphicon-info-sign question-filter"></i>
-            </a>
+        </div>
+
+        <div class="filter-section">
+          <div class="form-group row tight-form-spacing">
+            <label class="col-md-2">Languages</label>
+            <div class="col-md-10" style="display:inherit">
+              <input class="form-control" id="language-search" type="search"  onkeyup="search_movie_table('results')" spellcheck="false">
+              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('language-search'); search_movie_table('results')"></i>
+              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'German, !Dutch']" tabindex="-1">
+                <i class="fas fa-info-circle fa-2x question-filter"></i>
+              </a>
+            </div>
           </div>
         </div>
 
         <!-- Table column visibility toggle -->
         <hr/>
         <div class="table-columns-toggle-section">
-          <label class="checkbox-inline" for="image_data_checkbox">
-            <input type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
-            Image
-          </label>
-          <label class="checkbox-inline" for="rating_data_checkbox">
-            <input type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
-            Rating
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="vote_data_checkbox">
-            <input type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
-            Votes
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="resolution_data_checkbox">
-            <input type="checkbox" id="resolution_data_checkbox" name="resolution_data_checkbox" onclick="toggle_column_visibility('resolution_data')">
-            Quality
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="genres_data_checkbox">
-            <input type="checkbox" id="genres_data_checkbox" name="genres_data_checkbox" onclick="toggle_column_visibility('genres_data')" checked>
-            Genres
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="stars_data_checkbox">
-            <input type="checkbox" id="stars_data_checkbox" name="stars_data_checkbox" onclick="toggle_column_visibility('stars_data')" checked>
-            Cast
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="director_data_checkbox">
-            <input type="checkbox" id="director_data_checkbox" name="director_data_checkbox" onclick="toggle_column_visibility('director_data')">
-            Director
-          </label>
-          <label class="checkbox-inline hidden-sm hidden-xs" for="languages_data_checkbox">
-            <input type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
-            Languages
-          </label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
+            <label class="form-check-label" for="image_data_checkbox">Image</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
+            <label class="form-check-label" for="rating_data_checkbox">Rating</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
+            <label class="form-check-label" for="vote_data_checkbox">Vote</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="resolution_data_checkbox" name="resolution_data_checkbox" onclick="toggle_column_visibility('resolution_data')" checked>
+            <label class="form-check-label" for="resolution_data_checkbox">Quality</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="genres_data_checkbox" name="genres_data_checkbox" onclick="toggle_column_visibility('genres_data')" checked>
+            <label class="form-check-label" for="genres_data_checkbox">Genres</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="stars_data_checkbox" name="stars_data_checkbox" onclick="toggle_column_visibility('stars_data')" checked>
+            <label class="form-check-label" for="stars_data_checkbox">Cast</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="director_data_checkbox" name="director_data_checkbox" onclick="toggle_column_visibility('director_data')">
+            <label class="form-check-label" for="director_data_checkbox">Director</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
+            <label class="form-check-label" for="languages_data_checkbox">Languages</label>
+          </div>
         </div>
       </div>
 
@@ -222,7 +232,7 @@
               <th name="vote_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" style="vertical-align:top">Year</th>
-              <th name="resolution_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Quality</th>
+              <th name="resolution_data" class="hidden-sm hidden-xs" style="vertical-align:top">Quality</th>
               <th name="genres_data" class="hidden-sm hidden-xs" style="vertical-align:top">Genres</th>
               <th name="stars_data" class="hidden-sm hidden-xs" style="vertical-align:top">Cast</th>
               <th name="director_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Director</th>
@@ -259,8 +269,8 @@
                 <td name="year_data" class="vertical-row">
                   {{ movie_list[movie].year }}
                 </td>
-                <td name="resolution_data" class="hidden-sm hidden-xs vertical-row" style="display:none; text-align:center;">
-                  <span class="badge centered-badge">{{ movie_list[movie].media.resolution }}</span>
+                <td name="resolution_data" class="hidden-sm hidden-xs vertical-row" style="text-align:center;">
+                  <span class="badge badge-secondary">{{ movie_list[movie].media.resolution }}</span>
                 </td>
                 <td name="genres_data" class="hidden-sm hidden-xs vertical-row">
                   {{ movie_list[movie].genre|join(',<br>') }}

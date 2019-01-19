@@ -2,10 +2,13 @@
 <html lang="en">
   <head>
     <title>Local Movie Database</title>
-    <script src="../_resources/js/jquery-2.1.4.min.js"></script>
-    <script src="../_resources/js/bootstrap.min.js"></script>
-    <link href="../_resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/favicon.png" rel="shotcut icon" type="image/png"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -15,29 +18,37 @@
   </head>
 
   <body role="document">
-    <nav role="navigation" class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>                        
-          </button>
-        </div>
+    <nav class="navbar navbar-expand-lg navbar-fixed-top navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="./index.html">Movies <span class="badge">{{ number_of_movies }}</span></a></li>
-            <li><a href="./series.html">Series <span class="badge">{{ number_of_series }}</span></a></li>
-            <!--<li><a href="./documentaries.html">Documentaries <span class="badge"></span></a></li>-->
-	          <li class="active"><a href="#">About</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="./index.html">Movies
+             <span class="badge badge-secondary">
+                <span>{{ number_of_movies }}</span>
+              </span>
+							<span class="sr-only">(current)</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="./series.html">Series
+              <span class="badge badge-secondary">
+                <span>{{ number_of_series }}</span>
+              </span>
+						</a>
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link active" href="./about.html">About</a>
+					</li>
+				</ul>
+			</div>
     </nav>
 
     <div class="container theme-showcase body-container" role="main">
-      <div class="well col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+      <div class="mx-auto well col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 mb-5">
         <p>
           <b>IMDB-Scrape</b> creates a local movie database containing information related to your movie collection.
           Webpages are staticly generated and uploaded to the <i>_output/</i> directory. Rerun the script every

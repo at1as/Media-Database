@@ -27,17 +27,22 @@ h4, .h4 {
 hr{
    border-color:#CCC;
 }
-
+.well {
+  background-color:#EEE;
+  border:1px solid #DDD;
+  border-radius:5px;
+  padding:15px;
+}
 .body-container{
-  margin-top:80px;
+  margin-top:60px;
   margin-left:auto;
   margin-right:auto;
   max-width:1200px;
 }
 .title-body{
-  background-color:#EEE;
+  background-color:#e9ecef;
 }
-#navbar{
+#navbarSupportedContent{
   margin-left:auto;
   margin-right:auto;
   max-width:1200px;
@@ -80,6 +85,7 @@ hr{
   border: 1px solid #e3e3e3;
   -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,.05),0 1px 0 rgba(255,255,255,.1);
   box-shadow: inset 0 1px 3px rgba(0,0,0,.05),0 1px 0 rgba(255,255,255,.1);
+  max-width:800px;
 }
 #filter_toggle{
   width:100%;
@@ -106,26 +112,27 @@ hr{
   display:inline-block;
 }
 .clear-filter{
-  top:7px;
-  height:14px;
-  margin-left:-50px;
-  font-size:20px;
+  padding-top:5px;
+  margin-left:-65px;
+  font-size:25px;
   cursor:pointer;
-  color:#666;
+  color:#888;
 }
 .clear-filter:hover{
   color:red;
 }
 .question-filter{
-  top:7px;
-  height:14px;
+  padding-top:5px;
   padding-left:5px;
-  font-size:20px;
+  font-size:25px;
   cursor:pointer;
-  color:#666;
+  color:#888;
 }
 .question-filter:hover{
   color:red;
+}
+.tight-form-spacing{
+  margin-bottom:0.25rem;
 }
 .input-group-addon{
   border:none;
@@ -147,7 +154,7 @@ hr{
 .table-columns-toggle-section{
   width:100%;
   text-align:center;
-  background-color:#bbd6bb;
+  background-color:#cbcecb; 
   padding:4px;
   border-radius:6px
 }
@@ -208,7 +215,7 @@ th{
 #item-awards{
   padding-top:4px;
   padding-bottom:4px;
-  margin-top:-10px;
+  margin-top:-5px;
   border-radius:4px;
   background-color: #EFE3A4;
   text-align: center;
@@ -225,7 +232,7 @@ th{
   display:inline-block;
   padding-left:30px;
   margin-top:5px;
-  max-width:555px;
+  max-width:475px;
 }
 #title-title{
   margin-left:5px;
@@ -265,5 +272,4 @@ th{
   padding: 4px;
 }
 .movie-row{
-  font-size: 1.6rem;
 }
