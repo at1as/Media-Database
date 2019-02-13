@@ -63,6 +63,18 @@
               {% endif %}
           </div>
 
+          <h4 style="padding-top:25px">Directed By:</h4>
+          <div style="margin-left:10px">
+            <!-- legacy code for when only one director was listed -->
+            {% if movie.director is string %}
+              <h5 style="font-weight:400"> {{movie.director}} </h5>
+            {% else %}
+              {% for item in movie.director %}
+                <h5 style="font-weight:400"> {{item}} </h5>
+              {% endfor %}
+            {% endif %}
+          </div>
+
           <h4 style="padding-top:25px">Cast:</h4>
           <div style="margin-left:10px">
             {% for item in movie.stars %}
