@@ -79,7 +79,9 @@ class IMDB(BaseScraper):
 
   def get_stars(self, xml_doc):
     try:
-      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a'))[0:-1]
+      res = map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a'))[0:-1]
+      if not res:
+        return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
     except IndexError:
       try:
         return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[3]/span/a/span/text()')
