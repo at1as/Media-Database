@@ -207,7 +207,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./series/{{series_list[series].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">
-                    <img height="300px" src="images/series/{{series_list[series].directory.name}}.png"><!-- ' -->
+                    <img width="200px" src="images/series/{{series_list[series].directory.name}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -238,7 +238,7 @@
                   {{ series_list[series].genre|join(',<br/>') }}
                 </td>
                 <td name="stars_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ series_list[series].stars|join(',<br/>') }}
+                  {{ series_list[series].stars[:5] | join(',<br/>') }}
                 </td>
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
                   {{ series_list[series].languages|join(', ') }}

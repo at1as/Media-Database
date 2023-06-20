@@ -245,7 +245,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
-                    <img height="300px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
+                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -277,7 +277,7 @@
                   {{ movie_list[movie].genre|join(',<br>') }}
                 </td>
                 <td name="stars_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ movie_list[movie].stars|join(',<br/>') }}
+                  {{ movie_list[movie].stars[:5] | join(',<br/>') }}
                 </td>
                 {% if movie_list[movie].director is string %}
                   <!-- legacy code for when only one director was listed -->
@@ -286,11 +286,13 @@
                   </td>
                 {% else %}
                   <td name="director_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                    {{ movie_list[movie].director|join(',<br>') }}
+                    {{ movie_list[movie].director | join(',<br>') }}
                   </td>
                 {% endif %}
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {{ movie_list[movie].languages|join(', ') }}
+                  {%if movie_list[movie].languages is iterable %}
+                  {{ movie_list[movie].languages | join(', ') }}
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}

@@ -23,7 +23,7 @@
 
         <h2 class="title-title"> {{movie.title}} ({{movie.year}}) </h2>
         {% if movie.alternative_title %}
-        <div><b>Alternative Title : </b> {{ movie.alternative_title[0] }}</div>
+        <div><b>Alternative Title : </b> {{ movie.alternative_title }}</div>
         {% endif %}
 
         <span style="vertical-align:top">
@@ -53,7 +53,7 @@
               {% endif %}
 
               {% if movie.running_time %}
-              <span id="item-running-time">{{movie.running_time}}</span> -
+              <span id="item-running-time">{{movie.running_time}} mins</span> -
               {% endif %}
 
               {% if movie.genre %}
@@ -77,16 +77,18 @@
 
           <h4 style="padding-top:25px">Cast:</h4>
           <div style="margin-left:10px">
-            {% for item in movie.stars %}
+            {% for item in movie.stars[:5] %}
               <h5 style="font-weight:400"> {{item}} </h5>
             {% endfor %}
           </div>
 
           <h4 style="padding-top:25px">Languages:</h4>
           <div style="margin-left:10px;">
-            {% for item in movie.languages %}
+            {% if movie.languages is iterable %}
+              {% for item in movie.languages %}
               <h5 class="title-language"> {{item}} </h5>
-            {% endfor %}
+              {% endfor %}
+            {% endif %}
           </div>
 
           <h4 style="padding-top:25px">Media Details:</h4>

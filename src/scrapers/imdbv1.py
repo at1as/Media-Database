@@ -10,7 +10,7 @@ import time
 from unicodedata import normalize
 
 
-class IMDB(BaseScraper):
+class IMDBV1(BaseScraper):
   BASE_URL = "http://www.imdb.com"
   SEARCH_PATH = "/find?q="
   URL_END = "&s=all"
@@ -21,7 +21,7 @@ class IMDB(BaseScraper):
   def construct_search_url(self, title):
     """ Construct search results url for specified title """
     safe_title = normalize("NFC", title).replace(" ", "+").replace("&", "%26").replace("?", "%3F").lower()
-    return "{}{}{}{}".format(IMDB.BASE_URL, IMDB.SEARCH_PATH, safe_title, IMDB.URL_END)
+    return "{}{}{}{}".format(IMDBV1.BASE_URL, IMDBV1.SEARCH_PATH, safe_title, IMDBV1.URL_END)
 
   def get_title(self, xml_doc):
     try:
@@ -119,7 +119,7 @@ class IMDB(BaseScraper):
         if awards[-1] == ".":
           return " ".join(xml_doc.xpath('//div[@id="titleAwardsRanks"]//span[@class="awards-blurb"]/b/text()')[0].strip().split())
         try:
-          return IMDB.BASE_URL + xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
+          return IMDBV1.BASE_URL + xml_doc.xpath('//*[@id="titleAwardsRanks"]/span[@class="see-more inline"]/a/@href')[0]
         except IndexError:
           return ''
     except IndexError:
@@ -179,7 +179,7 @@ class IMDB(BaseScraper):
             for index, list_title in enumerate(search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr')):
               if not any(x in list_title.text_content() for x in invalid_results):
                 endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                return IMDB.BASE_URL + endpoint
+                return IMDBV1.BASE_URL + endpoint
     except IndexError:
       return
 
@@ -206,7 +206,7 @@ class IMDB(BaseScraper):
                 # Some items listed as "TV Episode" also contain a link with the term "TV Series" below
                 if "(TV Episode)" not in list_title.text_content():
                   endpoint = search_page.xpath('//*[@id="main"]/div[1]/div[2]/table[1]/tr[%i]/td/a' %(index+1))[0].attrib['href']
-                  return IMDB.BASE_URL + endpoint
+                  return IMDBV1.BASE_URL + endpoint
     except IndexError:
       return None
 
