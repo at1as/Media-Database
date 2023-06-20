@@ -11,15 +11,13 @@ import json
 from message import Message
 import os
 import scraper
-import sys
 
 
 class Worker():
   def __init__(self):
     self.config = helpers.verify_config_file()
-    self.movie_scraper  = scraper.Scraper("IMDB")
-    self.series_scraper = scraper.Scraper("IMDB")
-
+    self.series_scraper = None
+    self.movie_scraper = None
 
   def start(self, dry_run=False):
     script_started = datetime.now()
@@ -110,7 +108,7 @@ class Worker():
 
           # Do not repeat scrape for already acquired title
           if not saved_files.has_key(file_details['name']):
-            print "Now adding: %s : %s" %(path, file_details['name'])
+            print("Now adding: %s : %s" %(path, file_details['name']))
             filtered_file_list.append(file_details)
 
     return filtered_file_list
@@ -123,6 +121,7 @@ class Worker():
     try:
       # Enforce per asset type limit
       if not self.config["assets"][asset_type]["max_assets"] == 0:
+        print("Fetching up to " + str(self.config["assets"][asset_type]["max_assets"]) + " files for asset type: " + asset_type)
         return os.listdir(path)[0:self.config["assets"][asset_type]["max_assets"]]
       else:
         return os.listdir(path)
@@ -133,9 +132,9 @@ class Worker():
       )
       raise SystemExit
 
-
+  """
   def get_title_url(self, asset, mediatype):
-    """ Return the complete URL corresponding to particular title """
+    "" Return the complete URL corresponding to particular title ""
 
     if mediatype == "movie":
       page_url = self.movie_scraper.get_movie_page_url(asset)
@@ -143,10 +142,10 @@ class Worker():
       page_url = self.series_scraper.get_series_page_url(asset)
 
     if page_url is None:
-      print Message.warn("\"{}\" not found. Skipping.".format(asset))
+      print(Message.warn("\"{}\" not found. Skipping.".format(asset)))
 
     return page_url
-
+  """
 
   def compile_file_list(self, path, repo, mediatype):
     """
@@ -162,12 +161,9 @@ class Worker():
     file_attributes_list = []
     for file_details in self.get_file_list(path, repo, mediatype):
 
-      media_url = self.get_title_url(file_details['name'], mediatype)
-      if not media_url:
-        continue
-
       if mediatype == "movie":
-        file_attributes = self.movie_scraper.get_movie_details(file_details, media_url)
+        self.movie_scraper = scraper.IMDBV2(file_details["name"])
+        file_attributes = self.movie_scraper.get_movie_details(file_details, None)
         file_attributes['file_metadata'] = {}
         file_attributes['file_metadata']['filename']  = file_details['name']
         file_attributes['file_metadata']['extension'] = file_details['extension']
@@ -175,7 +171,8 @@ class Worker():
         file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
 
       elif mediatype == "series":
-        file_attributes = self.series_scraper.get_series_details(file_details, media_url)
+        self.series_scraper = scraper.IMDBV2(file_details["name"])
+        file_attributes = self.series_scraper.get_series_details(file_details, None)
         file_attributes['directory'] = {}
         file_attributes['directory']['name'] = file_details['name']
         file_attributes['directory']['absolute_path'] = file_details['full_path']
@@ -210,6 +207,7 @@ class Worker():
 
     # Import all pre-existing data from JSON file
     # TODO use relative path helper
+    print("Reading current saved info from path: " + self.config['assets'][base_path]['saved_data'])
     with open(self.config['assets'][base_path]['saved_data'], 'r') as asset_feed:
       saved_assets = json.load(asset_feed)
 

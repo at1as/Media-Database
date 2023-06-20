@@ -6,16 +6,16 @@ class Message():
 
   @staticmethod
   def info(text):
-    print '\nInfo: ' + text
+    print('\nInfo: ' + text)
 
   @staticmethod
   def success(text):
-    print Message.GREEN + '\nSuccess: ' + Message.CLEAR + text
+    print(Message.GREEN + '\nSuccess: ' + Message.CLEAR + text)
 
   @staticmethod
   def warn(text):
-    print Message.YELLOW + '\nWarning: ' + Message.CLEAR + text
-  
+    print(Message.YELLOW + '\nWarning: ' + Message.CLEAR + text)
+
   @staticmethod
   def error(text):
-    print Message.RED + '\nError: ' + Message.CLEAR + text
+    print(Message.RED + '\nError: ' + Message.CLEAR + text)

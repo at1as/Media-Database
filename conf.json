@@ -1,13 +1,13 @@
 {
   "assets" : {
     "movies" : {
-      "location"      : "/Volumes/5TB-MEDIA/Movies/",
+      "location"      : "/Volumes/14TB-MEDIA-1/Movies/",
       "saved_data"    : "./_data/movie_data.json",
       "index_asset"   : true,
       "max_assets"    : 9999
     },
     "series" : {
-      "location"      : "/Volumes/5TB-MEDIA/Television/",
+      "location"      : "/Volumes/14TB-MEDIA-1/Television/",
       "saved_data"    : "./_data/series_data.json",
       "index_asset"   : true,
       "max_assets"    : 9999

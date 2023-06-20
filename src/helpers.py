@@ -117,7 +117,7 @@ def video_media_details(filepath):
         lambda x: x!= None,
         list(set([t.language for t in media_info.tracks if t.track_type == 'Text']))
     )
-  except:
+  except Exception as e:
     return
 
   file_details = {
@@ -190,7 +190,7 @@ def get_nested_directory_contents(filepath):
           file_contents[f.rsplit(".", 1)[0]] = video_media_details(path_to_item)
 
       if file_contents:
-        directory_contents.append(OrderedDict(sorted(file_contents.items(), key=lambda (x, y): x)))
+        directory_contents.append(OrderedDict(sorted(file_contents.items(), key=lambda(x, y): x)))
 
     return directory_contents
   except Exception as e:

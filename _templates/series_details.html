@@ -24,7 +24,7 @@
 
         <h2 class="title-title"> {{series.title}} ({{series.year}}) </h2>
         {% if series.alternative_title %}
-        <div><b>Alternative Title : </b> {{ series.alternative_title }}</div>
+        <div><b>Alternative Titles : </b> <span style="font-size:0.8rem"><i>{{ series.alternative_title[:5] | join(", ") }}</i></span></div>
         {% endif %}
 
         <span style="vertical-align:top">
@@ -53,7 +53,7 @@
               {% endif %}
 
               {% if series.running_time %}
-              <span id="item-running-time">{{series.running_time}}</span> -
+              <span id="item-running-time">{{series.running_time}} mins</span> -
               {% endif %}
 
               {% if series.genre %}
@@ -65,7 +65,7 @@
 
           <h4 style="padding-top:25px">Cast:</h4>
           <div style="margin-left:10px">
-            {% for item in series.stars %}
+            {% for item in series.stars[:5] %}
               <h5 style="font-weight:400"> {{item}} </h5>
             {% endfor %}
           </div>

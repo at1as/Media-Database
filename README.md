@@ -23,7 +23,7 @@ Download the repository here, set the appropriate permissions and launch Media-D
 $ git clone https://github.com/at1as/Media-Database.git
 $ cd Media-Database
 $ vim conf.json
-$ python run.py
+$ sudo ~/.pyenv/versions/2.7.18/bin/python2.7 run.py
 ```
 
 Titles will be fetched from IMDB the first time the script is run, and then be saved in `_data/movie_data.json`, which the templates are built from. On subsequent runs, only newly added items to the directory will have their data fetched from IMDB.
