@@ -1,3 +1,3 @@
-import helpers
-import scraper
-import message
+from . import helpers
+from . import scraper
+from . import message

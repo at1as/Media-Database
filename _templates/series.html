@@ -241,7 +241,11 @@
                   {{ series_list[series].stars[:5] | join(',<br/>') }}
                 </td>
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {{ series_list[series].languages|join(', ') }}
+                  {% if series_list[series].languages %} 
+                    {{ series_list[series].languages|default([])|join(', ') }}
+                  {% else %}
+                     
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
