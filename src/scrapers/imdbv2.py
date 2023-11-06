@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
+
 from ..helpers import HEADERS
 import time
 from unicodedata import normalize
@@ -14,12 +14,15 @@ class IMDBV2(object):
 
   def __init__(self, title):
     self.scraper = Cinemagoer()
-    print("Scraping IMDB for: '{}'".format(title).encode('utf-8'))
+    print(("Scraping IMDB for: '{}'".format(title).encode('utf-8')))
     self.hits = self.scraper.search_movie("{}".format(title).encode('utf-8'))
     if len(self.hits) == 0:
       self.__add_to_skip_list(title)
       raise Exception("No results found for {}. Skipping".format(title))
-    self.detailed_hit = self.scraper.get_movie(self.hits[0].movieID)
+    movie_id = self.hits[0].movieID
+    print(("Searching for movie with id: {}".format(movie_id)))
+    time.sleep(1)
+    self.detailed_hit = self.scraper.get_movie(movie_id)
 
   def __assemble_url(self, movie_id):
     return self.BASE_URL + self.MOVIE_PATH + movie_id

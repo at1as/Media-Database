@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from helpers import HEADERS
-from scrapers.imdbv1 import IMDBV1
-from scrapers.imdbv2 import IMDBV2
+
+from .helpers import HEADERS
+from .scrapers.imdbv1 import IMDBV1
+from .scrapers.imdbv2 import IMDBV2
 
 class Scraper(object):
 

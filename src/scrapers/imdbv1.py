@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
+
 from ..helpers import HEADERS
-from base_scraper import BaseScraper
+from .base_scraper import BaseScraper
 import lxml.html
 import requests
 import time
@@ -43,7 +43,7 @@ class IMDBV1(BaseScraper):
 
   def get_director(self, xml_doc):
     try:
-      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a'))
+      return [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a')]
     except IndexError:
       return ''
 
@@ -79,9 +79,9 @@ class IMDBV1(BaseScraper):
 
   def get_stars(self, xml_doc):
     try:
-      res = map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a'))[0:-1]
+      res = [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a')][0:-1]
       if not res:
-        return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
+        return [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a')][0:-1]
     except IndexError:
       try:
         return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[3]/span/a/span/text()')
@@ -134,13 +134,13 @@ class IMDBV1(BaseScraper):
 
   def get_creator(self, xml_doc):
     try:
-      return map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a'))
+      return [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][1]//a')]
     except IndexError:
       return ''
 
   def get_series_stars(self, xml_doc):
     try:
-      cast = map(lambda x: x.text, xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a'))[0:-1]
+      cast = [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a')][0:-1]
       if cast:
         return cast
       else:
@@ -165,7 +165,7 @@ class IMDBV1(BaseScraper):
       return URL associated with movie page by parsing search page DOM
       return None if no results are found
     """
-    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video Game)"]
+    invalid_results = ["(TV Episode)", "(TV Series)", "(TV Mini-Series)", "(Short)", "(Video Game)", "(Podcast Episode)"]
     search_page = self.get_search_page(title)
 
     try:

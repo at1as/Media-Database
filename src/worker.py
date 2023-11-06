@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
+
 from datetime import datetime
-from site_generator import SiteGenerator
-import helpers
-from helpers import video_media_details, get_filepath_from_dir, path_of_depth
-from image import Image
+from .site_generator import SiteGenerator
+from . import helpers
+from .helpers import video_media_details, get_filepath_from_dir, path_of_depth
+from .image import Image
 import json
-from message import Message
+from .message import Message
 import os
-import scraper
+from . import scraper
 
 
 class Worker():
@@ -107,8 +107,8 @@ class Worker():
           saved_files = json.load(saved_file_list)
 
           # Do not repeat scrape for already acquired title
-          if not saved_files.has_key(file_details['name']):
-            print("Now adding: %s : %s" %(path, file_details['name']))
+          if file_details['name'] not in saved_files:
+            print(("Now adding: %s : %s" %(path, file_details['name'])))
             filtered_file_list.append(file_details)
 
     return filtered_file_list
@@ -121,7 +121,7 @@ class Worker():
     try:
       # Enforce per asset type limit
       if not self.config["assets"][asset_type]["max_assets"] == 0:
-        print("Fetching up to " + str(self.config["assets"][asset_type]["max_assets"]) + " files for asset type: " + asset_type)
+        print(("Fetching up to " + str(self.config["assets"][asset_type]["max_assets"]) + " files for asset type: " + asset_type))
         return os.listdir(path)[0:self.config["assets"][asset_type]["max_assets"]]
       else:
         return os.listdir(path)
@@ -207,7 +207,7 @@ class Worker():
 
     # Import all pre-existing data from JSON file
     # TODO use relative path helper
-    print("Reading current saved info from path: " + self.config['assets'][base_path]['saved_data'])
+    print(("Reading current saved info from path: " + self.config['assets'][base_path]['saved_data']))
     with open(self.config['assets'][base_path]['saved_data'], 'r') as asset_feed:
       saved_assets = json.load(asset_feed)
 
@@ -223,6 +223,6 @@ class Worker():
       # Write combined asset contents to JSON file
       # TODO: use relative path helper
       with open(self.config['assets'][base_path]['saved_data'], 'w+') as asset_feed:
-        json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
+        json.dump(saved_assets, asset_feed, indent=4)
 
     return saved_assets

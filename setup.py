@@ -11,6 +11,7 @@ setup(
   install_requires=[
     'certifi==2017.7.27.1'
     'chardet==3.0.4'
+    'cinemagoer==2023.5.1'
     'idna==2.5'
     'Jinja2==2.9.6'
     'lxml==3.8.0'

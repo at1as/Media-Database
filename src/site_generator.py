@@ -1,6 +1,6 @@
-from __future__ import unicode_literals
+
 from datetime import datetime
-import helpers
+from . import helpers
 import jinja2
 import re
 
@@ -13,7 +13,7 @@ class SiteGenerator(object):
     """
       Extract 'S01' from "Doctor Who S01E01.mkv"
     """
-    return re.sub(r".*[sS]([0-9]{2})[eE][0-9]{2}.*", "\\1", episode_name)
+    return re.sub(r".*[sS]([0-9]{2})[eE][0-9]{2}.*", "\\1", str(episode_name))
 
   @staticmethod
   def build_site(saved_movies, saved_series):
@@ -54,7 +54,7 @@ class SiteGenerator(object):
     )
 
     f = open("_output/index.html", "w")
-    f.write(movies_page.encode('utf-8'))
+    f.write(movies_page)
     f.close
 
 
@@ -67,7 +67,7 @@ class SiteGenerator(object):
     )
 
     f = open("_output/series.html", "w")
-    f.write(series_page.encode('utf-8'))
+    f.write(series_page)
     f.close
 
 
@@ -81,7 +81,7 @@ class SiteGenerator(object):
     )
 
     f = open("_output/about.html", "w")
-    f.write(about_page.encode('utf-8'))
+    f.write(about_page)
     f.close
 
 
@@ -98,7 +98,7 @@ class SiteGenerator(object):
       )
 
       f = open(output_dir, "w")
-      f.write(movie_page.encode('utf-8'))
+      f.write(movie_page)
       f.close
 
 
@@ -114,5 +114,5 @@ class SiteGenerator(object):
       )
 
       f = open(output_dir, "w")
-      f.write(series_page.encode('utf-8'))
+      f.write(series_page)
       f.close
