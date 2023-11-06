@@ -14,5 +14,6 @@
     }
   },
   "exclude_files"     : [],
-  "include_extensions": ["avi", "divx", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ogm", "qt", "rm", "ts", "wmv"]
+  "include_extensions": ["avi", "divx", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ogm", "qt", "rm", "ts", "wmv"],
+  "pause_time_ms"     : 500
 }
