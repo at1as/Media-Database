@@ -114,17 +114,17 @@ class Worker():
     return filtered_file_list
 
 
-  def verify_file_list(self, asset_type, path):
+  def verify_file_list(self, asset_type, path) -> list[str]:
     """
       Return list of files from directoy, or exit if path is invalid_results
     """
     try:
       # Enforce per asset type limit
-      if not self.config["assets"][asset_type]["max_assets"] == 0:
+      if self.config["assets"][asset_type]["max_assets"] <= 0:
+        return os.listdir(path)
+      else:
         print(("Fetching up to " + str(self.config["assets"][asset_type]["max_assets"]) + " files for asset type: " + asset_type))
         return os.listdir(path)[0:self.config["assets"][asset_type]["max_assets"]]
-      else:
-        return os.listdir(path)
 
     except OSError:
       Message.error(
@@ -162,7 +162,14 @@ class Worker():
     for file_details in self.get_file_list(path, repo, mediatype):
 
       if mediatype == "movie":
-        self.movie_scraper = scraper.IMDBV2(file_details["name"])
+
+        movie_id_override = self.config["file_override"].get(file_details["relative_path"], None)
+        if movie_id_override:
+          print("Initializing movie scraper for {} with override id: {}".format(file_details["name"], movie_id_override))
+          self.movie_scraper = scraper.IMDBV2(file_details["name"], movie_id_override)
+        else:
+          self.movie_scraper = scraper.IMDBV2(file_details["name"])
+
         file_attributes = self.movie_scraper.get_movie_details(file_details, None)
         file_attributes['file_metadata'] = {}
         file_attributes['file_metadata']['filename']  = file_details['name']
