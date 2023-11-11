@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 
-from ..helpers import HEADERS
+from ..helpers import HEADERS, verify_config_file
 import time
 from unicodedata import normalize
 from imdb import Cinemagoer
@@ -12,17 +12,31 @@ class IMDBV2(object):
   MOVIE_PATH = "/title/tt"
   SKIP_LIST_PATH = "./skip_list"
 
-  def __init__(self, title):
+  def __init__(self, title, foreign_id=None):
     self.scraper = Cinemagoer()
+    self.config = verify_config_file()
+
     print(("Scraping IMDB for: '{}'".format(title).encode('utf-8')))
-    self.hits = self.scraper.search_movie("{}".format(title).encode('utf-8'))
-    if len(self.hits) == 0:
-      self.__add_to_skip_list(title)
-      raise Exception("No results found for {}. Skipping".format(title))
-    movie_id = self.hits[0].movieID
+
+    if foreign_id is not None:
+      movie_id = foreign_id
+    else:
+      self.hits = self.scraper.search_movie("{}".format(title).encode('utf-8'))
+      if len(self.hits) == 0:
+        self.__add_to_skip_list(title)
+        raise Exception("No results found for {}. Skipping".format(title))
+      self.__sleep()
+      movie_id = self.hits[0].movieID
+
     print(("Searching for movie with id: {}".format(movie_id)))
-    time.sleep(1)
+
     self.detailed_hit = self.scraper.get_movie(movie_id)
+    self.__sleep()
+
+  def __sleep(self):
+    sleep_time = self.config.get("pause_time_sec", 1)
+    print("Sleeping for {} seconds".format(sleep_time))
+    time.sleep(sleep_time)
 
   def __assemble_url(self, movie_id):
     return self.BASE_URL + self.MOVIE_PATH + movie_id
