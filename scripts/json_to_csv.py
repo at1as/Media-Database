@@ -3,7 +3,7 @@
 import pandas as pd
 from datetime import datetime
 
-media_types = ['movie', 'series']
+media_types = ['movie', 'series', 'standup']
 
 for media_type in media_types:
 
@@ -14,7 +14,7 @@ for media_type in media_types:
     df_transposed = df.transpose()
     
     # Reorder the columns
-    if media_type == 'movie':
+    if media_type == 'movie' or media_type == 'standup':
         top_precedence_cols = ["title", "rating", "year", "genre", "description", "director", "stars", ]
     else:
         top_precedence_cols = ["title", "rating", "year", "genre", "description", "creator", "stars", ]
@@ -30,7 +30,7 @@ for media_type in media_types:
             return ', '.join(map(str, data)).replace('[', '').replace(']', '').replace('"', '')
         return data
     
-    if media_type == 'movie':
+    if media_type == 'movie' or media_type == 'standup':
         cleanup_columns = ['genre', 'languages', 'stars', 'director']
     else:
         cleanup_columns = ['genre', 'languages', 'stars', 'creator']
