@@ -132,19 +132,19 @@ def video_media_details(filepath):
   except TypeError:
     file_details["bit_rate"] = "{} kbps".format(int(video_track.bit_rate.split('/')[0]) / 1000)
 
-  if video_track.width == 7680:
+  if video_track.width in range (7660, 7700): # 7,680
     file_details["resolution"] = "8K"
 
-  elif video_track.width == 3480:
+  elif video_track.width in range(3820, 3860): # 3,840
     file_details["resolution"] = "4K"
 
-  elif video_track.width in range(1915, 1925):
+  elif video_track.width in range(1910, 1930): # 1,920
     file_details["resolution"] = "1080p"
 
-  elif video_track.width in range(1275, 1285):
+  elif video_track.width in range(1270, 1290): # 1,280
     file_details["resolution"] = "720p"
 
-  elif video_track.width < 1275:
+  elif video_track.width < 1270:
     file_details["resolution"] = "SD"
 
   else:
