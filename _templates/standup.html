@@ -30,12 +30,9 @@
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
 						<a class="nav-link active" href="./index.html">Movies
-             <span class="badge badge-secondary">
-                <span id="results_num" style="display:none">{{ movie_list|length }}</span>
-                <span id="mv_seperator" style="display:none"> / </span>
-                <span id="total_num">{{ movie_list|length }}</span>
+              <span class="badge badge-secondary">
+                <span>{{ number_of_movies }}</span>
               </span>
-							<span class="sr-only">(current)</span>
 						</a>
 					</li>
 					<li class="nav-item">
@@ -48,8 +45,11 @@
           <li class="nav-item">
 						<a class="nav-link" href="./standup.html">Standup
               <span class="badge badge-secondary">
-                <span>{{ number_of_standup }}</span>
+                <span id="results_num" style="display:none">{{ standup_list|length }}</span>
+                <span id="mv_seperator" style="display:none"> / </span>
+                <span id="total_num">{{ standup_list|length }}</span>
               </span>
+              <span class="sr-only">(current)</span>
 						</a>
 					</li>
 					<li class="nav-item">
@@ -248,57 +248,57 @@
             </tr>
           </thead>
           <tbody>
-            {% for movie in movie_list %}
+            {% for standup in standup_list %}
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
-                  <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
-                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
+                  <a href="#./standup/{{standup_list[standup].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{standup_list[standup].year}}).html" onclick="load_details(this)">
+                    <img width="200px" src="images/standup/{{standup_list[standup].file_metadata.filename}}.png"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
-                  {{ movie_list[movie].rating }}
+                  {{ standup_list[standup].rating }}
                 </td>
                 <td name="vote_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {{ movie_list[movie].votes }}
+                  {{ standup_list[standup].votes }}
                 </td>
-                <td sorttable_customkey="{{ movie_list[movie].title }}" class="vertical-row">
+                <td sorttable_customkey="{{ standup_list[standup].title }}" class="vertical-row">
                   <a
-                    href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html"
+                    href="#./standup/{{standup_list[standup].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{standup_list[standup].year}}).html"
                     onclick="load_details(this)"
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
-                    title="{{ movie_list[movie].description|replace('"', '&quot;') }}"
+                    title="{{ standup_list[standup].description|replace('"', '&quot;') }}"
                   >
-                    {{ movie_list[movie].title }}
+                    {{ standup_list[standup].title }}
                   </a>
                   <!-- ' -->
                 </td>
                 <td name="year_data" class="vertical-row">
-                  {{ movie_list[movie].year }}
+                  {{ standup_list[standup].year }}
                 </td>
                 <td name="resolution_data" class="hidden-sm hidden-xs vertical-row" style="text-align:center;">
-                  <span class="badge badge-secondary">{{ movie_list[movie].media.resolution }}</span>
+                  <span class="badge badge-secondary">{{ standup_list[standup].media.resolution }}</span>
                 </td>
                 <td name="genres_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ movie_list[movie].genre|join(',<br>') }}
+                  {{ standup_list[standup].genre|join(',<br>') }}
                 </td>
                 <td name="stars_data" class="hidden-sm hidden-xs vertical-row">
-                  {{ movie_list[movie].stars[:5] | join(',<br/>') }}
+                  {{ standup_list[standup].stars[:5] | join(',<br/>') }}
                 </td>
-                {% if movie_list[movie].director is string %}
+                {% if standup_list[standup].director is string %}
                   <!-- legacy code for when only one director was listed -->
                   <td name="director_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                    {{ movie_list[movie].director }}
+                    {{ standup_list[standup].director }}
                   </td>
                 {% else %}
                   <td name="director_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                    {{ movie_list[movie].director | join(',<br>') }}
+                    {{ standup_list[standup].director | join(',<br>') }}
                   </td>
                 {% endif %}
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {%if movie_list[movie].languages is iterable %}
-                  {{ movie_list[movie].languages | join(', ') }}
+                  {%if standup_list[standup].languages is iterable %}
+                  {{ standup_list[standup].languages | join(', ') }}
                   {% endif %}
                 </td>
               </tr>

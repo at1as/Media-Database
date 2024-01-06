@@ -23,16 +23,19 @@ class Worker():
     script_started = datetime.now()
 
     if dry_run:
-      saved_movies = self.write_scraped_data("movies", [])
-      saved_series = self.write_scraped_data("series", [])
-      SiteGenerator.build_site(saved_movies, saved_series)
+      saved_movies  = self.write_scraped_data("movies", [])
+      saved_series  = self.write_scraped_data("series", [])
+      saved_standup = self.write_scraped_data("standup", [])
+      SiteGenerator.build_site(saved_movies, saved_series, saved_standup)
     else:
       added_movies = self.fetch_new_files("movies", "movie")
       added_series = self.fetch_new_files("series", "series")
+      added_standup = self.fetch_new_files("standup", "standup")
       saved_movies = self.write_scraped_data("movies", added_movies)
       saved_series = self.write_scraped_data("series", added_series)
+      saved_standup = self.write_scraped_data("standup", added_standup)
 
-      SiteGenerator.build_site(saved_movies, saved_series)
+      SiteGenerator.build_site(saved_movies, saved_series, saved_standup)
 
     time_taken = (datetime.now() - script_started).seconds
     Message.success("Script completed after {} seconds\n".format(time_taken))
@@ -185,8 +188,18 @@ class Worker():
         file_attributes['directory']['absolute_path'] = file_details['full_path']
         file_attributes['directory']['relative_path'] = file_details['relative_path']
 
+      elif mediatype == "standup":
+        self.movie_scraper = scraper.IMDBV2(file_details["name"])
+
+        file_attributes = self.movie_scraper.get_standup_details(file_details, None)
+        file_attributes['file_metadata'] = {}
+        file_attributes['file_metadata']['filename'] = file_details['name']
+        file_attributes['file_metadata']['extension'] = file_details['extension']
+        file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
+        file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
+
       if file_attributes != None:
-        if mediatype == "movie":
+        if mediatype == "movie" or mediatype == "standup":
           file_attributes['media'] = video_media_details(file_details['full_path'])
 
         elif mediatype == "series":
@@ -222,7 +235,7 @@ class Worker():
 
       # Add new saved assets to JSON file
       for asset in additional_assets:
-        if base_path == "movies":
+        if base_path == "movies" or base_path == "standup":
           saved_assets[asset['file_metadata']['filename']] = asset
         else:
           saved_assets[asset['directory']['name']] = asset

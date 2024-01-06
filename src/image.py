@@ -32,6 +32,8 @@ class Image(object):
       media_dir = "movies"
     elif mediatype == "series":
       media_dir = "series"
+    elif mediatype == "standup":
+      media_dir = "standup"
 
     try:
       # TODO use relative_path helper function
