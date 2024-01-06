@@ -92,3 +92,7 @@ class IMDBV2(object):
         'image_url':         self.detailed_hit.get('full-size cover url'),
         'type':              self.detailed_hit.get('kind'),
     }
+
+  def get_standup_details(self, standup, standup_url):
+    """ Scrape standup page for attributes specified below """
+    return self.get_movie_details(standup, standup_url)

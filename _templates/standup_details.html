@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color:#EEE">
+  <head>
+    <meta charset="utf-8">
+    <title>Local standup Database</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+    <link href="../../_resources/css/common.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body role="document" class="title-body">
+
+    <div class="container theme-showcase" role="main" style="padding:0px; width:100%">
+      <div id="title_content" class="jumbotron">
+
+        <h2 class="title-title"> {{standup.title}} ({{standup.year}}) </h2>
+        {% if standup.alternative_title %}
+        <div><b>Alternative Title : </b> {{ standup.alternative_title }}</div>
+        {% endif %}
+
+        <span style="vertical-align:top">
+          <a href="../images/standup/{{standup.file_metadata.filename}}.png">
+            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/standup/{{standup.file_metadata.filename}}.png">
+          </a>
+        </span>
+
+        <span id="title-header">
+
+          <div class="form-group">
+            <span id="star">&#9733; </span>
+            <h4 id="item-rating" style="font-size:1.25rem"><b> {{standup.rating}} / 10</b> ({{standup.votes}} votes) </h4>
+          </div>
+
+          <div style="margin-left:10px">
+            <h5 style="border: 1px solid #AAA; border-radius:5px; padding:10px; font-size: 0.8rem; background-color: black;color: white; text-align:center">
+              {% if not standup.content_rating %}
+              {% elif standup.content_rating is string %}
+                <span id="item-content-rating">
+                  {{standup.content_rating}}
+                </span> -
+              {% else %}
+                <span id="item-content-rating">
+                  {{standup.content_rating[0]}}
+                </span> -
+              {% endif %}
+
+              {% if standup.running_time %}
+              <span id="item-running-time">{{standup.running_time}} mins</span> -
+              {% endif %}
+
+              {% if standup.genre %}
+              <span style="margin-left:10px">
+                {% for item in standup.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
+              </span>
+              {% endif %}
+          </div>
+
+          <h4 style="padding-top:25px">Directed By:</h4>
+          <div style="margin-left:10px">
+            <!-- legacy code for when only one director was listed -->
+            {% if standup.director is string %}
+              <h5 style="font-weight:400"> {{standup.director}} </h5>
+            {% else %}
+              {% for item in standup.director %}
+                <h5 style="font-weight:400"> {{item}} </h5>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <h4 style="padding-top:25px">Cast:</h4>
+          <div style="margin-left:10px">
+            {% for item in standup.stars[:5] %}
+              <h5 style="font-weight:400"> {{item}} </h5>
+            {% endfor %}
+          </div>
+
+          <h4 style="padding-top:25px">Languages:</h4>
+          <div style="margin-left:10px;">
+            {% if standup.languages is iterable %}
+              {% for item in standup.languages %}
+              <h5 class="title-language"> {{item}} </h5>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <h4 style="padding-top:25px">Media Details:</h4>
+          {% if standup.media.resolution %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">Resolution:
+                <span style="font-weight:800">
+                  {{standup.media.resolution}}
+                  {% if standup.media.width and standup.media.height %}
+                    ({{standup.media.width}}x{{standup.media.height}})
+                  {% endif %}
+                </span>
+              </h5>
+            </div>
+          {% endif %}
+          {% if standup.media.format %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">Format: <span style="font-weight:800">{{standup.media.format}}</span></h5>
+            </div>
+          {% endif %}
+          {% if standup.media.bit_rate %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">Bitrate: <span style="font-weight:800">{{standup.media.bit_rate}}</span></h5>
+            </div>
+          {% endif %}
+          {% if standup.file_metadata.extension %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">File Extension: <span style="font-weight:800">{{standup.file_metadata.extension}}</span></h5>
+            </div>
+          {% endif %}
+          {% if standup.media.subtitles %}
+            <div style="margin-left:10px">
+              <h5 style="font-weight:400">Subtitles: <span style="font-weight:800">{{standup.media.subtitles|join(', ')}}</span></h5>
+            </div>
+          {% endif %}
+        </span>
+        <hr>
+
+        {% if 'awards' in standup %}
+          {% if 'awards_link' in standup %}
+            <div id="item-awards">
+              <a target="_blank" href="{{ standup.awards_link }}">{{ standup.awards}}</a>
+            </div>
+          {% elif standup.awards|length > 0 %}
+            <div id="item-awards">
+              {{ standup.awards }}
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <div id="item-description">
+          <p> {{standup.description}} </p>
+        </div>
+        <p id="title-url"><a href="{{standup.url}}" target="_blank">Go to IMDB</a></p>
+        <div id="data-retrieved">
+          <div>Data Retrieved: {{standup.info_retrieved}}</div>
+          <div>File / Directory Name: &quot;{{standup.file_metadata.filename}}&quot;</div>
+
+          {% if standup.file_metadata.extension == "mp4" %}
+            <video src="{{standup.file_metadata.absolute_path}}" controls style="width:100%; margin-top:20px"></video>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

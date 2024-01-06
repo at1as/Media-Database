@@ -46,6 +46,13 @@
 							<span class="sr-only">(current)</span>
 						</a>
 					</li>
+          <li class="nav-item">
+						<a class="nav-link" href="./standup.html">Standup
+              <span class="badge badge-secondary">
+                <span>{{ number_of_standup }}</span>
+              </span>
+						</a>
+					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="./about.html">About</a>
 					</li>
@@ -241,10 +248,10 @@
                   {{ series_list[series].stars[:5] | join(',<br/>') }}
                 </td>
                 <td name="languages_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {% if series_list[series].languages %} 
+                  {% if series_list[series].languages %}
                     {{ series_list[series].languages|default([])|join(', ') }}
                   {% else %}
-                     
+
                   {% endif %}
                 </td>
               </tr>
