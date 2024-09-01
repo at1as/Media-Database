@@ -1,110 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Local Movie Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Local Movie Database - About</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
-    <link href="../_resources/favicon.png" rel="shotcut icon" type="image/png"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link href="../_resources/favicon.png" rel="shortcut icon" type="image/png"/>
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .navbar {
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+      }
+      .body-container {
+        margin-top: 2rem;
+      }
+      .about-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,.1);
+        padding: 2rem;
+      }
+      .about-card hr {
+        border-top: 1px solid #e9ecef;
+      }
+      .about-card a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .about-card a:hover {
+        text-decoration: underline;
+      }
+      .search-usage {
+        background-color: #f1f3f5;
+        border-radius: 5px;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+    </style>
   </head>
 
-  <body role="document">
-    <nav class="navbar navbar-expand-lg navbar-fixed-top navbar-dark bg-dark">
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="./index.html">Movies
-             <span class="badge badge-secondary">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="./index.html">Movies
+              <span class="badge badge-secondary">
                 <span>{{ number_of_movies }}</span>
               </span>
-							<span class="sr-only">(current)</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="./series.html">Series
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./series.html">Series
               <span class="badge badge-secondary">
                 <span>{{ number_of_series }}</span>
               </span>
-						</a>
-					</li>
+            </a>
+          </li>
           <li class="nav-item">
-						<a class="nav-link" href="./standup.html">Standup
+            <a class="nav-link" href="./standup.html">Standup
               <span class="badge badge-secondary">
                 <span>{{ number_of_standup }}</span>
               </span>
-						</a>
-					</li>
-					<li class="nav-item active">
-						<a class="nav-link active" href="./about.html">About</a>
-					</li>
-				</ul>
-			</div>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link active" href="./about.html">About</a>
+          </li>
+        </ul>
+      </div>
     </nav>
 
-    <div class="container theme-showcase body-container" role="main">
-      <div class="mx-auto well col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 mb-5">
-        <p>
-          <b>IMDB-Scrape</b> creates a local movie database containing information related to your movie collection.
-          Webpages are staticly generated and uploaded to the <i>_output/</i> directory. Rerun the script every
-          time a new file is added to the directory
-        </p>
-        <p style="margin-top:25px">
-          <b>Homepage :</b>
-          <a href="https://github.com/at1as/IMDB-Scrape">https://github.com/at1as/IMDB-Scrape</a>
-        </p>
-        <p>
-          <b>Bugs :</b>
-          <a href="https://github.com/at1as/IMDB-Scrape/issues">https://github.com/at1as/IMDB-Scrape/issues</a>
-        </p>
-        <p>
-          <b>Created by :</b> <a href="http://www.jasonwillems.com">Jason M. Willems</a>
-        </p>
-        <p>
-          <b>License :</b> <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE">MIT License</a>
-        </p>
-        <p>
-          <b>Data Sources:</b> <a href="http://imdb.com">IMDB</a>
-        </p>
-        <hr>
-
-        <p><b>Search Filter Usage</b></p>
-        <p>
-        Genres, Cast, and Language fields support multiple comma-separated queries:
-        <br><br>-&gt;<b> "Sci-Fi, Action" </b>
-        <br>
-        -&gt; Returns titles that are both Sci-Fi and Action
-        <br><br>
-
-        As well as negative queries:
-        <br><br>-&gt;<b> "Sci-Fi, Action, !Drama" </b>
-        <br>
-        -&gt; Returns titles that are marked as both Sci-Fi and Action while not being marked as Drama
-        <br><br>
-
-        Search queries do a match on the start of the string:
-        <br><br>-&gt;<b> "Po" </b>
-        <br>
-        -&gt; Returns titles marked as Portuguese, Polish, etc
-        </p>
-
-        <hr>
-        <p style="text-align:center">
-          <b>Last Report Generated :</b> <span style="display:block">{{ time }}</span>
-        </p>
+    <div class="container body-container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="about-card">
+            <h2 class="mb-4">About Media Database</h2>
+            <p>
+              <strong>Media Database</strong> creates a local movie database containing information related to your movie collection.
+              Webpages are statically generated and uploaded to the <em>_output/</em> directory. Rerun the script every
+              time a new file is added to the directory.
+            </p>
+            <hr>
+            <p><strong>Homepage:</strong> <a href="https://github.com/at1as/IMDB-Scrape">https://github.com/at1as/IMDB-Scrape</a></p>
+            <p><strong>Bugs:</strong> <a href="https://github.com/at1as/IMDB-Scrape/issues">https://github.com/at1as/IMDB-Scrape/issues</a></p>
+            <p><strong>Created by:</strong> <a href="http://www.jasonwillems.com">Jason M. Willems</a></p>
+            <p><strong>License:</strong> <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE">MIT License</a></p>
+            <p><strong>Data Sources:</strong> <a href="http://imdb.com">IMDB</a></p>
+            <hr>
+            <h4 class="mt-4 mb-3">Search Filter Usage</h4>
+            <div class="search-usage">
+              <p>Genres, Cast, and Language fields support multiple comma-separated queries:</p>
+              <p><code>"Sci-Fi, Action"</code> → Returns titles that are both Sci-Fi and Action</p>
+              <p>As well as negative queries:</p>
+              <p><code>"Sci-Fi, Action, !Drama"</code> → Returns titles that are marked as both Sci-Fi and Action while not being marked as Drama</p>
+              <p>Search queries do a match on the start of the string:</p>
+              <p><code>"Po"</code> → Returns titles marked as Portuguese, Polish, etc</p>
+            </div>
+            <hr>
+            <p class="text-center mt-4">
+              <strong>Last Report Generated:</strong> <span class="d-block">{{ time }}</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   </body>
 </html>
