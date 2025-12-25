@@ -61,7 +61,7 @@ class Worker():
     return []
 
 
-  def get_file_list(self, path, repo, mediatype):
+  def get_file_list(self, path, repo, mediatype, limit=None):
     """
       return list of files, for files whose information has not yet been scraped:
         [
@@ -113,6 +113,8 @@ class Worker():
           if file_details['name'] not in saved_files:
             print(("Now adding: %s : %s" %(path, file_details['name'])))
             filtered_file_list.append(file_details)
+            if isinstance(limit, int) and limit > 0 and len(filtered_file_list) >= limit:
+              return filtered_file_list
 
     return filtered_file_list
 
@@ -162,41 +164,62 @@ class Worker():
     """
 
     file_attributes_list = []
-    for file_details in self.get_file_list(path, repo, mediatype):
+
+    # Determine asset type key for config lookup
+    asset_type = "movies" if mediatype == "movie" else mediatype
+
+    # Optionally cap how many NEW items to process via conf: assets.<type>.max_assets_chunk
+    max_chunk = self.config["assets"].get(asset_type, {}).get("max_assets_chunk", None)
+
+    # Gather list of new files not yet in saved repo, stopping early if a limit is set
+    new_files = self.get_file_list(path, repo, mediatype, max_chunk if isinstance(max_chunk, int) and max_chunk > 0 else None)
+
+    for file_details in new_files:
 
       if mediatype == "movie":
+        try:
+          movie_id_override = self.config["file_override"].get(file_details["relative_path"], None)
+          if movie_id_override:
+            print("Initializing movie scraper for {} with override id: {}".format(file_details["name"], movie_id_override))
+            self.movie_scraper = scraper.IMDBV2(file_details["name"], movie_id_override)
+          else:
+            self.movie_scraper = scraper.IMDBV2(file_details["name"])
 
-        movie_id_override = self.config["file_override"].get(file_details["relative_path"], None)
-        if movie_id_override:
-          print("Initializing movie scraper for {} with override id: {}".format(file_details["name"], movie_id_override))
-          self.movie_scraper = scraper.IMDBV2(file_details["name"], movie_id_override)
-        else:
-          self.movie_scraper = scraper.IMDBV2(file_details["name"])
-
-        file_attributes = self.movie_scraper.get_movie_details(file_details, None)
-        file_attributes['file_metadata'] = {}
-        file_attributes['file_metadata']['filename']  = file_details['name']
-        file_attributes['file_metadata']['extension'] = file_details['extension']
-        file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
-        file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
+          file_attributes = self.movie_scraper.get_movie_details(file_details, None)
+          file_attributes['file_metadata'] = {}
+          file_attributes['file_metadata']['filename']  = file_details['name']
+          file_attributes['file_metadata']['extension'] = file_details['extension']
+          file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
+          file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
+        except Exception as e:
+          Message.warn("Skipping movie '{}': {}".format(file_details['name'], e))
+          continue
 
       elif mediatype == "series":
-        self.series_scraper = scraper.IMDBV2(file_details["name"])
-        file_attributes = self.series_scraper.get_series_details(file_details, None)
-        file_attributes['directory'] = {}
-        file_attributes['directory']['name'] = file_details['name']
-        file_attributes['directory']['absolute_path'] = file_details['full_path']
-        file_attributes['directory']['relative_path'] = file_details['relative_path']
+        try:
+          self.series_scraper = scraper.IMDBV2(file_details["name"])
+          file_attributes = self.series_scraper.get_series_details(file_details, None)
+          file_attributes['directory'] = {}
+          file_attributes['directory']['name'] = file_details['name']
+          file_attributes['directory']['absolute_path'] = file_details['full_path']
+          file_attributes['directory']['relative_path'] = file_details['relative_path']
+        except Exception as e:
+          Message.warn("Skipping series '{}': {}".format(file_details['name'], e))
+          continue
 
       elif mediatype == "standup":
-        self.movie_scraper = scraper.IMDBV2(file_details["name"])
+        try:
+          self.movie_scraper = scraper.IMDBV2(file_details["name"])
 
-        file_attributes = self.movie_scraper.get_standup_details(file_details, None)
-        file_attributes['file_metadata'] = {}
-        file_attributes['file_metadata']['filename'] = file_details['name']
-        file_attributes['file_metadata']['extension'] = file_details['extension']
-        file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
-        file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
+          file_attributes = self.movie_scraper.get_standup_details(file_details, None)
+          file_attributes['file_metadata'] = {}
+          file_attributes['file_metadata']['filename'] = file_details['name']
+          file_attributes['file_metadata']['extension'] = file_details['extension']
+          file_attributes['file_metadata']['absolute_path'] = file_details['full_path']
+          file_attributes['file_metadata']['relative_path'] = file_details['relative_path']
+        except Exception as e:
+          Message.warn("Skipping standup '{}': {}".format(file_details['name'], e))
+          continue
 
       if file_attributes != None:
         if mediatype == "movie" or mediatype == "standup":

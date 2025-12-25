@@ -1,13 +1,23 @@
-.PHONY: test run
+.PHONY: test run dryrun venv deps
 
 CWD = $(shell pwd)
+VENV = ./mediadb
+PY   = $(VENV)/bin/python
+PIP  = $(VENV)/bin/pip
 
-test:
-		python -m unittest discover -s tests
+venv:
+	@test -d $(VENV) || python3 -m venv $(VENV)
+	@$(PIP) install --upgrade pip
 
-run:
-		python run.py
+deps: venv
+	@$(PIP) install --upgrade cinemagoer jinja2 lxml requests pymediainfo
 
-dryrun:
-		python run.py --dry-run
+test: deps
+		$(PY) -m unittest discover -s tests
+
+run: deps
+		$(PY) run.py
+
+dryrun: deps
+		$(PY) run.py --dry-run
 

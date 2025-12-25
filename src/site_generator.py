@@ -3,6 +3,7 @@ from datetime import datetime
 from . import helpers
 import jinja2
 import re
+import os
 
 class SiteGenerator(object):
   def __init__(self):
@@ -25,6 +26,14 @@ class SiteGenerator(object):
     num_movies = len(saved_movies)
     num_series = len(saved_series)
     num_standup = len(saved_standup)
+
+    os.makedirs("_output", exist_ok=True)
+    os.makedirs("_output/movies", exist_ok=True)
+    os.makedirs("_output/series", exist_ok=True)
+    os.makedirs("_output/standup", exist_ok=True)
+    os.makedirs("_output/images/movies", exist_ok=True)
+    os.makedirs("_output/images/series", exist_ok=True)
+    os.makedirs("_output/images/standup", exist_ok=True)
 
     # Output Environment for static html generation
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))

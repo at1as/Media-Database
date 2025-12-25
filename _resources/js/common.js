@@ -57,6 +57,52 @@ function search_movie_table(table_id) {
     }
   }
 
+  // filter each tile
+  var tiles = document.querySelectorAll('[name="tile_data"]');
+
+  tiles.forEach(tile => {
+    var rating_cell = tile.querySelector('[name="rating_data"]').textContent;
+    var vote_cell = tile.querySelector('[name="vote_data"]').textContent;
+    var title_cell = tile.querySelector('[name="title_data"]').textContent;
+    var year_cell = tile.querySelector('[name="year_data"]').textContent;
+    var genre_cell = tile.querySelector('[name="genres_data"]').textContent;
+    var cast_cell = tile.querySelector('[name="stars_data"]').textContent;
+    var director_cell = tile.querySelector('[name="director_data"]').textContent;
+    var language_cell = tile.querySelector('[name="languages_data"]').textContent;
+
+    // Discard row if rating is empty or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (year_min_query !== '' && year_cell !== '' && (parseInt(year_cell) < parseInt(year_min_query))) {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (year_max_query !== '' && year_cell !== '' && (parseInt(year_cell) > parseInt(year_max_query))) {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (!substrings_in_list(genre_query, genre_cell, 'genre') && genre_query !== '') {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (!title_match(director_query, director_cell) && !title_match(director_query, remove_diacritics(director_cell)) && director_query !== '') {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else if (!substrings_in_list(language_query, language_cell, 'language') && language_query !== '') {
+      tile.style.setProperty('display', 'none', 'important');
+    }
+    else {
+      tile.style.display = '';
+    }
+  });
+
   // Update the filtered counter in the page header
   var count = 0;
   for (var j=1; j<movie_table.rows.length; j++) {
@@ -80,6 +126,16 @@ function search_movie_table(table_id) {
     count_spacer.style.display  = '';
   }
 
+  if (count === 0) {
+    document.getElementById('results-message').style.display = 'block';
+    movie_table.style.display = 'none';
+    //tiles.style.display = 'none';
+  } else {
+    document.getElementById('results-message').style.display = 'none';
+    //const viewType = document.getElementById('table-view-btn').classList.contains('btn-primary') ? 'table' : 'tile';
+    //this.toggleView(viewType);
+  }
+
   stripe_table();
 };
 
@@ -87,7 +143,7 @@ function search_movie_table(table_id) {
 // Refine Series Table based on current filters
 function search_series_table(table_id) {
   var series_table = document.getElementById(table_id);
-  
+
   // Get queries from each search field
   var rating_query    = document.getElementById('rating-search').value.toLowerCase();
   var vote_query      = document.getElementById('vote-search').value.toLowerCase().replace(/\,/g, '');
@@ -195,7 +251,7 @@ function substrings_in_list(query, item, filter_type) {
       if (current_query !== '!') { query_match.push(current_query); }
     }
   }
-  
+
   // If any 'match' queries are not present in item list return false
   for(var k=0; k<query_match.length; k++){
     positive_match = false;
@@ -205,7 +261,7 @@ function substrings_in_list(query, item, filter_type) {
     }
     if (!positive_match) { return false; }
   }
-  
+
   // If any 'not' queries are present in item list return false
   for(var m=0; m<query_not.length; m++){
 
@@ -220,9 +276,9 @@ function substrings_in_list(query, item, filter_type) {
         negative_match.push(false);
       }
     }
-    
-    if (negative_match.indexOf(true) !== -1) { 
-      return false; 
+
+    if (negative_match.indexOf(true) !== -1) {
+      return false;
     }
   }
   return true;
@@ -232,12 +288,12 @@ function substrings_in_list(query, item, filter_type) {
 function title_match(query, listing){
   // Split query string at '||' and remove empty elements from array, or partial search string
   // (trailing '|' or trailing ' ')
-  queries = query.split('||').map(function(x){ 
+  queries = query.split('||').map(function(x){
     return x.trim().replace(/\|/, '').trim();
-  }).filter(function(x){ 
+  }).filter(function(x){
     return x !== '';
   });
-  
+
   for(var i=0; i<query.length; i++){
     // TODO: Strip more than just the ':' (such as '-', '.', etc)
     if (listing.replace(':', '').indexOf(queries[i] ? queries[i].replace(':','') : queries[i]) !== -1){
@@ -391,10 +447,10 @@ function load_details(movie) {
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
   document.getElementById('modal-alert').innerHTML    = "<iframe id='frame' style='z-index: 12; max-width:800px; height:100%; width:100%; border:none; border-radius:3px' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
- 
+
   /* iFrame won't scroll on Desktop Safari unless this state is toggled */
-  var ua = navigator.userAgent.toLowerCase(); 
-  if (ua.indexOf('safari') != -1) { 
+  var ua = navigator.userAgent.toLowerCase();
+  if (ua.indexOf('safari') != -1) {
     if (ua.indexOf('chrome') > -1) {
       // Chrome
     } else {
@@ -435,7 +491,7 @@ function toggle_column_visibility(column_name) {
   var next_state    = "";
   column_cells[0].style.display === "none" ? next_state = "" : next_state = "none";
 
-  forEach(column_cells, function(cell) { 
+  forEach(column_cells, function(cell) {
     cell.style.display = next_state;
   });
 };
@@ -459,14 +515,14 @@ function random_selection() {
   /* Find item at index random_item in table (but search through visible rows) */
   for(var j = 0; j < all_items; j++){
     if (document.querySelectorAll('.table > tbody > tr')[j].style.display !== "none"){
-      
+
       if (displayed_item_count === random_item){
         displayed_item_index = j;
       }
       displayed_item_count++;
     }
   }
-  
+
   /* Find clickable title link for desired item in table */
   var table_row = document.querySelectorAll('.table > tbody > tr')[displayed_item_index];
   var table_row_name = table_row.querySelectorAll('td')[3];
@@ -494,6 +550,49 @@ function clear_filter(element_id){
   };
 };
 
+function toggleView(view) {
+  const table_view = document.getElementById('table-view');
+  const tile_view = document.getElementById('tile-view');
+
+  try {
+    table_view.style.display = (view === 'table') ? '' : 'none';
+    tile_view.style.display = (view === 'tile') ? '' : 'none';
+  } catch(err) {
+return;
+  }
+
+  // Update button styles
+  document.getElementById('table-view-btn').classList.toggle('btn-primary', view === 'table');
+  document.getElementById('table-view-btn').classList.toggle('btn-secondary', view !== 'table');
+  document.getElementById('tile-view-btn').classList.toggle('btn-primary', view === 'tile');
+  document.getElementById('tile-view-btn').classList.toggle('btn-secondary', view !== 'tile');
+
+  this.search_movie_table('results');
+}
+
+// Dark Mode
+function toggleDarkMode() {
+  const isDarkMode = document.body.classList.toggle('dark-theme');
+  localStorage.setItem('darkMode', isDarkMode);
+  updateDarkModeToggle(isDarkMode);
+}
+
+function updateDarkModeToggle(isDarkMode) {
+  const toggle = document.getElementById('darkModeToggle');
+  if (toggle) {
+    toggle.checked = isDarkMode;
+  }
+}
+
+function applyDarkMode() {
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  document.body.classList.toggle('dark-theme', isDarkMode);
+  updateDarkModeToggle(isDarkMode);
+}
+
+// Call this function when the document is ready
+document.addEventListener('DOMContentLoaded', applyDarkMode);
+
 
 /* Called on Document Load */
 // Stylized Tooltips
@@ -502,7 +601,6 @@ $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip({
     html: true
   });
-  
+
   $("a.tooltip-info").tooltip();
 });
-
