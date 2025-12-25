@@ -19,6 +19,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      .filter-bar {
+        display: flex;
+        align-items: center;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .filter-item {
+        margin-right: 10px;
+        position: relative;
+      }
+      .filter-button {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      .filter-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        display: none;
+        z-index: 1000;
+      }
+      .filter-dropdown input {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+    </style>
   </head>
 
   <body role="document">
@@ -61,133 +97,76 @@
     </nav>
     <div class="container-fluid theme-showcase body-container" role="main">
 
-      <!-- Filters -->
-      <div id="filters" class="mx-auto ml-5 mr-5 jumbotron filter-container col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-12 col-xs-12">
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Title</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="title-search" type="search" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('title-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Rating (Min)</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="rating-search" type="number" min="0" step="0.1" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('rating-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Votes (Min)</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="vote-search" type="number" min="0" step="1" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('vote-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Start Year (Min)</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="year-min-search" type="number" step="1" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-min-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">End Year (Min)</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="year-max-search" type="number" step="1" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-max-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Genres</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="genre-search" type="search" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('genre-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Drama, Action, !Comedy']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Cast</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="cast-search" type="search" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('cast-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <div class="form-group row tight-form-spacing">
-              <label class="col-md-3 col-form-label">Languages</label>
-              <div class="col-md-9" style="display:inherit">
-                <input class="form-control" id="language-search" type="search" onkeyup="search_series_table('results')" spellcheck="false">
-                <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('language-search'); search_series_table('results')"></i>
-                <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'German, !Dutch']" tabindex="-1">
-                  <i class="fas fa-info-circle fa-2x question-filter"></i>
-                </a>
-              </div>
+      <!-- Airtable-like Filters -->
+      <div class="filter-bar">
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('title')">Title</button>
+          <div id="title-filter" class="filter-dropdown">
+            <input type="text" id="title-search" onkeyup="search_series_table('results')" placeholder="Search titles...">
           </div>
         </div>
-
-        <!-- Table column visibility toggle -->
-        <hr/>
-        <div class="table-columns-toggle-section">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
-            <label class="form-check-label" for="image_data_checkbox">Image</label>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('rating')">Rating</button>
+          <div id="rating-filter" class="filter-dropdown">
+            <input type="number" id="rating-search" min="0" step="0.1" onkeyup="search_series_table('results')" placeholder="Min rating...">
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
-            <label class="form-check-label" for="languages_data_checkbox">Languages</label>
+        </div>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('votes')">Votes</button>
+          <div id="votes-filter" class="filter-dropdown">
+            <input type="number" id="vote-search" min="0" step="1" onkeyup="search_series_table('results')" placeholder="Min votes...">
+          </div>
+        </div>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('year')">Year</button>
+          <div id="year-filter" class="filter-dropdown">
+            <input type="number" id="year-min-search" step="1" onkeyup="search_series_table('results')" placeholder="Start year...">
+            <input type="number" id="year-max-search" step="1" onkeyup="search_series_table('results')" placeholder="End year...">
+          </div>
+        </div>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('genre')">Genres</button>
+          <div id="genre-filter" class="filter-dropdown">
+            <input type="text" id="genre-search" onkeyup="search_series_table('results')" placeholder="Search genres...">
+          </div>
+        </div>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('cast')">Cast</button>
+          <div id="cast-filter" class="filter-dropdown">
+            <input type="text" id="cast-search" onkeyup="search_series_table('results')" placeholder="Search cast...">
+          </div>
+        </div>
+        <div class="filter-item">
+          <button class="filter-button" onclick="toggleFilter('language')">Languages</button>
+          <div id="language-filter" class="filter-dropdown">
+            <input type="text" id="language-search" onkeyup="search_series_table('results')" placeholder="Search languages...">
           </div>
         </div>
       </div>
 
-      <!-- Show / Hide filter toggle -->
-      <div id="filter_toggle">
-        <button id="filter_toggle_btn" class="btn btn-small" onclick="filter_toggle()">
-          Hide Search Filters
-        </button>
+      <script>
+        function toggleFilter(filterId) {
+          const filterDropdown = document.getElementById(filterId + '-filter');
+          if (filterDropdown.style.display === 'none' || filterDropdown.style.display === '') {
+            filterDropdown.style.display = 'block';
+          } else {
+            filterDropdown.style.display = 'none';
+          }
+        }
+      </script>
+
+      <!-- Table column visibility toggle -->
+      <div class="table-columns-toggle-section">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
+          <label class="form-check-label" for="image_data_checkbox">Image</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="toggle_column_visibility('languages_data')">
+          <label class="form-check-label" for="languages_data_checkbox">Languages</label>
+        </div>
       </div>
+
       <div id="random_selection">
         <button id="random_selection_btn" class="btn btn-small" onclick="random_selection()">
           Choose Random from Selection

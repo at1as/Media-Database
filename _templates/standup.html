@@ -62,7 +62,167 @@
 
       <!-- Filters -->
       <div id="filters" class="mx-auto jumbotron filter-container ml-5 mr-5">
+        <form id="filter-form">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="title-search">Title</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="title-search" placeholder="Search title" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('title-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Searches for any word in title beginning with your query [ex. 'Dia' returns 'Blood Diamond']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="rating-search">Rating (Min)</label>
+              <div class="input-group">
+                <input type="number" class="form-control" id="rating-search" min="0" max="10.0" step="0.1" placeholder="Minimum rating" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('rating-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="vote-search">Votes (Min)</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="vote-search" placeholder="Minimum votes" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('vote-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Integer Number of Votes [ex. '100000', '1,000,0000']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <label for="year-min-search">Year (Min)</label>
+              <div class="input-group">
+                <input type="number" class="form-control" id="year-min-search" placeholder="From year" step="1" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('year-min-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Format YYYY [ex. '2014']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <label for="year-max-search">Year (Max)</label>
+              <div class="input-group">
+                <input type="number" class="form-control" id="year-max-search" placeholder="To year" step="1" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('year-max-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Format YYYY [ex. '2014']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="genre-search">Genres</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="genre-search" placeholder="Search genres" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('genre-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Comma-separated list. '!' preceding a term will exclude those from the listing [ex. 'Drama, Action, !Comedy']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="cast-search">Cast</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="cast-search" placeholder="Search cast" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('cast-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Comma-separated list. '!' preceding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="director-search">Directors</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="director-search" placeholder="Search directors" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('director-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="language-search">Languages</label>
+              <div class="input-group">
+                <input type="search" class="form-control" id="language-search" placeholder="Search languages" onkeyup="search_movie_table('results')" spellcheck="false">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clear_filter('language-search'); search_movie_table('results')">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" data-toggle="tooltip" data-placement="top" title="Comma-separated list. '!' preceding a term will exclude those from the listing [ex. 'German, !Dutch']">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Table column visibility toggle -->
+        <hr/>
+        <div class="table-columns-toggle-section">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
+            <label class="form-check-label" for="image_data_checkbox">Image</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="toggle_column_visibility('rating_data')" checked>
+            <label class="form-check-label" for="rating_data_checkbox">Rating</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
+            <label class="form-check-label" for="vote_data_checkbox">Vote</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="resolution_data_checkbox" name="resolution_data_checkbox" onclick="toggle_column_visibility('resolution_data')" checked>
+            <label class="form-check-label" for="resolution_data_checkbox">Quality</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="genres_data_checkbox" name="genres_data_checkbox" onclick="toggle_column_visibility('genres_data')" checked>
         <div class="filter-section">
           <div class="form-group row tight-form-spacing">
             <label class="col-md-2 col-form-label">Title</label>

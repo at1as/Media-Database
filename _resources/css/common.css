@@ -154,7 +154,7 @@ hr{
 .table-columns-toggle-section{
   width:100%;
   text-align:center;
-  background-color:#cbcecb; 
+  background-color:#cbcecb;
   padding:4px;
   border-radius:6px
 }
@@ -272,4 +272,68 @@ th{
   padding: 4px;
 }
 .movie-row{
+}
+
+/* Pills */
+.custom-pill {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 10rem;
+}
+
+/* Dark Mode */
+body.dark-theme {
+  background-color: #333;
+  color: #fff;
+}
+
+body.dark-theme .navbar {
+  background-color: #222 !important;
+}
+
+body.dark-theme .jumbotron,
+body.dark-theme .well,
+body.dark-theme .filter-container {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-theme .table {
+  color: #fff;
+}
+
+body.dark-theme .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-theme .form-control {
+  background-color: #555;
+  color: #fff;
+  border-color: #777;
+}
+
+body.dark-theme .btn-outline-secondary {
+  color: #fff;
+  border-color: #fff;
+}
+
+body.dark-theme .btn-outline-secondary:hover {
+  background-color: #fff;
+  color: #333;
+}
+
+body.dark-theme .form-switch .form-check-input {
+  background-color: #495057;
+  border-color: #ced4da;
+}
+
+body.dark-theme .form-switch .form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
 }
