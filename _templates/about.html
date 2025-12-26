@@ -26,6 +26,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,.1);
         padding: 2rem;
+        margin-bottom: 3rem;
       }
       .about-card hr {
         border-top: 1px solid #e9ecef;
@@ -42,6 +43,29 @@
         border-radius: 5px;
         padding: 1rem;
         margin-top: 1rem;
+      }
+
+      /* Dark mode styles */
+      body.dark-theme {
+        background-color: #333;
+        color: #fff;
+      }
+      body.dark-theme .navbar {
+        background-color: #222 !important;
+      }
+      body.dark-theme .about-card {
+        background-color: #444;
+        color: #fff;
+      }
+      body.dark-theme .about-card hr {
+        border-top: 1px solid #666;
+      }
+      body.dark-theme .about-card a {
+        color: #66b3ff;
+      }
+      body.dark-theme .search-usage {
+        background-color: #555;
+        color: #fff;
       }
     </style>
   </head>
