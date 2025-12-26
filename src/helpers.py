@@ -22,7 +22,7 @@ def relative_path(file_path):
 def path_of_depth(file_path, depth):
   # "/Volumes/Drive/Folder/Subfolder/File.mkv" -> "Subfolder/File.mkv"
   if file_path is None:
-    return
+    return None
 
   return "/".join(file_path.split('/')[-depth:])
 

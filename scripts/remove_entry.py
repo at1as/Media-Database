@@ -32,15 +32,15 @@ DATA = [
   config['assets']['series']['saved_data']
 ]
 
-HELP = """\nUsage: 
+HELP = """\nUsage:
             python remove_entry.py [type] "<filename>" [year]
-            \n[type] : 
+            \n[type] :
             -m, --movie \t\t=> movie
             -s, --series \t\t=> series
             \n[year] :
             - four digit year
             - The [year] field is optional. If not passed, first matching title will be deleted
-            \nExamples: 
+            \nExamples:
             python remove_entry.py -m "Monty Python and the Holy Grail"
             python remove_entry.py --series "Six Feet Under" 2001
             \nNote:
@@ -48,7 +48,7 @@ HELP = """\nUsage:
             - The [year] field is optional. If not passed, first matching title will be deleted\n"""
 
 def sanitize(string):
-  return re.sub("\s{2,}", " ", string.lower().replace(':', '').replace('-', '').strip())
+  return re.sub(r"\s{2,}", " ", string.lower().replace(':', '').replace('-', '').strip())
 
 def remove_file(filetype, asset_name, year):
 
@@ -88,8 +88,8 @@ def remove_file(filetype, asset_name, year):
 
     # Write contents to JSON file
     with open(relative_path('../' + filename), 'w+') as asset_feed:
-      json.dump(saved_assets, asset_feed, encoding="utf-8", indent=4)
-  
+      json.dump(saved_assets, asset_feed, indent=4, ensure_ascii=False)
+
     print("\nEntry deleted: \"%s\" from \"%s\"\n" % (asset_name, filename))
     return
 
@@ -104,10 +104,10 @@ if __name__ == "__main__":
       print(HELP)
     else:
       if len(sys.argv) == 4:
-        remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), sys.argv[3])
+        remove_file(sys.argv[1], normalize("NFC", sys.argv[2]), int(sys.argv[3]))
       else:
-        # Year arg was passed
-        remove_file(sys.argv[1], normalize("NFC", sys.argv[2].decode('UTF-8')), None)
+        # No year arg was passed
+        remove_file(sys.argv[1], normalize("NFC", sys.argv[2]), None)
   except IndexError:
     print(HELP)
 
