@@ -251,7 +251,7 @@
             {% for movie in movie_list %}
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
-                  <a href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
+                  <a href="#./movies/{{movie_list[movie].title|sanitize_title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
                     <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
                   </a>
                 </td>
@@ -263,7 +263,7 @@
                 </td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}" class="vertical-row">
                   <a
-                    href="#./movies/{{movie_list[movie].title|replace("/", "")|replace("?", "%3F")|replace("'", "%27")}}({{movie_list[movie].year}}).html"
+                    href="#./movies/{{movie_list[movie].title|sanitize_title}}({{movie_list[movie].year}}).html"
                     onclick="load_details(this)"
                     class="tooltip-info"
                     data-placement="right"

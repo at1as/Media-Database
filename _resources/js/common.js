@@ -24,8 +24,8 @@ function search_movie_table(table_id) {
     var director_cell = movie_table.rows[i].cells[8].textContent.toLowerCase();
     var language_cell = movie_table.rows[i].cells[9].textContent.toLowerCase();
 
-    // Discard row if rating is empty or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+    // Discard row if rating is empty, None, or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
       movie_table.rows[i].style.display = 'none';
     }
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
@@ -70,8 +70,8 @@ function search_movie_table(table_id) {
     var director_cell = tile.querySelector('[name="director_data"]').textContent;
     var language_cell = tile.querySelector('[name="languages_data"]').textContent;
 
-    // Discard row if rating is empty or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+    // Discard row if rating is empty, None, or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
       tile.style.setProperty('display', 'none', 'important');
     }
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
@@ -165,8 +165,8 @@ function search_series_table(table_id) {
     var cast_cell       = series_table.rows[i].cells[6].textContent.toLowerCase();
     var language_cell   = series_table.rows[i].cells[7].textContent.toLowerCase();
 
-    // Discard row if rating is empty or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && rating_cell === '')) {
+    // Discard row if rating is empty, None, or less than query
+    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
       series_table.rows[i].style.display = 'none';
     }
     else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
