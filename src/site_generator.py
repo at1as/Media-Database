@@ -29,6 +29,17 @@ class SiteGenerator(object):
     return SiteGenerator.sanitize_filename(title)
 
   @staticmethod
+  def format_number_filter(number):
+    """Jinja2 filter to format numbers with comma separators"""
+    if number is None or number == '':
+      return ''
+    try:
+      # Convert to int first to handle string numbers, then format with commas
+      return f"{int(number):,}"
+    except (ValueError, TypeError):
+      return str(number)
+
+  @staticmethod
   def build_site(saved_movies, saved_series, saved_standup):
     """
       Generate static HTML files
@@ -51,6 +62,7 @@ class SiteGenerator(object):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
     env.filters['seasonnumber'] = SiteGenerator.season_filter
     env.filters['sanitize_title'] = SiteGenerator.sanitize_title_filter
+    env.filters['format_number'] = SiteGenerator.format_number_filter
 
     movie_index     = env.get_template("index.html")
     series_index    = env.get_template("series.html")

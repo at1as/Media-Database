@@ -343,7 +343,7 @@
                   {{ standup_list[standup].rating }}
                 </td>
                 <td name="vote_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {{ standup_list[standup].votes }}
+                  {{ standup_list[standup].votes|format_number }}
                 </td>
                 <td sorttable_customkey="{{ standup_list[standup].title }}" class="vertical-row">
                   <a
