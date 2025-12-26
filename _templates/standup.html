@@ -30,6 +30,7 @@
       body.dark-theme .jumbotron {
         background-color: #444;
         color: #fff;
+        border: 1px solid #666;
       }
       body.dark-theme .card {
         background-color: #444;
@@ -97,7 +98,24 @@
       body.dark-theme .table-columns-toggle-section {
         color: #000;
       }
+      body.dark-theme .stripe-on {
+        background-color: #444 !important;
+        color: #fff !important;
+      }
+      body.dark-theme .stripe-off {
+        background-color: #555 !important;
+        color: #fff !important;
+      }
     </style>
+    <script>
+      // Apply dark mode immediately to prevent flash
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-theme');
+          document.body.classList.add('dark-theme');
+        }
+      })();
+    </script>
   </head>
 
   <body role="document">

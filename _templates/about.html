@@ -68,6 +68,15 @@
         color: #fff;
       }
     </style>
+    <script>
+      // Apply dark mode immediately to prevent flash
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-theme');
+          document.body.classList.add('dark-theme');
+        }
+      })();
+    </script>
   </head>
 
   <body>
