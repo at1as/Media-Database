@@ -209,7 +209,7 @@
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
-                    title="{{series_list[series].description|replace('"', '&quot;')}}"
+                    title="{{series_list[series].title|sanitize_title}}"
                     tabindex="-1"
                     data-html="true"
                   >
