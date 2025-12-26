@@ -10,11 +10,23 @@ class SiteGenerator(object):
     pass
 
   @staticmethod
+  def sanitize_filename(title):
+    """Sanitize title for use as HTML filename"""
+    # Replace problematic characters that cause file system or URL issues
+    sanitized = title.replace('/', '').replace('\\', '').replace(':', '').replace('*', '').replace('?', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace('&', 'and').replace(',', '').replace("'", "")
+    return sanitized
+
+  @staticmethod
   def season_filter(episode_name):
     """
       Extract 'S01' from "Doctor Who S01E01.mkv"
     """
     return re.sub(r".*[sS]([0-9]{2})[eE][0-9]{2}.*", "\\1", str(episode_name))
+
+  @staticmethod
+  def sanitize_title_filter(title):
+    """Jinja2 filter version of sanitize_filename for use in templates"""
+    return SiteGenerator.sanitize_filename(title)
 
   @staticmethod
   def build_site(saved_movies, saved_series, saved_standup):
@@ -38,6 +50,7 @@ class SiteGenerator(object):
     # Output Environment for static html generation
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(["./_templates"]))
     env.filters['seasonnumber'] = SiteGenerator.season_filter
+    env.filters['sanitize_title'] = SiteGenerator.sanitize_title_filter
 
     movie_index     = env.get_template("index.html")
     series_index    = env.get_template("series.html")
@@ -115,7 +128,7 @@ class SiteGenerator(object):
   def build_movie_pages(saved_movies, movie_details, num_movies, num_series, number_of_standup, movie_location):
     """ Individual Movie Pages, one for each movie """
     for item in saved_movies:
-      output_dir = "_output/movies/%s(%s).html" %(saved_movies[item]['title'].replace('/', ''), saved_movies[item]['year'])
+      output_dir = "_output/movies/%s(%s).html" %(SiteGenerator.sanitize_filename(saved_movies[item]['title']), saved_movies[item]['year'])
       movie_page = movie_details.render(
         number_of_movies = num_movies,
         movie = saved_movies[item],
@@ -132,7 +145,7 @@ class SiteGenerator(object):
   def build_series_pages(saved_series, series_details, num_movies, num_series, num_standup):
     """ Individual Series Pages, one for each movie """
     for item in saved_series:
-      output_dir = "_output/series/%s(%s).html" %(saved_series[item]['title'].replace('/', ''), saved_series[item]['year'][0:4])
+      output_dir = "_output/series/%s(%s).html" %(SiteGenerator.sanitize_filename(saved_series[item]['title']), saved_series[item]['year'][0:4])
       series_page = series_details.render(
         number_of_series = num_series,
         series = saved_series[item],
@@ -147,7 +160,7 @@ class SiteGenerator(object):
   def build_standup_pages(saved_standup, standup_details, num_movies, num_series, number_of_standup, standup_location):
     """ Individual Standup Pages, one for each standup """
     for item in saved_standup:
-      output_dir = "_output/standup/%s(%s).html" %(saved_standup[item]['title'].replace('/', ''), saved_standup[item]['year'])
+      output_dir = "_output/standup/%s(%s).html" %(SiteGenerator.sanitize_filename(saved_standup[item]['title']), saved_standup[item]['year'])
       standup_page = standup_details.render(
         standup = saved_standup[item],
         number_of_movies = num_movies,

@@ -1,28 +1,51 @@
 {
   "assets" : {
     "movies" : {
-      "location"      : "/Volumes/16TB-MEDIA-1/Movies/",
-      "saved_data"    : "./_data/movie_data.json",
-      "index_asset"   : true,
-      "max_assets"    : 9999
+      "location"         : "/Volumes/16TB-MEDIA-1/Movies/",
+      "saved_data"       : "./_data/movie_data.json",
+      "index_asset"      : true,
+      "max_assets"       : 9999,
+      "max_assets_chunk" : 0
     },
     "series" : {
-      "location"      : "/Volumes/16TB-MEDIA-1/Television/",
-      "saved_data"    : "./_data/series_data.json",
-      "index_asset"   : true,
-      "max_assets"    : 9999
+      "location"         : "/Volumes/16TB-MEDIA-1/Television/",
+      "saved_data"       : "./_data/series_data.json",
+      "index_asset"      : true,
+      "max_assets"       : 9999,
+      "max_assets_chunk" : 10
     },
     "standup" : {
-      "location"      : "/Volumes/16TB-MEDIA-1/Stand Up/",
-      "saved_data"    : "./_data/standup_data.json",
-      "index_asset"   : true,
-      "max_assets"    : 9999
+      "location"         : "/Volumes/16TB-MEDIA-1/Stand Up/",
+      "saved_data"       : "./_data/standup_data.json",
+      "index_asset"      : true,
+      "max_assets"       : 9999,
+      "max_assets_chunk" : 9999
     }
   },
-  "exclude_files"     : [],
+  "exclude_files"     : [
+    "Hitchcock Collection (1934 - 1976)",
+    "Monty Halls Dive Mysteries (2013)",
+    "Extract (2009).mkv",
+    "Seeking Satoshi The Mystery Bitcoin Creator (2025)"
+  ],
   "include_extensions": [
      "avi", "divx", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ogm", "qt", "rm", "ts", "wmv"
   ],
-  "file_override"     : {},
-  "pause_time_sec"    : 30
+  "file_override": {
+    "To Catch A Killer (2023).mkv"               : "10275534",
+    "The Best People (2017).mp4"                 : "6050668",
+    "2012 (2009).avi"                            : "1190080",
+    "VHS (2012)"                                 : "2105044",
+    "Come To Daddy (2019).mkv"                   : "8816194",
+    "James Bond Diamonds Are Forever (1971).avi" : "0066995",
+    "James Bond Licence to Kill (1989).avi"      : "0097742",
+    "Force Of Nature (2020).mp4"                 : "10308928",
+    "Happy Death Day 2U (2019).mp4"              : "8155288",
+    "The Diving Bell and the Butterfly (2007)"   : "0401383",
+    "Sonic The Hedgehog (2020).mp4"              : "3794354",
+    "James Bond For Your Eyes Only (1981).avi"   : "0082398",
+    "Beast Games (2025)"                         : "31812476"
+  },
+  "pause_time_sec"    : 9,
+  "imdb_source"       : "IMDB_SUGGEST"
 }

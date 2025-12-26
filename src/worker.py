@@ -94,11 +94,13 @@ class Worker():
         else:
           nested_filepath = get_filepath_from_dir(path + file)
           extension = nested_filepath.split('.')[-1] if nested_filepath else None
+          # For series, use directory name as relative_path if no video file found
+          relative_path = path_of_depth(nested_filepath, 2) if nested_filepath else file
           file_details = {
             'name':          file,
             'extension':     extension,
             'full_path':     nested_filepath,
-            'relative_path': path_of_depth(nested_filepath, 2)
+            'relative_path': relative_path
           }
 
         # Drop prepending "._" from files on external drives
@@ -172,20 +174,30 @@ class Worker():
     max_chunk = self.config["assets"].get(asset_type, {}).get("max_assets_chunk", None)
 
     # Gather list of new files not yet in saved repo, stopping early if a limit is set
-    new_files = self.get_file_list(path, repo, mediatype, max_chunk if isinstance(max_chunk, int) and max_chunk > 0 else None)
+    # If max_chunk is 0, return empty list (no new additions)
+    if isinstance(max_chunk, int) and max_chunk == 0:
+      new_files = []
+    else:
+      new_files = self.get_file_list(path, repo, mediatype, max_chunk if isinstance(max_chunk, int) and max_chunk > 0 else None)
 
     for file_details in new_files:
+
+      # Select scraper implementation based on config
+      imdb_source = self.config.get("imdb_source", "IMDBV2")
+      print("DEBUG: Using imdb_source='{}' for mediatype='{}'".format(imdb_source, mediatype))
 
       if mediatype == "movie":
         try:
           movie_id_override = self.config["file_override"].get(file_details["relative_path"], None)
           if movie_id_override:
             print("Initializing movie scraper for {} with override id: {}".format(file_details["name"], movie_id_override))
-            self.movie_scraper = scraper.IMDBV2(file_details["name"], movie_id_override)
+            self.movie_scraper = scraper.Scraper(imdb_source, file_details["name"], movie_id_override)
           else:
-            self.movie_scraper = scraper.IMDBV2(file_details["name"])
+            self.movie_scraper = scraper.Scraper(imdb_source, file_details["name"])
 
           file_attributes = self.movie_scraper.get_movie_details(file_details, None)
+          # Mark provenance
+          file_attributes['source_lib'] = imdb_source
           file_attributes['file_metadata'] = {}
           file_attributes['file_metadata']['filename']  = file_details['name']
           file_attributes['file_metadata']['extension'] = file_details['extension']
@@ -197,8 +209,15 @@ class Worker():
 
       elif mediatype == "series":
         try:
-          self.series_scraper = scraper.IMDBV2(file_details["name"])
+          print("DEBUG: Looking for series override with relative_path: '{}'".format(file_details["relative_path"]))
+          series_id_override = self.config["file_override"].get(file_details["relative_path"], None)
+          if series_id_override:
+            print("Initializing series scraper for {} with override id: {}".format(file_details["name"], series_id_override))
+            self.series_scraper = scraper.Scraper(imdb_source, file_details["name"], series_id_override)
+          else:
+            self.series_scraper = scraper.Scraper(imdb_source, file_details["name"])
           file_attributes = self.series_scraper.get_series_details(file_details, None)
+          file_attributes['source_lib'] = imdb_source
           file_attributes['directory'] = {}
           file_attributes['directory']['name'] = file_details['name']
           file_attributes['directory']['absolute_path'] = file_details['full_path']
@@ -209,9 +228,15 @@ class Worker():
 
       elif mediatype == "standup":
         try:
-          self.movie_scraper = scraper.IMDBV2(file_details["name"])
+          standup_id_override = self.config["file_override"].get(file_details["relative_path"], None)
+          if standup_id_override:
+            print("Initializing standup scraper for {} with override id: {}".format(file_details["name"], standup_id_override))
+            self.movie_scraper = scraper.Scraper(imdb_source, file_details["name"], standup_id_override)
+          else:
+            self.movie_scraper = scraper.Scraper(imdb_source, file_details["name"])
 
           file_attributes = self.movie_scraper.get_standup_details(file_details, None)
+          file_attributes['source_lib'] = imdb_source
           file_attributes['file_metadata'] = {}
           file_attributes['file_metadata']['filename'] = file_details['name']
           file_attributes['file_metadata']['extension'] = file_details['extension']
