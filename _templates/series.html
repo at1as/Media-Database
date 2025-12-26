@@ -289,7 +289,7 @@
                   {{ series_list[series].rating }}
                 </td>
                 <td name="votes_data" class="vertical-row" style="display:none">
-                  {{ series_list[series].votes }}
+                  {{ series_list[series].votes|format_number }}
                 </td>
                 <td sorttable_customkey="{{ series_list[series].title }}" class="vertical-row">
                   <a

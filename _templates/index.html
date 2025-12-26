@@ -18,6 +18,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      /* Dark mode styles */
+      body.dark-theme {
+        background-color: #333;
+        color: #fff;
+      }
+      body.dark-theme .navbar {
+        background-color: #222 !important;
+      }
+      body.dark-theme .jumbotron {
+        background-color: #444;
+        color: #fff;
+      }
+      body.dark-theme .card {
+        background-color: #444;
+        color: #fff;
+      }
+      body.dark-theme .table {
+        color: #fff;
+        background-color: #444;
+      }
+      body.dark-theme .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255,255,255,.05);
+      }
+      body.dark-theme .table thead th {
+        background-color: #555;
+        color: #fff;
+        border-color: #666;
+      }
+      body.dark-theme .table td, body.dark-theme .table th {
+        border-color: #666;
+      }
+      body.dark-theme .form-control {
+        background-color: #555;
+        border-color: #666;
+        color: #fff;
+      }
+      body.dark-theme .form-control:focus {
+        background-color: #666;
+        border-color: #777;
+        color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(102, 179, 255, 0.25);
+      }
+      body.dark-theme .badge-secondary {
+        background-color: #666;
+        color: #fff;
+      }
+      body.dark-theme .tooltip-inner {
+        background-color: #555;
+        color: #fff;
+      }
+      body.dark-theme .modal-content {
+        background-color: #444;
+        color: #fff;
+      }
+      body.dark-theme .col-form-label {
+        color: #fff;
+      }
+      body.dark-theme .clear-filter {
+        color: #ccc;
+      }
+      body.dark-theme .clear-filter:hover {
+        color: #fff;
+      }
+      body.dark-theme .question-filter {
+        color: #66b3ff;
+      }
+      body.dark-theme .question-filter:hover {
+        color: #99ccff;
+      }
+      body.dark-theme .tooltip-info {
+        color: #66b3ff;
+      }
+      body.dark-theme .form-check-label {
+        color: #555;
+      }
+      body.dark-theme .table-columns-toggle-section {
+        color: #000;
+      }
+    </style>
   </head>
 
   <body role="document">
@@ -56,6 +136,10 @@
 						<a class="nav-link" href="./about.html">About</a>
 					</li>
 				</ul>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+          <label class="form-check-label" for="darkModeToggle" style="color: gray;">Dark Mode</label>
+        </div>
 			</div>
     </nav>
     <div class="container-fluid theme-showcase body-container" role="main">
@@ -259,7 +343,7 @@
                   {{ movie_list[movie].rating }}
                 </td>
                 <td name="vote_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
-                  {{ movie_list[movie].votes }}
+                  {{ movie_list[movie].votes|format_number }}
                 </td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}" class="vertical-row">
                   <a
