@@ -169,7 +169,7 @@ function search_series_table(table_id) {
     if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
       series_table.rows[i].style.display = 'none';
     }
-    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
+    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && (vote_cell === '' || vote_cell === 'none'))) {
       series_table.rows[i].style.display = 'none';
     }
     else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
