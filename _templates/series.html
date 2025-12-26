@@ -32,6 +32,7 @@
       body.dark-theme .jumbotron {
         background-color: #444;
         color: #fff;
+        border: 1px solid #666;
       }
       body.dark-theme .card {
         background-color: #444;
@@ -111,6 +112,15 @@
         color: #000;
       }
     </style>
+    <script>
+      // Apply dark mode immediately to prevent flash
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-theme');
+          document.body.classList.add('dark-theme');
+        }
+      })();
+    </script>
   </head>
 
   <body role="document">
@@ -276,7 +286,7 @@
             <label class="form-check-label" for="rating_data_checkbox">Rating</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('votes_data')">
+            <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
             <label class="form-check-label" for="vote_data_checkbox">Vote</label>
           </div>
           <div class="form-check form-check-inline">
@@ -284,7 +294,7 @@
             <label class="form-check-label" for="genre_data_checkbox">Genres</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="cast_data_checkbox" name="cast_data_checkbox" onclick="toggle_column_visibility('cast_data')" checked>
+            <input class="form-check-input" type="checkbox" id="cast_data_checkbox" name="cast_data_checkbox" onclick="toggle_column_visibility('stars_data')" checked>
             <label class="form-check-label" for="cast_data_checkbox">Cast</label>
           </div>
           <div class="form-check form-check-inline">
@@ -327,7 +337,7 @@
                 <td name="rating_data" class="vertical-row" style="text-align:center">
                   {{ series_list[series].rating }}
                 </td>
-                <td name="votes_data" class="vertical-row" style="display:none">
+                <td name="vote_data" class="vertical-row" style="display:none">
                   {{ series_list[series].votes|format_number }}
                 </td>
                 <td sorttable_customkey="{{ series_list[series].title }}" class="vertical-row">

@@ -25,10 +25,10 @@ function search_movie_table(table_id) {
     var language_cell = movie_table.rows[i].cells[9].textContent.toLowerCase();
 
     // Discard row if rating is empty, None, or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
       movie_table.rows[i].style.display = 'none';
     }
-    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
+    else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
       movie_table.rows[i].style.display = 'none';
     }
     else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
@@ -71,10 +71,10 @@ function search_movie_table(table_id) {
     var language_cell = tile.querySelector('[name="languages_data"]').textContent;
 
     // Discard row if rating is empty, None, or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
       tile.style.setProperty('display', 'none', 'important');
     }
-    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && vote_cell === '')) {
+    else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
       tile.style.setProperty('display', 'none', 'important');
     }
     else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
@@ -166,10 +166,10 @@ function search_series_table(table_id) {
     var language_cell   = series_table.rows[i].cells[7].textContent.toLowerCase();
 
     // Discard row if rating is empty, None, or less than query
-    if ((parseFloat(rating_cell) < parseFloat(rating_query)) || (rating_query !== '' && (rating_cell === '' || rating_cell === 'none'))) {
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
       series_table.rows[i].style.display = 'none';
     }
-    else if ((parseFloat(vote_cell) < parseFloat(vote_query)) || (vote_query !== '' && (vote_cell === '' || vote_cell === 'none'))) {
+    else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
       series_table.rows[i].style.display = 'none';
     }
     else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
@@ -319,17 +319,17 @@ function stripe_table() {
 
     if (even_row === false) {
       for (var m=0; m<visible_cells.length; m++) {
-        visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
-        visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
-        visible_cells[m].className += " stripe-on";
+        // Preserve existing classes and only modify stripe classes
+        var existingClasses = visible_cells[m].className.replace(/\s*stripe-off\s*/g, '').replace(/\s*stripe-on\s*/g, '').trim();
+        visible_cells[m].className = existingClasses + " stripe-on";
       }
       even_row = true;
 
     } else {
       for (var m=0; m<visible_cells.length; m++) {
-        visible_cells[m].className = visible_cells[m].className.replace("stripe-off", "");
-        visible_cells[m].className = visible_cells[m].className.replace("stripe-on", "");
-        visible_cells[m].className += " stripe-off";
+        // Preserve existing classes and only modify stripe classes
+        var existingClasses = visible_cells[m].className.replace(/\s*stripe-off\s*/g, '').replace(/\s*stripe-on\s*/g, '').trim();
+        visible_cells[m].className = existingClasses + " stripe-off";
       }
       even_row = false;
 
