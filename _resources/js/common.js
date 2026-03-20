@@ -444,9 +444,28 @@ function remove_diacritics(str) {
 // Load iFrame with specific title
 function load_details(movie) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
+
+  // Prevent body scroll
+  document.body.classList.add('modal-open');
+
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
-  document.getElementById('modal-alert').innerHTML    = "<iframe id='frame' style='z-index: 12; max-width:800px; height:100%; width:100%; border:none; border-radius:3px' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
+
+  // Create close button and iframe
+  var closeBtn = '<div id="modal-close-btn" onclick="close_details()" title="Close (Esc)">×</div>';
+  var iframe = "<iframe id='frame' style='z-index: 12; max-width:1000px; height:100%; width:100%; border:none; border-radius:16px; background-color:#fff;' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
+  document.getElementById('modal-alert').innerHTML = closeBtn + iframe;
+
+  // Close modal when clicking backdrop
+  document.getElementById('backdrop').onclick = close_details;
+
+  // Close modal with Escape key
+  document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 27) {
+      close_details();
+    }
+  };
 
   /* iFrame won't scroll on Desktop Safari unless this state is toggled */
   var ua = navigator.userAgent.toLowerCase();
@@ -457,19 +476,24 @@ function load_details(movie) {
       // Safari
       if (!( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
         // Desktop Safari
-        document.getElementById('modal-alert').style.overflow = "hidden";
+        document.getElementById('frame').scrolling = 'no';
+        setTimeout(function() { document.getElementById('frame').scrolling = 'yes'; }, 1);
       }
     }
   }
+  return false;
+}
 
-  // Hide all tooltips
-  $(".tooltip").tooltip("hide");
-};
-
+// Close modal function
 function close_details() {
   document.getElementById('backdrop').style.display = 'none';
   document.getElementById('modal-alert').style.display = 'none';
-};
+  document.getElementById('modal-alert').innerHTML = '';
+  document.getElementById('backdrop').onclick = null;
+  document.onkeydown = null;
+  // Re-enable body scroll
+  document.body.classList.remove('modal-open');
+}
 
 // Toggle Display of Search Filters
 function filter_toggle() {
