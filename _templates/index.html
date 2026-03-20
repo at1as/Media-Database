@@ -354,7 +354,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./movies/{{movie_list[movie].title|sanitize_title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
-                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png"><!-- ' -->
+                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
