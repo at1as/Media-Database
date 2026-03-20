@@ -28,9 +28,9 @@ hr{
    border-color:#CCC;
 }
 .well {
-  background-color:#EEE;
-  border:1px solid #DDD;
-  border-radius:5px;
+  background-color:#f8f9fa;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
   padding:15px;
 }
 .body-container{
@@ -39,8 +39,58 @@ hr{
   margin-right:auto;
   max-width:1200px;
 }
+
+/* Table column toggle checkboxes */
+.table-columns-toggle-section {
+  padding: 0.75rem 0;
+}
 .title-body{
   background-color:#e9ecef;
+}
+
+/* Table header styling */
+.table thead th {
+  background-color: #6c757d;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+/* Button styling improvements */
+#filter_toggle_btn,
+#random_selection_btn {
+  background-color: #6c757d;
+  color: white;
+  border: 1px solid #5a6268;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+#filter_toggle_btn:hover,
+#random_selection_btn:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+#random_selection_btn::before {
+  content: '🎲 ';
+}
+
+#filters {
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+
+#filter_toggle,
+#random_selection {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 #navbarSupportedContent{
   margin-left:auto;

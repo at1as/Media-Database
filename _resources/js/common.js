@@ -510,15 +510,17 @@ function close_details() {
 // Toggle Display of Search Filters
 function filter_toggle() {
   var filters   = document.getElementById('filters');
-  var btn_text  = document.getElementById('filter_toggle_btn');
+  var btn       = document.getElementById('filter_toggle_btn');
 
-  if (filters.style.display === '') {
-    filters.style.display = 'none';
-    btn_text.innerHTML    = 'Show Filter Options';
-    window.scroll(0, 0);
+  if (filters.style.maxHeight && filters.style.maxHeight !== '5000px') {
+    // Show filters - roll down
+    filters.style.maxHeight = '5000px';
+    btn.innerHTML = '▲ Hide Search Filters';
   } else {
-    filters.style.display = '';
-    btn_text.innerHTML    = 'Hide Filter Options';
+    // Hide filters - roll up
+    filters.style.maxHeight = '0px';
+    btn.innerHTML = '▼ Show Search Filters';
+    window.scroll(0, 0);
   }
 };
 
@@ -534,38 +536,22 @@ function toggle_column_visibility(column_name) {
 
 // Choose Random Item from List
 function random_selection() {
-  var all_items = document.querySelectorAll('.table > tbody > tr').length;
-  var displayed_items = 0;
+  // Get all visible rows in one pass
+  var all_rows = document.querySelectorAll('.table > tbody > tr');
+  var visible_rows = [];
 
-  /* Traverse table for currently displayed rows */
-  for(var i = 0; i < all_items; i++){
-    if (document.querySelectorAll('.table > tbody > tr')[i].style.display !== "none"){
-      displayed_items++;
+  for(var i = 0; i < all_rows.length; i++){
+    if (all_rows[i].style.display !== "none"){
+      visible_rows.push(all_rows[i]);
     }
   }
-
-  var random_item = Math.floor(Math.random() * displayed_items);
-  var displayed_item_count = 0;
-  var displayed_item_index = 0;
-
-  /* Find item at index random_item in table (but search through visible rows) */
-  for(var j = 0; j < all_items; j++){
-    if (document.querySelectorAll('.table > tbody > tr')[j].style.display !== "none"){
-
-      if (displayed_item_count === random_item){
-        displayed_item_index = j;
-      }
-      displayed_item_count++;
-    }
-  }
-
-  /* Find clickable title link for desired item in table */
-  var table_row = document.querySelectorAll('.table > tbody > tr')[displayed_item_index];
-  var table_row_name = table_row.querySelectorAll('td')[3];
-  var table_row_name_link = table_row_name.querySelectorAll('a')[0];
 
   /* Select a random item only if there are some currently displayed */
-  if (displayed_item_count > 0) {
+  if (visible_rows.length > 0) {
+    var random_index = Math.floor(Math.random() * visible_rows.length);
+    var table_row = visible_rows[random_index];
+    var table_row_name = table_row.querySelectorAll('td')[3];
+    var table_row_name_link = table_row_name.querySelectorAll('a')[0];
     table_row_name_link.click();
   }
 };
