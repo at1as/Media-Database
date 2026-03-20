@@ -573,6 +573,7 @@ return;
 // Dark Mode
 function toggleDarkMode() {
   const isDarkMode = document.body.classList.toggle('dark-theme');
+  document.documentElement.classList.toggle('dark-theme', isDarkMode);
   localStorage.setItem('darkMode', isDarkMode);
   updateDarkModeToggle(isDarkMode);
 }
@@ -586,6 +587,7 @@ function updateDarkModeToggle(isDarkMode) {
 
 function applyDarkMode() {
   const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  document.documentElement.classList.toggle('dark-theme', isDarkMode);
   document.body.classList.toggle('dark-theme', isDarkMode);
   updateDarkModeToggle(isDarkMode);
 }

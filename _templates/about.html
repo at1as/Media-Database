@@ -4,6 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Local Movie Database - About</title>
+    <script>
+      // Apply dark mode immediately to prevent flash - MUST be before any stylesheets
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-theme');
+        }
+      })();
+    </script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -67,16 +75,24 @@
         background-color: #555;
         color: #fff;
       }
+
+      /* Navbar spacing */
+      .navbar-nav .nav-item {
+        margin-right: 1.5rem;
+      }
+
+      /* Active navbar link styling */
+      .navbar-dark .navbar-nav .nav-link.active {
+        font-weight: 700;
+        border-bottom: 3px solid #66b3ff;
+        padding-bottom: 4px;
+      }
+      body.dark-theme .navbar-dark .navbar-nav .nav-link.active {
+        color: #66b3ff !important;
+        font-weight: 700;
+        border-bottom: 3px solid #66b3ff;
+      }
     </style>
-    <script>
-      // Apply dark mode immediately to prevent flash
-      (function() {
-        if (localStorage.getItem('darkMode') === 'true') {
-          document.documentElement.classList.add('dark-theme');
-          document.body.classList.add('dark-theme');
-        }
-      })();
-    </script>
   </head>
 
   <body>
