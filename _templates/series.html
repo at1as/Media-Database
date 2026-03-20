@@ -331,7 +331,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="#./series/{{series_list[series].title|sanitize_title}}({{series_list[series].year[0:4]}}).html" onclick="load_details(this)">
-                    <img width="200px" src="images/series/{{series_list[series].directory.name}}.png"><!-- ' -->
+                    <img width="200px" src="images/series/{{series_list[series].directory.name}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
