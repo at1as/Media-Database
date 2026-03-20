@@ -9,6 +9,15 @@
       (function() {
         if (localStorage.getItem('darkMode') === 'true') {
           document.documentElement.classList.add('dark-theme');
+          // Also add to body if it exists (for pages already loaded)
+          if (document.body) {
+            document.body.classList.add('dark-theme');
+          } else {
+            // If body doesn't exist yet, add it when DOM loads
+            document.addEventListener('DOMContentLoaded', function() {
+              document.body.classList.add('dark-theme');
+            });
+          }
         }
       })();
     </script>
@@ -21,59 +30,190 @@
 
     <style>
       body {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
       }
       .navbar {
-        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,.15);
       }
       .body-container {
-        margin-top: 2rem;
+        margin-top: 3rem;
+        margin-bottom: 3rem;
       }
       .about-card {
         background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,.1);
-        padding: 2rem;
-        margin-bottom: 3rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.15);
+        padding: 3rem;
+        margin-bottom: 2rem;
       }
-      .about-card hr {
-        border-top: 1px solid #e9ecef;
+      .about-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
       }
-      .about-card a {
-        color: #007bff;
+      .about-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+      }
+      .about-header p {
+        color: #718096;
+        font-size: 1.1rem;
+      }
+      .info-section {
+        margin-bottom: 2rem;
+      }
+      .info-section h4 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      .info-section h4 i {
+        margin-right: 0.5rem;
+        color: #667eea;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .info-item {
+        padding: 1rem;
+        background-color: #f7fafc;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
+      .info-item strong {
+        color: #4a5568;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .info-item a {
+        color: #667eea;
         text-decoration: none;
+        font-weight: 500;
       }
-      .about-card a:hover {
+      .info-item a:hover {
+        color: #764ba2;
         text-decoration: underline;
       }
+      .about-card hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        margin: 2rem 0;
+        opacity: 0.3;
+      }
       .search-usage {
-        background-color: #f1f3f5;
-        border-radius: 5px;
-        padding: 1rem;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
         margin-top: 1rem;
+        border: 1px solid #e2e8f0;
+      }
+      .search-usage p {
+        margin-bottom: 0.75rem;
+        color: #4a5568;
+      }
+      .search-usage code {
+        background-color: #2d3748;
+        color: #68d391;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .timestamp-footer {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+        border-radius: 8px;
+        margin-top: 2rem;
+      }
+      .timestamp-footer strong {
+        color: #2d3748;
+      }
+      .timestamp-footer span {
+        color: #667eea;
+        font-weight: 600;
       }
 
       /* Dark mode styles */
       body.dark-theme {
-        background-color: #333;
+        background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
         color: #fff;
       }
       body.dark-theme .navbar {
         background-color: #222 !important;
       }
       body.dark-theme .about-card {
-        background-color: #444;
+        background-color: #2d3748;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      }
+      body.dark-theme .about-header h1 {
         color: #fff;
       }
-      body.dark-theme .about-card hr {
-        border-top: 1px solid #666;
+      body.dark-theme .about-header p {
+        color: #cbd5e0;
       }
-      body.dark-theme .about-card a {
+      body.dark-theme .info-section h4 {
+        color: #fff;
+      }
+      body.dark-theme .info-section h4 i {
         color: #66b3ff;
       }
+      body.dark-theme .info-item {
+        background-color: #1a202c;
+        border-left-color: #66b3ff;
+      }
+      body.dark-theme .info-item:hover {
+        box-shadow: 0 4px 12px rgba(102, 179, 255, 0.3);
+      }
+      body.dark-theme .info-item strong {
+        color: #a0aec0;
+      }
+      body.dark-theme .info-item a {
+        color: #66b3ff;
+      }
+      body.dark-theme .info-item a:hover {
+        color: #99ccff;
+      }
+      body.dark-theme .about-card hr {
+        background: linear-gradient(to right, #66b3ff, #99ccff);
+      }
       body.dark-theme .search-usage {
-        background-color: #555;
-        color: #fff;
+        background: linear-gradient(135deg, #66b3ff20 0%, #99ccff20 100%);
+        border-color: #4a5568;
+      }
+      body.dark-theme .search-usage p {
+        color: #cbd5e0;
+      }
+      body.dark-theme .search-usage code {
+        background-color: #1a202c;
+        color: #68d391;
+      }
+      body.dark-theme .timestamp-footer {
+        background: linear-gradient(135deg, #66b3ff15 0%, #99ccff15 100%);
+      }
+      body.dark-theme .timestamp-footer strong {
+        color: #e2e8f0;
+      }
+      body.dark-theme .timestamp-footer span {
+        color: #66b3ff;
       }
 
       /* Navbar spacing */
@@ -137,34 +277,79 @@
 
     <div class="container body-container">
       <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-9">
           <div class="about-card">
-            <h2 class="mb-4">About Media Database</h2>
-            <p>
-              <strong>Media Database</strong> creates a local movie database containing information related to your movie collection.
-              Webpages are statically generated and uploaded to the <em>_output/</em> directory. Rerun the script every
-              time a new file is added to the directory.
-            </p>
-            <hr>
-            <p><strong>Homepage:</strong> <a href="https://github.com/at1as/IMDB-Scrape">https://github.com/at1as/IMDB-Scrape</a></p>
-            <p><strong>Bugs:</strong> <a href="https://github.com/at1as/IMDB-Scrape/issues">https://github.com/at1as/IMDB-Scrape/issues</a></p>
-            <p><strong>Created by:</strong> <a href="http://www.jasonwillems.com">Jason M. Willems</a></p>
-            <p><strong>License:</strong> <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE">MIT License</a></p>
-            <p><strong>Data Sources:</strong> <a href="http://imdb.com">IMDB</a></p>
-            <hr>
-            <h4 class="mt-4 mb-3">Search Filter Usage</h4>
-            <div class="search-usage">
-              <p>Genres, Cast, and Language fields support multiple comma-separated queries:</p>
-              <p><code>"Sci-Fi, Action"</code> → Returns titles that are both Sci-Fi and Action</p>
-              <p>As well as negative queries:</p>
-              <p><code>"Sci-Fi, Action, !Drama"</code> → Returns titles that are marked as both Sci-Fi and Action while not being marked as Drama</p>
-              <p>Search queries do a match on the start of the string:</p>
-              <p><code>"Po"</code> → Returns titles marked as Portuguese, Polish, etc</p>
+            <div class="about-header">
+              <h1><i class="fas fa-film"></i> Media Database</h1>
+              <p>A local movie database for your personal collection</p>
             </div>
+
+            <div class="info-section">
+              <p style="font-size: 1.05rem; color: #4a5568; line-height: 1.7;">
+                Media Database creates a local movie database containing information related to your movie collection.
+                Webpages are statically generated and uploaded to the <em>_output/</em> directory. Rerun the script every
+                time a new file is added to the directory.
+              </p>
+            </div>
+
             <hr>
-            <p class="text-center mt-4">
-              <strong>Last Report Generated:</strong> <span class="d-block">{{ time }}</span>
-            </p>
+
+            <div class="info-section">
+              <h4><i class="fas fa-info-circle"></i> Project Information</h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong>Homepage</strong>
+                  <a href="https://github.com/at1as/IMDB-Scrape" target="_blank">
+                    <i class="fab fa-github"></i> GitHub Repository
+                  </a>
+                </div>
+                <div class="info-item">
+                  <strong>Report Issues</strong>
+                  <a href="https://github.com/at1as/IMDB-Scrape/issues" target="_blank">
+                    <i class="fas fa-bug"></i> Issue Tracker
+                  </a>
+                </div>
+                <div class="info-item">
+                  <strong>Created By</strong>
+                  <a href="http://www.jasonwillems.com" target="_blank">
+                    <i class="fas fa-user"></i> Jason M. Willems
+                  </a>
+                </div>
+                <div class="info-item">
+                  <strong>License</strong>
+                  <a href="https://github.com/at1as/IMDB-Scrape/blob/master/LICENSE" target="_blank">
+                    <i class="fas fa-balance-scale"></i> MIT License
+                  </a>
+                </div>
+                <div class="info-item">
+                  <strong>Data Source</strong>
+                  <a href="http://imdb.com" target="_blank">
+                    <i class="fas fa-database"></i> IMDB
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="info-section">
+              <h4><i class="fas fa-search"></i> Search Filter Usage</h4>
+              <div class="search-usage">
+                <p><strong>Multiple criteria:</strong> Genres, Cast, and Language fields support comma-separated queries</p>
+                <p><code>"Sci-Fi, Action"</code> → Returns titles that are both Sci-Fi and Action</p>
+
+                <p><strong>Negative queries:</strong> Use <code>!</code> to exclude criteria</p>
+                <p><code>"Sci-Fi, Action, !Drama"</code> → Sci-Fi and Action titles, excluding Drama</p>
+
+                <p><strong>Partial matching:</strong> Searches match from the start of the string</p>
+                <p><code>"Po"</code> → Returns Portuguese, Polish, etc.</p>
+              </div>
+            </div>
+
+            <div class="timestamp-footer">
+              <strong>Last Report Generated:</strong><br>
+              <span>{{ time }}</span>
+            </div>
           </div>
         </div>
       </div>
