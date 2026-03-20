@@ -6,8 +6,36 @@
     <script>
       // Apply dark mode immediately to prevent flash - MUST be before any stylesheets
       (function() {
-        if (localStorage.getItem('darkMode') === 'true') {
+        // Check URL parameter first (for static file:// protocol)
+        var urlParams = new URLSearchParams(window.location.search);
+        var urlDarkMode = urlParams.get('dark');
+        var isDarkMode;
+
+        if (urlDarkMode !== null) {
+          isDarkMode = urlDarkMode === '1';
+          localStorage.setItem('darkMode', isDarkMode.toString());
+        } else {
+          isDarkMode = localStorage.getItem('darkMode') === 'true';
+        }
+
+        if (isDarkMode) {
           document.documentElement.classList.add('dark-theme');
+          if (document.body) {
+            document.body.classList.add('dark-theme');
+          } else {
+            document.addEventListener('DOMContentLoaded', function() {
+              document.body.classList.add('dark-theme');
+            });
+          }
+        } else {
+          document.documentElement.classList.remove('dark-theme');
+          if (document.body) {
+            document.body.classList.remove('dark-theme');
+          } else {
+            document.addEventListener('DOMContentLoaded', function() {
+              document.body.classList.remove('dark-theme');
+            });
+          }
         }
       })();
     </script>

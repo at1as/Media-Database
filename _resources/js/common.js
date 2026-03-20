@@ -572,27 +572,86 @@ return;
 
 // Dark Mode
 function toggleDarkMode() {
+  // Toggle on body first to get the new state
   const isDarkMode = document.body.classList.toggle('dark-theme');
+  // Apply same state to html element
   document.documentElement.classList.toggle('dark-theme', isDarkMode);
-  localStorage.setItem('darkMode', isDarkMode);
+  // Save to localStorage
+  localStorage.setItem('darkMode', isDarkMode.toString());
+  console.log('[Dark Mode] Toggled to:', isDarkMode, 'Saved to localStorage:', localStorage.getItem('darkMode'));
+  // Update checkbox
   updateDarkModeToggle(isDarkMode);
+  // Update all navigation links to include dark mode parameter
+  updateNavigationLinks(isDarkMode);
+}
+
+function updateNavigationLinks(isDarkMode) {
+  // Update all internal navigation links to include the dark mode state
+  // Match links ending in .html OR containing .html? (with query params)
+  const links = document.querySelectorAll('a[href*=".html"]');
+  links.forEach(link => {
+    try {
+      const url = new URL(link.href);
+      // Only update if it's a local HTML file
+      if (url.pathname.endsWith('.html')) {
+        if (isDarkMode) {
+          url.searchParams.set('dark', '1');
+        } else {
+          url.searchParams.delete('dark');
+        }
+        link.href = url.toString();
+      }
+    } catch (e) {
+      // Skip invalid URLs
+      console.warn('[Dark Mode] Could not update link:', link.href, e);
+    }
+  });
+  console.log('[Dark Mode] Updated', links.length, 'navigation links. Dark mode:', isDarkMode);
 }
 
 function updateDarkModeToggle(isDarkMode) {
   const toggle = document.getElementById('darkModeToggle');
   if (toggle) {
     toggle.checked = isDarkMode;
+    console.log('[Dark Mode] Checkbox updated to:', isDarkMode);
   }
 }
 
 function applyDarkMode() {
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
-  document.documentElement.classList.toggle('dark-theme', isDarkMode);
-  document.body.classList.toggle('dark-theme', isDarkMode);
+  // Check URL parameter first (for static file:// protocol)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlDarkMode = urlParams.get('dark');
+
+  let isDarkMode;
+  if (urlDarkMode !== null) {
+    // URL parameter takes precedence
+    isDarkMode = urlDarkMode === '1';
+    // Save to localStorage for this page
+    localStorage.setItem('darkMode', isDarkMode.toString());
+    console.log('[Dark Mode] URL parameter found:', urlDarkMode, 'Setting dark mode to:', isDarkMode);
+  } else {
+    // Fall back to localStorage
+    const storedValue = localStorage.getItem('darkMode');
+    isDarkMode = storedValue === 'true';
+    console.log('[Dark Mode] No URL parameter. localStorage value:', storedValue, 'Parsed as:', isDarkMode);
+  }
+
+  console.log('[Dark Mode] HTML has dark-theme:', document.documentElement.classList.contains('dark-theme'));
+  console.log('[Dark Mode] Body has dark-theme:', document.body.classList.contains('dark-theme'));
+
+  // Early script already applied theme to html and body
+  // We just need to sync the checkbox state
   updateDarkModeToggle(isDarkMode);
+
+  // IMPORTANT: Update all navigation links on this page to reflect current state
+  // This ensures links are correct even if we navigated from a page with different state
+  setTimeout(function() {
+    updateNavigationLinks(isDarkMode);
+    console.log('[Dark Mode] Navigation links updated to:', isDarkMode ? 'include ?dark=1' : 'remove ?dark=1');
+  }, 0);
 }
 
-// Call this function when the document is ready
+// Call this function when the document is ready to sync checkbox
 document.addEventListener('DOMContentLoaded', applyDarkMode);
 
 
