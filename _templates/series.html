@@ -20,6 +20,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <style>
+      /* Hide number input spinners to prevent visual conflicts with icons */
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type=number] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
 
       /* Dark mode styles */
       body.dark-theme {
@@ -94,7 +104,7 @@
         color: #ccc;
       }
       body.dark-theme .clear-filter:hover {
-        color: #fff;
+        color: #ff6b6b;
       }
       body.dark-theme .question-filter {
         color: #66b3ff;
@@ -106,10 +116,20 @@
         color: #66b3ff;
       }
       body.dark-theme .form-check-label {
-        color: #555;
+        color: #ddd;
       }
       body.dark-theme .table-columns-toggle-section {
-        color: #000;
+        background-color: #555;
+        color: #fff;
+        border: 1px solid #666;
+      }
+      body.dark-theme .stripe-on {
+        background-color: #444 !important;
+        color: #fff !important;
+      }
+      body.dark-theme .stripe-off {
+        background-color: #555 !important;
+        color: #fff !important;
       }
     </style>
     <script>
