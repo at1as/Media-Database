@@ -48,25 +48,102 @@ hr{
   max-width:1200px;
 }
 #backdrop{
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   position: fixed;
   left:0;
   top:0;
   width:100%;
   height:100%;
   z-index:5;
+  animation: fadeIn 0.25s ease-in;
+  cursor: pointer;
+  overflow: hidden;
+}
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 #results{
   margin-bottom:50px;
 }
 #modal-alert{
   z-index:11;
-  max-width:800px;
-  width:100%;
-  max-height:80%;
-  height:580px;
-  overflow: hidden;
+  max-width:1000px;
+  width:90%;
+  max-height:90vh;
+  height:85vh;
+  overflow: visible;
   -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  cursor: default;
+}
+#modal-alert iframe {
+  border-radius: 16px;
+  overflow: hidden;
+}
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, -48%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+/* Close button for modal */
+#modal-close-btn {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 3px solid #fff;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+#modal-close-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+#modal-close-btn:active {
+  transform: scale(0.95);
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #modal-alert {
+    width: 95%;
+    height: 80vh;
+    max-height: 80vh;
+    border-radius: 12px;
+  }
+  #modal-close-btn {
+    top: -12px;
+    right: -12px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
 }
 .modal-content{
   -webkit-overflow-scrolling: touch !important;
