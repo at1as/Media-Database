@@ -445,8 +445,12 @@ function remove_diacritics(str) {
 function load_details(movie) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
 
+  // Save current scroll position
+  window.scrollPositionBeforeModal = window.pageYOffset || document.documentElement.scrollTop;
+
   // Prevent body scroll
   document.body.classList.add('modal-open');
+  document.body.style.top = `-${window.scrollPositionBeforeModal}px`;
 
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
@@ -491,8 +495,16 @@ function close_details() {
   document.getElementById('modal-alert').innerHTML = '';
   document.getElementById('backdrop').onclick = null;
   document.onkeydown = null;
-  // Re-enable body scroll
+
+  // Re-enable body scroll and restore position
   document.body.classList.remove('modal-open');
+  document.body.style.top = '';
+
+  // Restore scroll position
+  if (window.scrollPositionBeforeModal !== undefined) {
+    window.scrollTo(0, window.scrollPositionBeforeModal);
+    window.scrollPositionBeforeModal = undefined;
+  }
 }
 
 // Toggle Display of Search Filters
@@ -616,6 +628,10 @@ function updateNavigationLinks(isDarkMode) {
   links.forEach(link => {
     try {
       const url = new URL(link.href);
+      // Skip movie detail links (they're loaded in iframes and shouldn't have dark mode)
+      if (url.pathname.includes('movie_details') || url.pathname.includes('series_details') || url.pathname.includes('standup_details')) {
+        return;
+      }
       // Only update if it's a local HTML file
       if (url.pathname.endsWith('.html')) {
         if (isDarkMode) {

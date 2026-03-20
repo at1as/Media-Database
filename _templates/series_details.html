@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color:#f8f9fa">
   <head>
     <meta charset="utf-8">
     <title>Local Movie Database</title>
@@ -16,94 +16,368 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #f8f9fa;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        overflow-x: hidden;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        min-height: 100vh;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Left side - Poster */
+      .poster-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .poster-section a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .poster-section img {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease;
+      }
+
+      .poster-section img:hover {
+        transform: scale(1.02);
+      }
+
+      /* Right side - Details */
+      .details-section {
+        background: white;
+        padding: 2.5rem 3rem;
+        overflow-y: auto;
+      }
+
+      .title-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+
+      .alt-title {
+        color: #6b7280;
+        font-size: 0.95rem;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+      }
+
+      .alt-title strong {
+        font-weight: 600;
+        color: #374151;
+        font-style: normal;
+      }
+
+      .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .star-icon {
+        color: #fbbf24;
+        font-size: 2rem;
+        filter: drop-shadow(0 2px 6px rgba(251, 191, 36, 0.4));
+      }
+
+      .rating-text {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin-right: 0.5rem;
+      }
+
+      .votes-text {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      .plot-section {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+        border-radius: 6px;
+      }
+
+      .plot-section p {
+        color: #374151;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .meta-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .meta-badges span {
+        background: #1f2937;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .meta-badges .badge-rating {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .meta-badges .badge-runtime {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .meta-badges .badge-genre {
+        background: #1f2937;
+        color: white;
+      }
+
+      .info-block {
+        margin-bottom: 1.5rem;
+      }
+
+      .info-block h3 {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+
+      .info-block p, .info-block div {
+        color: #1f2937;
+        font-size: 1rem;
+        line-height: 1.6;
+        font-weight: 500;
+        padding-left: 0.5rem;
+      }
+
+      .imdb-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        margin: 1.5rem auto;
+      }
+
+      .imdb-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        text-decoration: none;
+        color: white;
+      }
+
+      .button-container {
+        text-align: center;
+        margin: 1.5rem 0;
+      }
+
+      .season-header {
+        background: #f8f9fa;
+        color: #374151;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e5e7eb;
+        transition: background 0.2s;
+      }
+
+      .season-header:hover {
+        background: #e5e7eb;
+      }
+
+      .season-container {
+        margin-bottom: 1.5rem;
+        padding-left: 0;
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
+
+      .episode-container {
+        padding: 0.6rem 0.75rem;
+        margin-bottom: 0.25rem;
+        color: #374151;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+
+      .episode-container:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+      }
+
+      .episode-container:last-child {
+        margin-bottom: 0;
+      }
+
+      .episode-container .badge {
+        margin-left: 0.5rem;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+        .poster-section {
+          padding: 1.5rem;
+          min-height: 400px;
+        }
+        .details-section {
+          padding: 1.5rem;
+        }
+      }
+    </style>
   </head>
-  <body role="document" class="title-body">
+  <body>
+    <div class="container">
+      <!-- Left: Poster -->
+      <div class="poster-section">
+        <img src="../images/series/{{series.directory.name}}.png" alt="{{series.title}}">
+      </div>
 
-    <div role="main" style="padding-right:20px; padding-left:20px; padding-top:10px; padding-bottom:10px; width:100%">
-      <div id="title_content" class="jumbotron">
+      <!-- Right: Details -->
+      <div class="details-section">
+        <h2 class="title-title">{{series.title}} ({{series.year}})</h2>
 
-        <h2 class="title-title"> {{series.title}} ({{series.year}}) </h2>
         {% if series.alternative_title %}
-        <div><b>Alternative Titles : </b> <span style="font-size:0.8rem"><i>{{ series.alternative_title[:5] | join(", ") }}</i></span></div>
+        <div class="alt-title"><strong>Alternative Titles:</strong> {{ series.alternative_title[:5] | join(", ") }}</div>
         {% endif %}
 
-        <span style="vertical-align:top">
-          <a href="../images/series/{{series.directory.name}}.png">
-            <img data-src="holder.js/200x200" class="img-thumbnail title-image" alt="200x200" src="../images/series/{{series.directory.name}}.png">
-          </a>
-        </span>
+        <div class="rating-section">
+          <span class="star-icon">★</span>
+          <span class="rating-text">{{series.rating}} / 10</span>
+          <span class="votes-text">({{series.votes|format_number}} votes)</span>
+        </div>
 
-        <span id="title-header">
-          <div>
-            <span id="star">&#9733; </span>
-            <h4 id="item-rating" style="font-size:1.25rem"><b> {{series.rating}} / 10</b> ({{series.votes|format_number}} votes) </h4>
-          </div>
-
-          <div style="margin-left:10px">
-            <h5 style="border: 1px solid #AAA; border-radius:5px; padding:10px; font-size: 0.8rem; background-color: black;color: white; text-align:center">
-              {% if not series.content_rating %}
-              {% elif series.content_rating is string %}
-                <span id="item-content-rating">
-                  {{series.content_rating}}
-                </span> -
-              {% else %}
-                <span id="item-content-rating">
-                  {{series.content_rating[0]}}
-                </span> -
-              {% endif %}
-
-              {% if series.running_time %}
-              <span id="item-running-time">{{series.running_time}} mins</span> -
-              {% endif %}
-
-              {% if series.genre %}
-              <span style="margin-left:10px">
-                {% for item in series.genre %} <span style="margin-right:10px">{{item}}</span> {% endfor %}</h5>
-              </span>
-              {% endif %}
-          </div>
-
-          <h4 style="padding-top:25px">Cast:</h4>
-          <div style="margin-left:10px">
-            {% for item in series.stars[:5] %}
-              <h5 style="font-weight:400"> {{item}} </h5>
-            {% endfor %}
-          </div>
-
-          {% if series.languages %}
-          <h4 style="padding-top:25px">Languages:</h4>
-          <div style="margin-left:10px;">
-            {% for item in series.languages %}
-              <h5 class="title-language"> {{item}} </h5>
-            {% endfor %}
-          </div>
+        <div class="meta-badges">
+          {% if series.content_rating %}
+            {% if series.content_rating is string %}
+              <span class="badge-rating">{{series.content_rating}}</span>
+            {% else %}
+              <span class="badge-rating">{{series.content_rating[0]}}</span>
+            {% endif %}
           {% endif %}
-        </span>
-
-        <hr>
-        <div id="item-description">
-          <p> {{series.description}} </p>
+          {% if series.running_time %}
+            <span class="badge-runtime">{{series.running_time}} mins</span>
+          {% endif %}
+          {% if series.genre %}
+            {% for item in series.genre %}
+              <span class="badge-genre">{{item}}</span>
+            {% endfor %}
+          {% endif %}
         </div>
-        <p id="title-url"><a href="{{series.url}}" target="_blank">Go to IMDB</a></p>
 
-        <hr>
-        <div style="margin-bottom:30px">
-          {% for season in series.episodes %}
-          <div class="season-header" onclick="toggle_visibility('season-{{loop.index}}-container')">
-            Season {{season.keys()[0] | seasonnumber}}
+        <div class="plot-section">
+          <p>{{series.description}}</p>
+        </div>
+
+        <div class="info-block">
+          <h3>Cast</h3>
+          <div>
+            {% for item in series.stars[:5] %}
+              {{item}}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
           </div>
-            <div class="season-container" id="season-{{loop.index}}-container" style="display:none">
-              {% for episode in season | sort %}
-                <div class="episode-container">
-                  {{episode}}
-                  {% if season and season[episode] and 'resolution' in season[episode] %}
-                    <span class="badge badge-secondary">{{season[episode].resolution}}</span>
-                  {% endif %}
-                </div>
-              {% endfor %}
-            </div>
-          {% endfor %}
         </div>
+
+        {% if series.languages %}
+        <div class="info-block">
+          <h3>Languages</h3>
+          <div>
+            {% for item in series.languages %}
+              {{item}}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="info-block">
+          <h3>Episodes</h3>
+          <div style="padding-left: 0;">
+            {% for season in series.episodes %}
+            <div class="season-header" onclick="toggle_visibility('season-{{loop.index}}-container')">
+              Season {{season.keys()[0] | seasonnumber}}
+            </div>
+              <div class="season-container" id="season-{{loop.index}}-container" style="display:none">
+                {% for episode in season | sort %}
+                  <div class="episode-container">
+                    {{episode}}
+                    {% if season and season[episode] and 'resolution' in season[episode] %}
+                      <span class="badge badge-secondary">{{season[episode].resolution}}</span>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="button-container">
+          <a href="{{series.url}}" target="_blank" class="imdb-button">Go to IMDB</a>
+        </div>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
 
         <div id="data-retrieved">
           <div>Data Retrieved: {{series.info_retrieved}}</div>
