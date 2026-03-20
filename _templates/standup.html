@@ -3,6 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>Local Movie Database</title>
+    <script>
+      // Apply dark mode immediately to prevent flash - MUST be before any stylesheets
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-theme');
+        }
+      })();
+    </script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -19,6 +27,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <style>
+      /* Hide number input spinners to prevent visual conflicts with icons */
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type=number] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
       /* Dark mode styles */
       body.dark-theme {
         background-color: #333;
@@ -81,7 +99,7 @@
         color: #ccc;
       }
       body.dark-theme .clear-filter:hover {
-        color: #fff;
+        color: #ff6b6b;
       }
       body.dark-theme .question-filter {
         color: #66b3ff;
@@ -93,10 +111,12 @@
         color: #66b3ff;
       }
       body.dark-theme .form-check-label {
-        color: #555;
+        color: #ddd;
       }
       body.dark-theme .table-columns-toggle-section {
-        color: #000;
+        background-color: #555;
+        color: #fff;
+        border: 1px solid #666;
       }
       body.dark-theme .stripe-on {
         background-color: #444 !important;
@@ -106,16 +126,24 @@
         background-color: #555 !important;
         color: #fff !important;
       }
+
+      /* Navbar spacing */
+      .navbar-nav .nav-item {
+        margin-right: 1.5rem;
+      }
+
+      /* Active navbar link styling */
+      .navbar-dark .navbar-nav .nav-link.active {
+        font-weight: 700;
+        border-bottom: 3px solid #66b3ff;
+        padding-bottom: 4px;
+      }
+      body.dark-theme .navbar-dark .navbar-nav .nav-link.active {
+        color: #66b3ff !important;
+        font-weight: 700;
+        border-bottom: 3px solid #66b3ff;
+      }
     </style>
-    <script>
-      // Apply dark mode immediately to prevent flash
-      (function() {
-        if (localStorage.getItem('darkMode') === 'true') {
-          document.documentElement.classList.add('dark-theme');
-          document.body.classList.add('dark-theme');
-        }
-      })();
-    </script>
   </head>
 
   <body role="document">
