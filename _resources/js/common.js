@@ -127,13 +127,15 @@ function search_movie_table(table_id) {
   }
 
   if (count === 0) {
-    document.getElementById('results-message').style.display = 'block';
+    var resultsMessage = document.getElementById('results-message');
+    if (resultsMessage) resultsMessage.style.display = 'block';
     movie_table.style.display = 'none';
     //tiles.style.display = 'none';
   } else {
-    document.getElementById('results-message').style.display = 'none';
-    //const viewType = document.getElementById('table-view-btn').classList.contains('btn-primary') ? 'table' : 'tile';
-    //this.toggleView(viewType);
+    var resultsMessage = document.getElementById('results-message');
+    if (resultsMessage) resultsMessage.style.display = 'none';
+    movie_table.style.display = '';
+    //tiles.style.display = '';
   }
 
   stripe_table();
