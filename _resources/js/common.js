@@ -1652,6 +1652,20 @@ function update_random_selection_button() {
   }
 }
 
+function handleDropdownItemClick(checkboxId, columnType) {
+  var checkbox = document.getElementById(checkboxId);
+  if (checkbox) {
+    // Toggle checkbox first
+    checkbox.checked = !checkbox.checked;
+
+    // Then toggle column visibility
+    toggle_column_visibility(columnType);
+
+    // Debug: log the state
+    console.log('Toggled', columnType, 'checkbox:', checkbox.checked);
+  }
+}
+
 /* Clear cell in filters */
 function clear_filter(element_id){
   clear_filter_field(element_id);
