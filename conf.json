@@ -1,21 +1,21 @@
 {
   "assets" : {
     "movies" : {
-      "location"         : "/Volumes/16TB-MEDIA-1/Movies/",
+      "location"         : "/Volumes/18TB-MEDIA-1/Movies/",
       "saved_data"       : "./_data/movie_data.json",
       "index_asset"      : true,
       "max_assets"       : 9999,
       "max_assets_chunk" : 9999
     },
     "series" : {
-      "location"         : "/Volumes/16TB-MEDIA-1/Television/",
+      "location"         : "/Volumes/18TB-MEDIA-1/Television/",
       "saved_data"       : "./_data/series_data.json",
       "index_asset"      : true,
       "max_assets"       : 9999,
       "max_assets_chunk" : 9999
     },
     "standup" : {
-      "location"         : "/Volumes/16TB-MEDIA-1/Stand Up/",
+      "location"         : "/Volumes/18TB-MEDIA-1/Stand Up/",
       "saved_data"       : "./_data/standup_data.json",
       "index_asset"      : true,
       "max_assets"       : 9999,
