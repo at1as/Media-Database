@@ -223,9 +223,9 @@
       <!-- Filters -->
       <div id="filters" class="mx-auto jumbotron filter-container ml-5 mr-5">
         <div class="filters-toolbar">
-          <div class="filter-input-shell filter-search-shell">
-            <span class="filter-search-icon" aria-hidden="true">⌕</span>
-            <input class="form-control modern-filter-input filter-title-input" id="title-search" type="search" placeholder="Search by title" onkeyup="search_movie_table('results')" spellcheck="false">
+          <div class="filter-prefixed-control filter-search-control has-inline-clear">
+            <span class="filter-prefix" aria-hidden="true">⌕</span>
+            <input class="filter-inline-input filter-title-input" id="title-search" type="search" placeholder="Search by title" onkeyup="search_movie_table('results')" spellcheck="false">
             <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search'); search_movie_table('results')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
           </div>
           <div class="filters-results-summary">
@@ -236,6 +236,12 @@
               <span id="page_total_num">{{ standup_list|length }}</span>
             </span>
           </div>
+          <div id="clear_all_filters">
+            <button id="clear_all_filters_btn" class="btn media-action-btn media-action-btn-clear" onclick="clear_all_filters()">
+              <span class="media-action-btn-icon" aria-hidden="true">✕</span>
+              <span class="media-action-btn-label">Clear All Filters (0)</span>
+            </button>
+          </div>
         </div>
 
         <div class="filters-section-title">Search Filters</div>
@@ -244,11 +250,11 @@
 
           <div class="filter-card filter-card-half filter-card-inline-group">
             <div class="filter-prefixed-control filter-prefixed-control-rating">
-              <span class="filter-prefix" aria-hidden="true"><span class="filter-prefix-star">★</span> <span class="filter-prefix-text">Rating</span></span>
+              <span class="filter-prefix" aria-hidden="true">★ RATING</span>
               <select class="native-filter-select filter-inline-input" id="rating-search" data-filter-type="rating"></select>
             </div>
             <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
-              <span class="filter-prefix" aria-hidden="true">Votes +</span>
+              <span class="filter-prefix" aria-hidden="true">MIN VOTES</span>
               <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
               <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search'); search_movie_table('results')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
@@ -278,6 +284,17 @@
 
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
+              <label for="language-search" class="filter-label">Languages</label>
+            </div>
+            <div class="filter-input-shell">
+              <select class="enhanced-filter-select" id="language-search" data-filter-type="language" multiple placeholder="Any languages"></select>
+            </div>
+          </div>
+
+          <div class="filters-row-break"></div>
+
+          <div class="filter-card filter-card-half">
+            <div class="filter-label-row">
               <label for="cast-search" class="filter-label">Cast</label>
             </div>
             <div class="filter-input-shell has-inline-help">
@@ -287,8 +304,6 @@
             </div>
           </div>
 
-          <div class="filters-row-break"></div>
-
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
               <label for="director-search" class="filter-label">Directors</label>
@@ -297,15 +312,6 @@
               <input class="form-control modern-filter-input" id="director-search" type="search" placeholder="Director names" onkeyup="search_movie_table('results')" spellcheck="false">
               <a href="#" class="tooltip-info filter-inline-help" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1" aria-label="Director filter help"><i class="fas fa-info-circle question-filter"></i></a>
               <button type="button" class="filter-clear-btn" onclick="clear_filter('director-search'); search_movie_table('results')" aria-label="Clear director filter"><i class="fa fa-times-circle clear-filter"></i></button>
-            </div>
-          </div>
-
-          <div class="filter-card filter-card-half">
-            <div class="filter-label-row">
-              <label for="language-search" class="filter-label">Languages</label>
-            </div>
-            <div class="filter-input-shell">
-              <select class="enhanced-filter-select" id="language-search" data-filter-type="language" multiple placeholder="Any languages"></select>
             </div>
           </div>
         </div>
@@ -356,16 +362,10 @@
             <span class="media-action-btn-label">Hide Search Filters</span>
           </button>
         </div>
-        <div id="clear_all_filters">
-          <button id="clear_all_filters_btn" class="btn media-action-btn media-action-btn-clear" onclick="clear_all_filters()">
-            <span class="media-action-btn-icon" aria-hidden="true">✕</span>
-            <span class="media-action-btn-label">Clear All Filters (0)</span>
-          </button>
-        </div>
         <div id="random_selection">
           <button id="random_selection_btn" class="btn media-action-btn media-action-btn-random" onclick="random_selection()">
             <span class="media-action-btn-icon" aria-hidden="true">🎲</span>
-            <span class="media-action-btn-label">Choose Random from Selection</span>
+            <span class="media-action-btn-label">Surprise Me</span>
           </button>
         </div>
       </div>
