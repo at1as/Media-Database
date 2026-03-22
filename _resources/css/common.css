@@ -351,10 +351,36 @@ body.modal-open {
 .media-action-btn-clear .media-action-btn-icon{
   background-color:#6c757d;
 }
+.media-action-btn.is-disabled,
+.media-action-btn.is-disabled:hover,
+.media-action-btn.is-disabled:focus{
+  color:#8b949e !important;
+  border-color:#dee2e6;
+  background:linear-gradient(180deg, #f5f6f7 0%, #eceff1 100%);
+  box-shadow:none;
+  transform:none;
+  cursor:default;
+}
+.media-action-btn.is-disabled .media-action-btn-icon{
+  background-color:#adb5bd;
+}
 .media-action-btn-label{
   display:inline-flex;
   align-items:center;
   color:inherit;
+}
+.results-empty-state{
+  max-width:640px;
+  margin:0 auto 24px;
+  padding:18px 20px;
+  border:1px solid #d6dbe1;
+  border-radius:14px;
+  background:linear-gradient(180deg, #fafbfc 0%, #f3f5f7 100%);
+  color:#4a5560;
+  font-size:0.95rem;
+  font-weight:600;
+  text-align:center;
+  box-shadow:0 8px 18px rgba(36, 52, 71, 0.08);
 }
 @media (max-width: 575px) {
   .page-action-group{
