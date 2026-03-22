@@ -820,11 +820,13 @@ document.addEventListener('DOMContentLoaded', applyDarkMode);
 
 /* Called on Document Load */
 // Stylized Tooltips
-$(document).ready(function(){
-  // Bootstrap doesn't allow html in tooltips without this setting
-  $('[data-toggle="tooltip"]').tooltip({
-    html: true
-  });
+if (typeof $ !== 'undefined') {
+  $(document).ready(function(){
+    // Bootstrap doesn't allow html in tooltips without this setting
+    $('[data-toggle="tooltip"]').tooltip({
+      html: true
+    });
 
-  $("a.tooltip-info").tooltip();
-});
+    $("a.tooltip-info").tooltip();
+  });
+}
