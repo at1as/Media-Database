@@ -34,7 +34,7 @@ hr{
   padding:15px;
 }
 .body-container{
-  margin-top:60px;
+  margin-top:50px;
   margin-left:auto;
   margin-right:auto;
   max-width:1200px;
@@ -268,6 +268,10 @@ body.modal-open {
   flex:1 1 auto;
   margin-bottom:0;
 }
+.filters-toolbar .filter-search-control {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+}
 .filters-toolbar .filters-results-summary{
   flex:0 0 auto;
 }
@@ -290,7 +294,8 @@ body.modal-open {
   display:inline-flex;
   align-items:center;
   gap:10px;
-  padding:8px 12px;
+  padding:12px 16px;
+  min-height: 50px;
   border:1px solid #d8e0e8;
   border-radius:999px;
   background:rgba(255, 255, 255, 0.92);
@@ -404,16 +409,23 @@ body.dark-theme .filters-results-summary.is-empty{
   grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
   gap:12px;
 }
-.filter-prefixed-control{
-  position:relative;
-  display:grid;
-  grid-template-columns:auto minmax(0, 1fr);
-  align-items:stretch;
-  min-height:42px;
-  border:1px solid #d1d9e0;
-  border-radius:12px;
-  background:#ffffff;
-  overflow:hidden;
+.filter-prefixed-control {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 42px;
+  border: 1px solid #d1d9e0;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+}
+.filter-search-control {
+  min-height: 50px;
+}
+.filter-search-control .filter-inline-input {
+  font-size: 0.98rem !important;
+  font-weight: 600;
 }
 .filter-prefixed-control.has-inline-clear{
   padding-right:40px;
@@ -432,6 +444,16 @@ body.dark-theme .filters-results-summary.is-empty{
   letter-spacing:0.05em;
   text-transform:uppercase;
   white-space:nowrap;
+}
+.filter-search-control .filter-prefix {
+  font-size: 1.4rem;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
 }
 .filter-prefixed-control-rating .filter-prefix{
   min-width:92px;
@@ -656,6 +678,9 @@ body.dark-theme .filters-results-summary.is-empty{
   height:24px;
   transform:translateY(-50%);
 }
+.filter-input-shell:not(.has-clear-visible) .filter-inline-help {
+  right: 8px;
+}
 .filters-divider{
   margin:18px 0 16px;
   border-top:1px solid #d9dfe6;
@@ -712,7 +737,7 @@ body.dark-theme .filters-results-summary.is-empty{
   justify-content:center;
   gap:10px;
   box-sizing:border-box;
-  min-height:44px;
+  min-height:50px;
   padding:10px 18px;
   border:1px solid #ced4da;
   border-radius:999px;

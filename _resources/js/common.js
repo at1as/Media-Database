@@ -62,10 +62,43 @@ function clear_filter_field(field_id) {
 
   if (field.tomselect) {
     field.tomselect.clear(true);
+    update_clear_button_visibility(field_id);
     return;
   }
 
   field.value = '';
+  update_clear_button_visibility(field_id);
+}
+
+function update_clear_button_visibility(field_id) {
+  var field = document.getElementById(field_id);
+  if (!field) {
+    return;
+  }
+
+  var clear_btn = field.parentElement.querySelector('.filter-clear-btn');
+  if (clear_btn) {
+    if (field.value.trim() === '') {
+      clear_btn.style.display = 'none';
+      field.parentElement.classList.remove('has-clear-visible');
+    } else {
+      clear_btn.style.display = 'flex';
+      field.parentElement.classList.add('has-clear-visible');
+    }
+  }
+}
+
+function setup_search_clear_buttons() {
+  var search_inputs = document.querySelectorAll('.filter-title-input, #cast-search, #director-search, #vote-search');
+  forEach(search_inputs, function(input) {
+    // Set initial visibility
+    update_clear_button_visibility(input.id);
+
+    // Add input event listener
+    input.addEventListener('input', function() {
+      update_clear_button_visibility(input.id);
+    });
+  });
 }
 
 function detect_results_table_type() {
@@ -982,6 +1015,7 @@ function search_movie_table(table_id) {
   update_results_count_display(count);
   update_clear_all_filters_button();
   update_results_empty_state(count);
+  update_random_selection_button();
 
   stripe_table();
 };
@@ -1074,6 +1108,7 @@ function search_series_table(table_id) {
   update_results_count_display(count);
   update_clear_all_filters_button();
   update_results_empty_state(count);
+  update_random_selection_button();
 
   stripe_table();
 };
@@ -1534,13 +1569,13 @@ function filter_toggle() {
   var label     = btn.querySelector('.media-action-btn-label');
 
   if (filters.style.maxHeight && filters.style.maxHeight !== '5000px') {
-    // Show filters - roll down
+    // Show filters - roll down to full
     filters.style.maxHeight = '5000px';
     icon.textContent = '▲';
     label.textContent = 'Hide Search Filters';
   } else {
-    // Hide filters - roll up
-    filters.style.maxHeight = '0px';
+    // Partial collapse - show only toolbar + first filter row
+    filters.style.maxHeight = '120px';
     icon.textContent = '▼';
     label.textContent = 'Show Search Filters';
     window.scroll(0, 0);
@@ -1556,6 +1591,7 @@ function clear_all_filters() {
 
   trigger_page_search();
   update_clear_all_filters_button();
+  update_random_selection_button();
 };
 
 function toggle_column_visibility(column_name) {
@@ -1590,11 +1626,38 @@ function random_selection() {
   }
 };
 
+function update_random_selection_button() {
+  var random_btn = document.getElementById('random_selection_btn');
+  if (!random_btn) {
+    return;
+  }
+
+  // Get all visible rows
+  var all_rows = document.querySelectorAll('.table > tbody > tr');
+  var visible_rows = [];
+
+  for(var i = 0; i < all_rows.length; i++){
+    if (all_rows[i].style.display !== "none"){
+      visible_rows.push(all_rows[i]);
+    }
+  }
+
+  // Enable/disable based on visible results count
+  if (visible_rows.length === 0) {
+    random_btn.classList.add('is-disabled');
+    random_btn.disabled = true;
+  } else {
+    random_btn.classList.remove('is-disabled');
+    random_btn.disabled = false;
+  }
+}
+
 /* Clear cell in filters */
 function clear_filter(element_id){
   clear_filter_field(element_id);
   trigger_page_search();
   update_clear_all_filters_button();
+  update_random_selection_button();
 };
 
 function toggleView(view) {
@@ -1707,6 +1770,8 @@ document.addEventListener('DOMContentLoaded', applyDarkMode);
 document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
 document.addEventListener('DOMContentLoaded', initialize_enhanced_filter_selects);
 document.addEventListener('DOMContentLoaded', initialize_numeric_filter_inputs);
+document.addEventListener('DOMContentLoaded', setup_search_clear_buttons);
+document.addEventListener('DOMContentLoaded', update_random_selection_button);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
   if (!filters) {
@@ -1715,6 +1780,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   filters.addEventListener('input', update_clear_all_filters_button);
   filters.addEventListener('change', update_clear_all_filters_button);
+  filters.addEventListener('input', update_random_selection_button);
+  filters.addEventListener('change', update_random_selection_button);
 });
 
 
