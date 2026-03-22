@@ -48,6 +48,8 @@
         position: sticky;
         top: 0;
         height: 100vh;
+        flex-direction: column;
+        gap: 1rem;
       }
 
       .poster-section a {
@@ -71,6 +73,23 @@
 
       .poster-section img:hover {
         transform: scale(1.02);
+      }
+
+      .poster-position-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 2;
+        display: none;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.68);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
       }
 
       /* Right side - Details */
@@ -246,9 +265,31 @@
     </style>
   </head>
   <body>
+    <script>
+      (function() {
+        var params = new URLSearchParams(window.location.search);
+        var position = params.get('position');
+        var total = params.get('total');
+
+        if (!position || !total) {
+          return;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          var badge = document.getElementById('poster-position-badge');
+          if (!badge) {
+            return;
+          }
+
+          badge.textContent = position + ' / ' + total;
+          badge.style.display = 'inline-flex';
+        });
+      })();
+    </script>
     <div class="container">
       <!-- Left: Poster -->
       <div class="poster-section">
+        <div id="poster-position-badge" class="poster-position-badge"></div>
         <img src="../images/movies/{{movie.file_metadata.filename}}.png" alt="{{movie.title}}">
       </div>
 
