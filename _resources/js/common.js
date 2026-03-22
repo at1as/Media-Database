@@ -648,17 +648,40 @@ function close_details() {
 function filter_toggle() {
   var filters   = document.getElementById('filters');
   var btn       = document.getElementById('filter_toggle_btn');
+  var icon      = btn.querySelector('.media-action-btn-icon');
+  var label     = btn.querySelector('.media-action-btn-label');
 
   if (filters.style.maxHeight && filters.style.maxHeight !== '5000px') {
     // Show filters - roll down
     filters.style.maxHeight = '5000px';
-    btn.innerHTML = '▲ Hide Search Filters';
+    icon.textContent = '▲';
+    label.textContent = 'Hide Search Filters';
   } else {
     // Hide filters - roll up
     filters.style.maxHeight = '0px';
-    btn.innerHTML = '▼ Show Search Filters';
+    icon.textContent = '▼';
+    label.textContent = 'Show Search Filters';
     window.scroll(0, 0);
   }
+};
+
+function clear_all_filters() {
+  var filter_inputs = document.querySelectorAll('#filters input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
+
+  forEach(filter_inputs, function(input) {
+    input.value = '';
+  });
+
+  try{
+    search_movie_table('results');
+  } catch(err) {
+    // no action
+  };
+  try {
+    search_series_table('results');
+  } catch(err) {
+    // no action
+  };
 };
 
 function toggle_column_visibility(column_name) {

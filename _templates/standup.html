@@ -377,15 +377,25 @@
       </div>
 
       <!-- Show / Hide filter toggle -->
-      <div id="filter_toggle">
-        <button id="filter_toggle_btn" class="btn btn-small" onclick="filter_toggle()">
-          Hide Search Filters
-        </button>
-      </div>
-      <div id="random_selection">
-        <button id="random_selection_btn" class="btn btn-small" onclick="random_selection()">
-          Choose Random from Selection
-        </button>
+      <div class="page-action-group">
+        <div id="filter_toggle">
+          <button id="filter_toggle_btn" class="btn media-action-btn" onclick="filter_toggle()">
+            <span class="media-action-btn-icon" aria-hidden="true">▲</span>
+            <span class="media-action-btn-label">Hide Search Filters</span>
+          </button>
+        </div>
+        <div id="clear_all_filters">
+          <button id="clear_all_filters_btn" class="btn media-action-btn media-action-btn-clear" onclick="clear_all_filters()">
+            <span class="media-action-btn-icon" aria-hidden="true">✕</span>
+            <span class="media-action-btn-label">Clear All Filters</span>
+          </button>
+        </div>
+        <div id="random_selection">
+          <button id="random_selection_btn" class="btn media-action-btn media-action-btn-random" onclick="random_selection()">
+            <span class="media-action-btn-icon" aria-hidden="true">🎲</span>
+            <span class="media-action-btn-label">Choose Random from Selection</span>
+          </button>
+        </div>
       </div>
 
       <!-- Results Table -->
