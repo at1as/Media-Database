@@ -46,6 +46,63 @@ function update_results_empty_state(count) {
   }
 }
 
+function sanitize_numeric_filter_value(input) {
+  var filter_type = input.getAttribute('data-numeric-filter');
+  var original_value = input.value;
+  var sanitized_value = original_value;
+
+  if (filter_type === 'decimal') {
+    sanitized_value = sanitized_value.replace(/[^0-9.]/g, '');
+
+    var first_decimal_index = sanitized_value.indexOf('.');
+    if (first_decimal_index !== -1) {
+      sanitized_value = sanitized_value.substring(0, first_decimal_index + 1) + sanitized_value.substring(first_decimal_index + 1).replace(/\./g, '');
+    }
+  } else {
+    sanitized_value = sanitized_value.replace(/[^0-9]/g, '');
+  }
+
+  if (sanitized_value !== original_value) {
+    input.value = sanitized_value;
+    input.classList.add('filter-input-invalid');
+
+    window.clearTimeout(input.invalidFilterTimeout);
+    input.invalidFilterTimeout = window.setTimeout(function() {
+      input.classList.remove('filter-input-invalid');
+    }, 900);
+  } else {
+    input.classList.remove('filter-input-invalid');
+  }
+}
+
+function initialize_numeric_filter_inputs() {
+  var numeric_inputs = document.querySelectorAll('.numeric-filter-input');
+
+  forEach(numeric_inputs, function(input) {
+    input.addEventListener('keydown', function(event) {
+      if (event.key === 'e' || event.key === 'E' || event.key === '+' || event.key === '-') {
+        event.preventDefault();
+        input.classList.add('filter-input-invalid');
+
+        window.clearTimeout(input.invalidFilterTimeout);
+        input.invalidFilterTimeout = window.setTimeout(function() {
+          input.classList.remove('filter-input-invalid');
+        }, 900);
+      }
+    });
+
+    input.addEventListener('input', function() {
+      sanitize_numeric_filter_value(input);
+    });
+
+    input.addEventListener('paste', function() {
+      window.setTimeout(function() {
+        sanitize_numeric_filter_value(input);
+      }, 0);
+    });
+  });
+}
+
 // Refine Movie Table based on current filters
 function search_movie_table(table_id) {
   var movie_table = document.getElementById(table_id);
@@ -886,6 +943,7 @@ function applyDarkMode() {
 // Call this function when the document is ready to sync checkbox
 document.addEventListener('DOMContentLoaded', applyDarkMode);
 document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
+document.addEventListener('DOMContentLoaded', initialize_numeric_filter_inputs);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
   if (!filters) {

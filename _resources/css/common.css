@@ -56,6 +56,9 @@ hr{
   font-size: 1rem;
   padding: 0.75rem;
   vertical-align: middle !important;
+  position: sticky;
+  top: -1px;
+  z-index: 3;
 }
 
 #filters {
@@ -256,6 +259,22 @@ body.modal-open {
 .filter-section{
   width:100%;
   display:inline-block;
+}
+.filter-section .form-group.row{
+  align-items:center;
+}
+.filter-section label{
+  display:flex;
+  align-items:center;
+  min-height:38px;
+  margin-bottom:0;
+}
+.numeric-filter-input.filter-input-invalid{
+  border-color:#dc3545;
+  box-shadow:0 0 0 0.15rem rgba(220, 53, 69, 0.15);
+}
+.numeric-filter-input::placeholder{
+  color:#8b949e;
 }
 .clear-filter{
   padding-top:5px;

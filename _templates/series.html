@@ -251,7 +251,7 @@
           <div class="form-group row tight-form-spacing">
             <label class="col-md-2 col-form-label">Rating (Min)</label>
             <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="rating-search" type="number" min="0" max="10.0" step="0.1" onkeyup="search_series_table('results')" spellcheck="false">
+              <input class="form-control numeric-filter-input" id="rating-search" type="number" min="0" max="10.0" step="0.1" inputmode="decimal" placeholder="e.g. 7.5" data-numeric-filter="decimal" onkeyup="search_series_table('results')" spellcheck="false">
               <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('rating-search'); search_series_table('results')"></i>
               <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1">
                 <i class="fas fa-info-circle fa-2x question-filter"></i>
@@ -277,7 +277,7 @@
           <div class="form-group row tight-form-spacing">
             <label class="col-md-2">Year (Min)</label>
             <div class="col-md-10" style="display:flex">
-              <input class="form-control" id="year-min-search" type="number" step="1" onkeyup="search_series_table('results')" spellcheck="false">
+              <input class="form-control numeric-filter-input" id="year-min-search" type="number" step="1" inputmode="numeric" placeholder="e.g. 1990" data-numeric-filter="integer" onkeyup="search_series_table('results')" spellcheck="false">
               <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-min-search'); search_series_table('results')"></i>
               <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
                 <i class="fas fa-info-circle fa-2x question-filter"></i>
@@ -290,7 +290,7 @@
           <div class="form-group row tight-form-spacing">
             <label class="col-md-2">Year (Max)</label>
             <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="year-max-search" type="number" step="1" onkeyup="search_series_table('results')" spellcheck="false">
+              <input class="form-control numeric-filter-input" id="year-max-search" type="number" step="1" inputmode="numeric" placeholder="e.g. 2024" data-numeric-filter="integer" onkeyup="search_series_table('results')" spellcheck="false">
               <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-max-search'); search_series_table('results')"></i>
               <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
                 <i class="fas fa-info-circle fa-2x question-filter"></i>
@@ -402,7 +402,7 @@
           <thead>
             <tr id="table_header" onclick="stripe_table()">
               <th name="image_data" class="sorttable_nosort" style="vertical-align:top;"><!-- Image --></th>
-              <th name="rating_data" style="vertical-align:top" class="sorttable_numeric">Rating</th>
+              <th name="rating_data" style="vertical-align:middle !important;" class="sorttable_numeric">Rating</th>
               <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" class="hidden-sm hidden-xs" style="vertical-align:top" class="sorttable_alpha">Years</th>
