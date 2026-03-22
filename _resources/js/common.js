@@ -442,32 +442,52 @@ function remove_diacritics(str) {
 
 
 // Load iFrame with specific title
-function load_details(movie) {
+function load_details(movie, preserveCurrentElement) {
   var movie_details = movie.href.substring(movie.href.indexOf('#')+1);
 
-  // Save current scroll position
+  // Save current scroll position and current element for navigation
   window.scrollPositionBeforeModal = window.pageYOffset || document.documentElement.scrollTop;
+  console.log('load_details called with preserveCurrentElement:', preserveCurrentElement);
+  if (!preserveCurrentElement) {
+    console.log('Setting currentModalElement to new movie');
+    window.currentModalElement = movie;
+    window.currentModalUrl = movie.href; // Store URL for navigation
+  } else {
+    console.log('Preserving currentModalElement');
+    // During navigation, we still need to update the URL for next navigation
+    window.currentModalUrl = movie.href;
+  }
 
   // Prevent body scroll
   document.body.classList.add('modal-open');
   document.body.style.top = `-${window.scrollPositionBeforeModal}px`;
 
+  console.log('About to show modal - backdrop display:', document.getElementById('backdrop').style.display, 'modal display:', document.getElementById('modal-alert').style.display);
   document.getElementById('backdrop').style.display     = '';
   document.getElementById('modal-alert').style.display  = '';
+  console.log('Modal shown - backdrop display:', document.getElementById('backdrop').style.display, 'modal display:', document.getElementById('modal-alert').style.display);
 
-  // Create close button and iframe
+  // Create navigation buttons and close button
+  var prevBtn = '<div id="modal-prev-btn" onclick="navigate_modal(\'prev\')" title="Previous (←)">‹</div>';
+  var nextBtn = '<div id="modal-next-btn" onclick="navigate_modal(\'next\')" title="Next (→)">›</div>';
   var closeBtn = '<div id="modal-close-btn" onclick="close_details()" title="Close (Esc)">×</div>';
+  var navButtons = prevBtn + nextBtn + closeBtn;
+
   var iframe = "<iframe id='frame' style='z-index: 12; max-width:1000px; height:100%; width:100%; border:none; border-radius:16px; background-color:#fff;' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
-  document.getElementById('modal-alert').innerHTML = closeBtn + iframe;
+  document.getElementById('modal-alert').innerHTML = navButtons + iframe;
 
-  // Close modal when clicking backdrop
-  document.getElementById('backdrop').onclick = close_details;
+  // Don't close modal when clicking backdrop (to prevent interference with navigation buttons)
+  // Users must use the close button (×) or Escape key to close modal
 
-  // Close modal with Escape key
+  // Close modal with Escape key and navigation with arrow keys
   document.onkeydown = function(evt) {
     evt = evt || window.event;
     if (evt.keyCode == 27) {
       close_details();
+    } else if (evt.keyCode == 37) {
+      navigate_modal('prev');
+    } else if (evt.keyCode == 39) {
+      navigate_modal('next');
     }
   };
 
@@ -485,16 +505,158 @@ function load_details(movie) {
       }
     }
   }
+
+  // Update navigation button visibility after a short delay
+  setTimeout(update_navigation_buttons, 100);
+
+  console.log('load_details completed - modal display:', document.getElementById('modal-alert').style.display);
   return false;
 }
 
+// Navigate to next/previous item in modal
+function navigate_modal(direction) {
+  console.log('navigate_modal called with:', direction);
+
+  if (!window.currentModalUrl) {
+    console.log('No currentModalUrl stored');
+    return;
+  }
+
+  console.log('Current URL:', window.currentModalUrl);
+
+  var allLinks = document.querySelectorAll('.table > tbody > tr a[href*=".html"]:not(.tooltip-info)');
+  var visibleLinks = [];
+
+  // Collect only visible links
+  for (var i = 0; i < allLinks.length; i++) {
+    var row = allLinks[i].closest('tr');
+    if (row.style.display !== 'none') {
+      visibleLinks.push(allLinks[i]);
+    }
+  }
+
+  console.log('Found', visibleLinks.length, 'visible links');
+
+  if (visibleLinks.length === 0) return;
+
+  // Find current index by URL
+  var currentIndex = -1;
+  for (var j = 0; j < visibleLinks.length; j++) {
+    var linkUrl = visibleLinks[j].href;
+    if (window.currentModalUrl.includes(linkUrl.split('#')[1])) {
+      currentIndex = j;
+      console.log('Found current index:', currentIndex, 'for URL:', linkUrl);
+      break;
+    }
+  }
+
+  if (currentIndex === -1) {
+    console.log('Current URL not found in visible links');
+    return;
+  }
+
+  // Calculate next index (no wrap-around)
+  var nextIndex;
+  if (direction === 'next') {
+    nextIndex = currentIndex + 1;
+    if (nextIndex >= visibleLinks.length) {
+      console.log('No next item available');
+      return; // No next item
+    }
+  } else {
+    nextIndex = currentIndex - 1;
+    if (nextIndex < 0) {
+      console.log('No previous item available');
+      return; // No previous item
+    }
+  }
+
+  console.log('Next index:', nextIndex);
+
+  // Load next item
+  var nextElement = visibleLinks[nextIndex];
+  console.log('Loading next element:', nextElement.href);
+  window.currentModalElement = nextElement; // Update for consistency
+  window.currentModalUrl = nextElement.href; // Store URL for next navigation
+  window.isNavigating = true; // Set navigation flag to block close calls
+  load_details(nextElement, false); // Don't preserve current element during navigation
+  console.log('navigate_modal finished');
+
+  // Reset navigation flag after a short delay
+  setTimeout(function() {
+    window.isNavigating = false;
+    console.log('Navigation flag reset');
+  }, 1000);
+
+  // Check if modal is still open after navigation at different intervals
+  setTimeout(function() {
+    var modal = document.getElementById('modal-alert');
+    var backdrop = document.getElementById('backdrop');
+    console.log('Modal state after 100ms - display:', modal.style.display, 'backdrop display:', backdrop.style.display);
+  }, 100);
+
+  setTimeout(function() {
+    var modal = document.getElementById('modal-alert');
+    var backdrop = document.getElementById('backdrop');
+    console.log('Modal state after 500ms - display:', modal.style.display, 'backdrop display:', backdrop.style.display);
+  }, 500);
+
+  setTimeout(function() {
+    var modal = document.getElementById('modal-alert');
+    var backdrop = document.getElementById('backdrop');
+    console.log('Modal state after 1000ms - display:', modal.style.display, 'backdrop display:', backdrop.style.display);
+  }, 1000);
+}
+
+// Update navigation button visibility
+function update_navigation_buttons() {
+  if (!window.currentModalElement) return;
+
+  var allLinks = document.querySelectorAll('.table > tbody > tr a[href*=".html"]:not(.tooltip-info)');
+  var visibleLinks = [];
+
+  // Collect only visible links
+  for (var i = 0; i < allLinks.length; i++) {
+    var row = allLinks[i].closest('tr');
+    if (row.style.display !== 'none') {
+      visibleLinks.push(allLinks[i]);
+    }
+  }
+
+  if (visibleLinks.length === 0) return;
+
+  // Find current index
+  var currentIndex = -1;
+  for (var j = 0; j < visibleLinks.length; j++) {
+    if (visibleLinks[j] === window.currentModalElement) {
+      currentIndex = j;
+      break;
+    }
+  }
+
+  if (currentIndex === -1) return;
+
+  // Show/hide buttons based on availability
+  var prevBtn = document.getElementById('modal-prev-btn');
+  var nextBtn = document.getElementById('modal-next-btn');
+
+  if (prevBtn) {
+    prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
+  }
+  if (nextBtn) {
+    nextBtn.style.display = currentIndex < visibleLinks.length - 1 ? 'flex' : 'none';
+  }
+}
+
 // Close modal function
-function close_details() {
+function close_details_internal() {
+  console.log('CLOSE_DETAILS_INTERNAL CALLED');
   document.getElementById('backdrop').style.display = 'none';
   document.getElementById('modal-alert').style.display = 'none';
   document.getElementById('modal-alert').innerHTML = '';
   document.getElementById('backdrop').onclick = null;
   document.onkeydown = null;
+  window.currentModalElement = null;
 
   // Re-enable body scroll and restore position
   document.body.classList.remove('modal-open');
@@ -505,6 +667,18 @@ function close_details() {
     window.scrollTo(0, window.scrollPositionBeforeModal);
     window.scrollPositionBeforeModal = undefined;
   }
+}
+
+// Public close function that can be called by our buttons
+function close_details() {
+  // Block close calls only during navigation (when iframe is loading)
+  if (window.isNavigating) {
+    console.log('Blocked close_details call during navigation');
+    return;
+  }
+
+  console.log('Legitimate close_details call');
+  close_details_internal();
 }
 
 // Toggle Display of Search Filters
