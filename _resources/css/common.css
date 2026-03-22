@@ -52,9 +52,10 @@ hr{
 .table thead th {
   background-color: #6c757d;
   color: white;
-  font-weight: 700;
+  font-weight: 500 !important;
   font-size: 1rem;
   padding: 0.75rem;
+  vertical-align: middle !important;
 }
 
 /* Button styling improvements */
@@ -91,6 +92,68 @@ hr{
 #random_selection {
   margin-bottom: 1rem;
   text-align: center;
+}
+
+/* Modal navigation buttons */
+#modal-prev-btn,
+#modal-next-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+#modal-prev-btn {
+  left: 20px;
+}
+
+#modal-next-btn {
+  right: 20px;
+}
+
+#modal-prev-btn:hover,
+#modal-next-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+#modal-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 15;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+}
+
+#modal-close-btn:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.9);
 }
 #navbarSupportedContent{
   margin-left:auto;
