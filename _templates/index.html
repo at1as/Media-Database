@@ -41,9 +41,11 @@
     </script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
@@ -221,126 +223,120 @@
 
       <!-- Filters -->
       <div id="filters" class="mx-auto jumbotron filter-container ml-5 mr-5">
-
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2 col-form-label">Title</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="title-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('title-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
-            </div>
+        <div class="filters-toolbar">
+          <div>
+            <div class="filters-heading">Search Filters</div>
+          </div>
+          <div class="filters-results-summary">
+            <span class="filters-results-label">Results</span>
+            <span class="filters-results-count">
+              <span id="page_results_num" style="display:none">{{ movie_list|length }}</span>
+              <span id="page_mv_seperator" style="display:none"> / </span>
+              <span id="page_total_num">{{ movie_list|length }}</span>
+            </span>
           </div>
         </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2 col-form-label">Rating (Min)</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control numeric-filter-input" id="rating-search" type="number" min="0" max="10.0" step="0.1" inputmode="decimal" placeholder="e.g. 7.5" data-numeric-filter="decimal" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('rating-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+        <div class="filters-grid">
+          <div class="filter-card filter-card-title">
+            <div class="filter-label-row">
+              <label for="title-search" class="filter-label">Title</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <input class="form-control modern-filter-input" id="title-search" type="search" placeholder="Search titles" onkeyup="search_movie_table('results')" spellcheck="false">
+              <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search'); search_movie_table('results')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2 col-form-label">Votes (Min)</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="vote-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-               <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('vote-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filter-card filter-card-compact">
+            <div class="filter-label-row">
+              <label for="rating-search" class="filter-label">Min Rating</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <select class="form-control modern-filter-input native-filter-select" id="rating-search" data-filter-type="rating"></select>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Year (Min)</label>
-            <div class="col-md-10" style="display:flex">
-              <input class="form-control numeric-filter-input" id="year-min-search" type="number" step="1" inputmode="numeric" placeholder="e.g. 1990" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-min-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filter-card filter-card-compact">
+            <div class="filter-label-row">
+              <label for="vote-search" class="filter-label">Min Votes</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <input class="form-control modern-filter-input numeric-filter-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
+              <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search'); search_movie_table('results')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Year (Max)</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control numeric-filter-input" id="year-max-search" type="number" step="1" inputmode="numeric" placeholder="e.g. 2024" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('year-max-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filter-card filter-card-compact">
+            <div class="filter-label-row">
+              <label for="year-min-search" class="filter-label">Year Min</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <select class="form-control modern-filter-input native-filter-select" id="year-min-search" data-filter-type="year"></select>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Genres</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="genre-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('genre-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Drama, Action, !Comedy']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filter-card filter-card-compact">
+            <div class="filter-label-row">
+              <label for="year-max-search" class="filter-label">Year Max</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <select class="form-control modern-filter-input native-filter-select" id="year-max-search" data-filter-type="year"></select>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Cast</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="cast-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('cast-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filters-row-break"></div>
+
+          <div class="filter-card filter-card-half">
+            <div class="filter-label-row">
+              <label for="genre-search" class="filter-label">Genres</label>
+            </div>
+            <div class="filter-input-shell">
+              <select class="enhanced-filter-select" id="genre-search" data-filter-type="genre" multiple placeholder="Any genres"></select>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Directors</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="director-search" type="search" onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('director-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filter-card filter-card-half">
+            <div class="filter-label-row">
+              <label for="cast-search" class="filter-label">Cast</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <input class="form-control modern-filter-input" id="cast-search" type="search" placeholder="Ben Stiller, !Owen Wilson" onkeyup="search_movie_table('results')" spellcheck="false">
+              <button type="button" class="filter-clear-btn" onclick="clear_filter('cast-search'); search_movie_table('results')" aria-label="Clear cast filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
-        </div>
 
-        <div class="filter-section">
-          <div class="form-group row tight-form-spacing">
-            <label class="col-md-2">Languages</label>
-            <div class="col-md-10" style="display:inherit">
-              <input class="form-control" id="language-search" type="search"  onkeyup="search_movie_table('results')" spellcheck="false">
-              <i class="fa fa-times-circle fa-2x clear-filter" onclick="clear_filter('language-search'); search_movie_table('results')"></i>
-              <a href="#" class="tooltip-info" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'German, !Dutch']" tabindex="-1">
-                <i class="fas fa-info-circle fa-2x question-filter"></i>
-              </a>
+          <div class="filters-row-break"></div>
+
+          <div class="filter-card filter-card-half">
+            <div class="filter-label-row">
+              <label for="director-search" class="filter-label">Directors</label>
+              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+            </div>
+            <div class="filter-input-shell">
+              <input class="form-control modern-filter-input" id="director-search" type="search" placeholder="Coen, Kubrick, David" onkeyup="search_movie_table('results')" spellcheck="false">
+              <button type="button" class="filter-clear-btn" onclick="clear_filter('director-search'); search_movie_table('results')" aria-label="Clear director filter"><i class="fa fa-times-circle clear-filter"></i></button>
+            </div>
+          </div>
+
+          <div class="filter-card filter-card-half">
+            <div class="filter-label-row">
+              <label for="language-search" class="filter-label">Languages</label>
+            </div>
+            <div class="filter-input-shell">
+              <select class="enhanced-filter-select" id="language-search" data-filter-type="language" multiple placeholder="Any languages"></select>
             </div>
           </div>
         </div>
 
         <!-- Table column visibility toggle -->
-        <hr/>
+        <hr class="filters-divider"/>
         <div class="table-columns-toggle-section">
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="toggle_column_visibility('image_data')" checked>
@@ -352,7 +348,7 @@
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="toggle_column_visibility('vote_data')">
-            <label class="form-check-label" for="vote_data_checkbox">Vote</label>
+            <label class="form-check-label" for="vote_data_checkbox">Votes</label>
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" id="resolution_data_checkbox" name="resolution_data_checkbox" onclick="toggle_column_visibility('resolution_data')" checked>

@@ -136,25 +136,6 @@
         margin: 2rem 0;
         opacity: 0.3;
       }
-      .search-usage {
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-        border: 1px solid #e2e8f0;
-      }
-      .search-usage p {
-        margin-bottom: 0.75rem;
-        color: #4a5568;
-      }
-      .search-usage code {
-        background-color: #2d3748;
-        color: #68d391;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.9rem;
-      }
       .timestamp-footer {
         text-align: center;
         padding: 1.5rem;
@@ -213,17 +194,6 @@
       }
       body.dark-theme .about-card hr {
         background: linear-gradient(to right, #66b3ff, #99ccff);
-      }
-      body.dark-theme .search-usage {
-        background: linear-gradient(135deg, #66b3ff20 0%, #99ccff20 100%);
-        border-color: #4a5568;
-      }
-      body.dark-theme .search-usage p {
-        color: #cbd5e0;
-      }
-      body.dark-theme .search-usage code {
-        background-color: #1a202c;
-        color: #68d391;
       }
       body.dark-theme .timestamp-footer {
         background: linear-gradient(135deg, #66b3ff15 0%, #99ccff15 100%);
@@ -346,22 +316,6 @@
                     <i class="fas fa-database"></i> IMDB
                   </a>
                 </div>
-              </div>
-            </div>
-
-            <hr>
-
-            <div class="info-section">
-              <h4><i class="fas fa-search"></i> Search Filter Usage</h4>
-              <div class="search-usage">
-                <p><strong>Multiple criteria:</strong> Genres, Cast, and Language fields support comma-separated queries</p>
-                <p><code>"Sci-Fi, Action"</code> → Returns titles that are both Sci-Fi and Action</p>
-
-                <p><strong>Negative queries:</strong> Use <code>!</code> to exclude criteria</p>
-                <p><code>"Sci-Fi, Action, !Drama"</code> → Sci-Fi and Action titles, excluding Drama</p>
-
-                <p><strong>Partial matching:</strong> Searches match from the start of the string</p>
-                <p><code>"Po"</code> → Returns Portuguese, Polish, etc.</p>
               </div>
             </div>
 
