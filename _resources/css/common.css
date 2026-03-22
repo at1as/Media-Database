@@ -685,6 +685,27 @@ body.dark-theme .filters-results-summary.is-empty{
   margin:18px 0 16px;
   border-top:1px solid #d9dfe6;
 }
+.dropdown-item .form-check {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  width: 100%;
+  min-height: 32px;
+  cursor: pointer;
+}
+.dropdown-item .form-check-input {
+  margin: 0;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  position: relative;
+}
+.dropdown-item .form-check-label {
+  margin: 0 0 0 8px;
+  cursor: pointer;
+  flex-grow: 1;
+  line-height: 1.2;
+}
 .numeric-filter-input.filter-input-invalid{
   border-color:#dc3545;
   box-shadow:0 0 0 0.15rem rgba(220, 53, 69, 0.15);
