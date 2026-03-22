@@ -559,6 +559,32 @@ function refresh_rating_select_options() {
   rating_select.value = selected_value;
 }
 
+function format_selected_rating_option() {
+  var rating_select = document.getElementById('rating-search');
+  if (!rating_select || rating_select.tomselect || !rating_select.value) {
+    return;
+  }
+
+  var selected_option = rating_select.options[rating_select.selectedIndex];
+  if (selected_option) {
+    selected_option.text = rating_select.value + '+';
+  }
+}
+
+function format_selected_year_options() {
+  forEach(['year-min-search', 'year-max-search'], function(field_id) {
+    var year_select = document.getElementById(field_id);
+    if (!year_select || year_select.tomselect || !year_select.value) {
+      return;
+    }
+
+    var selected_option = year_select.options[year_select.selectedIndex];
+    if (selected_option) {
+      selected_option.text = year_select.value;
+    }
+  });
+}
+
 function collect_visible_year_range_values() {
   var results_table = document.getElementById('results');
   var rows = results_table ? results_table.querySelectorAll('tbody tr') : [];
@@ -676,6 +702,8 @@ function refresh_year_select_options() {
     year_max_select.value = selected_max;
   }
 
+  format_selected_year_options();
+
   return selected_max;
 }
 
@@ -706,11 +734,15 @@ function initialize_enhanced_filter_selects() {
   if (rating_select) {
     refresh_rating_select_options();
     if (!rating_select.dataset.filterBound) {
-      rating_select.addEventListener('change', trigger_page_search);
+      rating_select.addEventListener('change', function() {
+        trigger_page_search();
+        format_selected_rating_option();
+      });
       rating_select.addEventListener('focus', refresh_rating_select_options);
       rating_select.addEventListener('mousedown', refresh_rating_select_options);
       rating_select.dataset.filterBound = '1';
     }
+    format_selected_rating_option();
   }
 
   var year_values = collect_year_values();
@@ -722,6 +754,7 @@ function initialize_enhanced_filter_selects() {
           var previous_max = document.getElementById('year-max-search') ? document.getElementById('year-max-search').value : '';
           trigger_page_search();
           var refreshed_max = refresh_year_select_options();
+          format_selected_year_options();
 
           if (field_id === 'year-min-search' && previous_max !== refreshed_max) {
             trigger_page_search();
@@ -735,6 +768,7 @@ function initialize_enhanced_filter_selects() {
   });
 
   refresh_year_select_options();
+  format_selected_year_options();
 
   if (typeof TomSelect === 'undefined') {
     return;

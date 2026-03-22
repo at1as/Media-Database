@@ -224,8 +224,10 @@
       <!-- Filters -->
       <div id="filters" class="mx-auto jumbotron filter-container ml-5 mr-5">
         <div class="filters-toolbar">
-          <div>
-            <div class="filters-heading">Search Filters</div>
+          <div class="filter-input-shell filter-search-shell">
+            <span class="filter-search-icon" aria-hidden="true">⌕</span>
+            <input class="form-control modern-filter-input filter-title-input" id="title-search" type="search" placeholder="Search by title" onkeyup="search_movie_table('results')" spellcheck="false">
+            <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search'); search_movie_table('results')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
           </div>
           <div class="filters-results-summary">
             <span class="filters-results-label">Results</span>
@@ -237,56 +239,30 @@
           </div>
         </div>
 
+        <div class="filters-section-title">Search Filters</div>
+
         <div class="filters-grid">
-          <div class="filter-card filter-card-title">
-            <div class="filter-label-row">
-              <label for="title-search" class="filter-label">Title</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Searches for any word in title begining with your query [ex. 'Dia' returns 'Blood Diamond']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
-            </div>
-            <div class="filter-input-shell">
-              <input class="form-control modern-filter-input" id="title-search" type="search" placeholder="Search titles" onkeyup="search_movie_table('results')" spellcheck="false">
-              <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search'); search_movie_table('results')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
-            </div>
-          </div>
 
-          <div class="filter-card filter-card-compact">
-            <div class="filter-label-row">
-              <label for="rating-search" class="filter-label">Min Rating</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Integer or Decimal Rating out of 10.0 [ex. '9', '8.3']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+          <div class="filter-card filter-card-half filter-card-inline-group">
+            <div class="filter-prefixed-control filter-prefixed-control-rating">
+              <span class="filter-prefix" aria-hidden="true"><span class="filter-prefix-star">★</span> <span class="filter-prefix-text">Rating</span></span>
+              <select class="native-filter-select filter-inline-input" id="rating-search" data-filter-type="rating"></select>
             </div>
-            <div class="filter-input-shell">
-              <select class="form-control modern-filter-input native-filter-select" id="rating-search" data-filter-type="rating"></select>
-            </div>
-          </div>
-
-          <div class="filter-card filter-card-compact">
-            <div class="filter-label-row">
-              <label for="vote-search" class="filter-label">Min Votes</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Integer Number of Votes [ex. '100000', '1,000,0000']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
-            </div>
-            <div class="filter-input-shell">
-              <input class="form-control modern-filter-input numeric-filter-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
+            <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
+              <span class="filter-prefix" aria-hidden="true">Votes +</span>
+              <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
               <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search'); search_movie_table('results')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
 
-          <div class="filter-card filter-card-compact">
-            <div class="filter-label-row">
-              <label for="year-min-search" class="filter-label">Year Min</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
+          <div class="filter-card filter-card-half filter-card-inline-group">
+            <div class="filter-prefixed-control">
+              <span class="filter-prefix" aria-hidden="true">From</span>
+              <select class="native-filter-select filter-inline-input" id="year-min-search" data-filter-type="year"></select>
             </div>
-            <div class="filter-input-shell">
-              <select class="form-control modern-filter-input native-filter-select" id="year-min-search" data-filter-type="year"></select>
-            </div>
-          </div>
-
-          <div class="filter-card filter-card-compact">
-            <div class="filter-label-row">
-              <label for="year-max-search" class="filter-label">Year Max</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Format YYYY [ex. '2014']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
-            </div>
-            <div class="filter-input-shell">
-              <select class="form-control modern-filter-input native-filter-select" id="year-max-search" data-filter-type="year"></select>
+            <div class="filter-prefixed-control">
+              <span class="filter-prefix" aria-hidden="true">To</span>
+              <select class="native-filter-select filter-inline-input" id="year-max-search" data-filter-type="year"></select>
             </div>
           </div>
 
@@ -304,10 +280,10 @@
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
               <label for="cast-search" class="filter-label">Cast</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
             </div>
-            <div class="filter-input-shell">
+            <div class="filter-input-shell has-inline-help">
               <input class="form-control modern-filter-input" id="cast-search" type="search" placeholder="Ben Stiller, !Owen Wilson" onkeyup="search_movie_table('results')" spellcheck="false">
+              <a href="#" class="tooltip-info filter-inline-help" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1" aria-label="Cast filter help"><i class="fas fa-info-circle question-filter"></i></a>
               <button type="button" class="filter-clear-btn" onclick="clear_filter('cast-search'); search_movie_table('results')" aria-label="Clear cast filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
@@ -317,10 +293,10 @@
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
               <label for="director-search" class="filter-label">Directors</label>
-              <a href="#" class="tooltip-info filter-help" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1"><i class="fas fa-info-circle question-filter"></i></a>
             </div>
-            <div class="filter-input-shell">
+            <div class="filter-input-shell has-inline-help">
               <input class="form-control modern-filter-input" id="director-search" type="search" placeholder="Coen, Kubrick, David" onkeyup="search_movie_table('results')" spellcheck="false">
+              <a href="#" class="tooltip-info filter-inline-help" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1" aria-label="Director filter help"><i class="fas fa-info-circle question-filter"></i></a>
               <button type="button" class="filter-clear-btn" onclick="clear_filter('director-search'); search_movie_table('results')" aria-label="Clear director filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
