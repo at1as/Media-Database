@@ -1,3 +1,51 @@
+function get_filter_inputs() {
+  return document.querySelectorAll('#filters input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
+}
+
+function count_active_filters() {
+  var filter_inputs = get_filter_inputs();
+  var count = 0;
+
+  forEach(filter_inputs, function(input) {
+    if (input.value.trim() !== '') {
+      count += 1;
+    }
+  });
+
+  return count;
+}
+
+function update_clear_all_filters_button() {
+  var button = document.getElementById('clear_all_filters_btn');
+  if (!button) {
+    return;
+  }
+
+  var label = button.querySelector('.media-action-btn-label');
+  if (!label) {
+    return;
+  }
+
+  var active_filter_count = count_active_filters();
+
+  label.textContent = 'Clear All Filters (' + active_filter_count + ')';
+  button.classList.toggle('is-disabled', active_filter_count === 0);
+  button.disabled = active_filter_count === 0;
+}
+
+function update_results_empty_state(count) {
+  var results_message = document.getElementById('results-message');
+  var results_container = document.getElementById('results-container');
+
+  if (results_message) {
+    results_message.style.display = count === 0 ? 'block' : 'none';
+  }
+
+  if (results_container) {
+    results_container.style.display = count === 0 ? 'none' : '';
+  }
+}
+
 // Refine Movie Table based on current filters
 function search_movie_table(table_id) {
   var movie_table = document.getElementById(table_id);
@@ -126,17 +174,8 @@ function search_movie_table(table_id) {
     count_spacer.style.display  = '';
   }
 
-  if (count === 0) {
-    var resultsMessage = document.getElementById('results-message');
-    if (resultsMessage) resultsMessage.style.display = 'block';
-    movie_table.style.display = 'none';
-    //tiles.style.display = 'none';
-  } else {
-    var resultsMessage = document.getElementById('results-message');
-    if (resultsMessage) resultsMessage.style.display = 'none';
-    movie_table.style.display = '';
-    //tiles.style.display = '';
-  }
+  update_clear_all_filters_button();
+  update_results_empty_state(count);
 
   stripe_table();
 };
@@ -219,6 +258,9 @@ function search_series_table(table_id) {
     current_count.style.color   = '#45d234';
     count_spacer.style.display  = ''
   }
+
+  update_clear_all_filters_button();
+  update_results_empty_state(count);
 
   stripe_table();
 };
@@ -666,7 +708,7 @@ function filter_toggle() {
 };
 
 function clear_all_filters() {
-  var filter_inputs = document.querySelectorAll('#filters input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])');
+  var filter_inputs = get_filter_inputs();
 
   forEach(filter_inputs, function(input) {
     input.value = '';
@@ -682,6 +724,8 @@ function clear_all_filters() {
   } catch(err) {
     // no action
   };
+
+  update_clear_all_filters_button();
 };
 
 function toggle_column_visibility(column_name) {
@@ -730,6 +774,8 @@ function clear_filter(element_id){
   } catch(err) {
     // no action
   };
+
+  update_clear_all_filters_button();
 };
 
 function toggleView(view) {
@@ -839,6 +885,16 @@ function applyDarkMode() {
 
 // Call this function when the document is ready to sync checkbox
 document.addEventListener('DOMContentLoaded', applyDarkMode);
+document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
+document.addEventListener('DOMContentLoaded', function() {
+  var filters = document.getElementById('filters');
+  if (!filters) {
+    return;
+  }
+
+  filters.addEventListener('input', update_clear_all_filters_button);
+  filters.addEventListener('change', update_clear_all_filters_button);
+});
 
 
 /* Called on Document Load */
