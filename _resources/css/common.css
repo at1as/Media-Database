@@ -52,13 +52,16 @@ hr{
 .table thead th {
   background-color: #6c757d;
   color: white;
-  font-weight: 500 !important;
-  font-size: 1rem;
-  padding: 0.75rem;
+  font-weight: 600 !important;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.85rem 0.75rem;
   vertical-align: middle !important;
   position: sticky;
   top: -1px;
   z-index: 3;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 #filters {
@@ -284,7 +287,7 @@ body.modal-open {
 }
 .filters-section-title{
   margin:14px 0 10px;
-  color:#5d6b7a;
+  color:#8b949e;
   font-size:0.76rem;
   font-weight:800;
   letter-spacing:0.08em;
@@ -624,7 +627,8 @@ body.dark-theme .filters-results-summary.is-empty{
   background:#edf4fb;
   color:#1f2f3f;
 }
-.filter-input-shell .ts-wrapper.multi .ts-control > div{
+.filter-input-shell .ts-wrapper.multi .ts-control > div,
+.filter-input-shell .ts-wrapper.multi .ts-control > .item{
   margin:2px 6px 2px 0;
   padding:3px 8px;
   border-radius:999px;
@@ -632,6 +636,9 @@ body.dark-theme .filters-results-summary.is-empty{
   color:#294055;
   font-size:0.85rem !important;
   line-height:1.2 !important;
+  height:auto !important;
+  min-height:20px !important;
+  visibility:visible !important;
 }
 .filter-input-shell .ts-wrapper.multi .ts-control > input{
   margin:0 !important;
@@ -653,6 +660,11 @@ body.dark-theme .filters-results-summary.is-empty{
 .filter-input-shell .ts-wrapper.plugin-remove_button .item .remove{
   border-left:none;
   color:#617182;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  margin-left:4px;
 }
 .filter-clear-btn{
   position:absolute;
@@ -682,7 +694,7 @@ body.dark-theme .filters-results-summary.is-empty{
 .filter-input-shell:not(.has-clear-visible) .filter-inline-help {
   right: 8px;
 }
-.media-action-btn-random:hover .media-action-btn-icon {
+.media-action-btn-random:not(.is-disabled):hover .media-action-btn-icon {
   animation: rollDice 0.5s ease-in-out;
 }
 
@@ -969,6 +981,58 @@ th{
   font-weight:400 !important;
 }
 
+/* Table cell border radius for first and last cells */
+.table tbody tr td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.table tbody tr td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Genre pills styling */
+.genre-pill {
+  display: inline-block;
+  padding: 0.3em 0.65em;
+  margin: 0.15em 0.25em 0.15em 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+body.dark-theme .genre-pill {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+  color: #90caf9;
+  border-color: #4a6fa5;
+}
+
+/* Rating with star */
+.rating-with-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+}
+
+body.dark-theme .rating-with-star {
+  color: #fff;
+}
+
+.rating-star {
+  color: #f4b400 !important;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
 /* Individual Title Page */
 #item-description{
   padding:10px;
@@ -991,7 +1055,6 @@ th{
 }
 #star{
   display:inline-block;
-  color:#f4b400 !important;
   font-size:30px;
   margin-left:10px;
   vertical-align:middle;

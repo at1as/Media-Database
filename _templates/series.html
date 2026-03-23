@@ -304,8 +304,6 @@
             </div>
           </div>
 
-          <div class="filters-row-break"></div>
-
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
               <label for="cast-search" class="filter-label">Cast</label>
@@ -345,37 +343,37 @@
             <span class="media-action-btn-label">Columns</span>
           </button>
           <div class="dropdown-menu" aria-labelledby="columnVisibilityDropdown">
-            <div class="dropdown-item" onclick="handleDropdownItemClick('image_data_checkbox', 'image_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('image_data_checkbox', 'image_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="image_data_checkbox" name="image_data_checkbox" onclick="event.stopPropagation()" checked>
                 <label class="form-check-label" for="image_data_checkbox" onclick="event.stopPropagation()">Image</label>
               </div>
             </div>
-            <div class="dropdown-item" onclick="handleDropdownItemClick('rating_data_checkbox', 'rating_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('rating_data_checkbox', 'rating_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="rating_data_checkbox" name="rating_data_checkbox" onclick="event.stopPropagation()" checked>
                 <label class="form-check-label" for="rating_data_checkbox" onclick="event.stopPropagation()">Rating</label>
               </div>
             </div>
-            <div class="dropdown-item" onclick="handleDropdownItemClick('vote_data_checkbox', 'vote_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('vote_data_checkbox', 'vote_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="vote_data_checkbox" name="vote_data_checkbox" onclick="event.stopPropagation()">
                 <label class="form-check-label" for="vote_data_checkbox" onclick="event.stopPropagation()">Votes</label>
               </div>
             </div>
-            <div class="dropdown-item" onclick="handleDropdownItemClick('genre_data_checkbox', 'genre_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('genre_data_checkbox', 'genre_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="genre_data_checkbox" name="genre_data_checkbox" onclick="event.stopPropagation()" checked>
                 <label class="form-check-label" for="genre_data_checkbox" onclick="event.stopPropagation()">Genres</label>
               </div>
             </div>
-            <div class="dropdown-item" onclick="handleDropdownItemClick('cast_data_checkbox', 'stars_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('cast_data_checkbox', 'stars_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="cast_data_checkbox" name="cast_data_checkbox" onclick="event.stopPropagation()" checked>
                 <label class="form-check-label" for="cast_data_checkbox" onclick="event.stopPropagation()">Cast</label>
               </div>
             </div>
-            <div class="dropdown-item" onclick="handleDropdownItemClick('languages_data_checkbox', 'languages_data')">
+            <div class="dropdown-item" onclick="handleDropdownItemClick('languages_data_checkbox', 'languages_data', event)">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="languages_data_checkbox" name="languages_data_checkbox" onclick="event.stopPropagation()">
                 <label class="form-check-label" for="languages_data_checkbox" onclick="event.stopPropagation()">Languages</label>
