@@ -445,6 +445,11 @@ function refresh_filter_select_for_visible_rows(field_id) {
     return;
   }
 
+  if (select.tomselect.isRefreshing) {
+    return;
+  }
+  select.tomselect.isRefreshing = true;
+
   var cell_name = get_filter_option_cell_name(field_id);
   if (!cell_name) {
     return;
@@ -473,6 +478,11 @@ function refresh_filter_select_for_visible_rows(field_id) {
 
   select.tomselect.clearOptions();
 
+  var selected_set = {};
+  forEach(selected_values, function(value) {
+    selected_set[value] = true;
+  });
+
   forEach(option_values, function(value) {
     var count = counts[value];
     select.tomselect.addOption({
@@ -480,11 +490,15 @@ function refresh_filter_select_for_visible_rows(field_id) {
       text: value,
       count: count
     });
-  });
 
-  select.tomselect.setValue(selected_values, true);
+    if (selected_set[value]) {
+      select.tomselect.addItem(value, true);
+    }
+  });
   select.tomselect.refreshOptions(false);
   select.tomselect.refreshItems();
+
+  select.tomselect.isRefreshing = false;
 
   log_filter_debug('refresh_filter_select_for_visible_rows', {
     field_id: field_id,
@@ -872,6 +886,7 @@ function initialize_enhanced_filter_selects() {
             }, this)
           });
           trigger_page_search();
+          refresh_filter_select_for_visible_rows(config.id);
         }
       });
     }
