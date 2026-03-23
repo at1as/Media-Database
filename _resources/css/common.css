@@ -34,7 +34,7 @@ hr{
   padding:15px;
 }
 .body-container{
-  margin-top:50px;
+  margin-top:45px;
   margin-left:auto;
   margin-right:auto;
   max-width:1200px;
@@ -618,6 +618,7 @@ body.dark-theme .filters-results-summary.is-empty{
   border:1px solid #d1d9e0;
   border-radius:12px;
   box-shadow:0 12px 28px rgba(36, 52, 71, 0.12);
+  z-index:1050;
 }
 .filter-input-shell .ts-dropdown .active{
   background:#edf4fb;
@@ -680,6 +681,21 @@ body.dark-theme .filters-results-summary.is-empty{
 }
 .filter-input-shell:not(.has-clear-visible) .filter-inline-help {
   right: 8px;
+}
+.media-action-btn-random:hover .media-action-btn-icon {
+  animation: rollDice 0.5s ease-in-out;
+}
+
+@keyframes rollDice {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+.dropdown-menu {
+  z-index: 1050;
+  position: absolute;
 }
 .filters-divider{
   margin:18px 0 16px;
@@ -975,10 +991,15 @@ th{
 }
 #star{
   display:inline-block;
-  color:orange;
+  color:#f4b400 !important;
   font-size:30px;
   margin-left:10px;
   vertical-align:middle;
+}
+
+/* Ensure all star elements are yellow */
+.star, .star-rating, [class*="star"] {
+  color: #f4b400 !important;
 }
 #item-rating{
   display:inline-block;
@@ -1072,7 +1093,7 @@ body.dark-theme .navbar {
 body.dark-theme .jumbotron,
 body.dark-theme .well,
 body.dark-theme .filter-container {
-  background-color: #444;
+  background-color: #2a2a2a;
   color: #fff;
 }
 

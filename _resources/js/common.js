@@ -822,6 +822,7 @@ function initialize_enhanced_filter_selects() {
         placeholder: config.placeholder,
         searchField: ['text'],
         refreshThrottle: 0,
+        dropdownParent: 'body',
         plugins: {
           remove_button: {
             title: 'Remove'
@@ -1596,8 +1597,22 @@ function clear_all_filters() {
 
 function toggle_column_visibility(column_name) {
   var column_cells  = document.getElementsByName(column_name);
-  var next_state    = "";
-  column_cells[0].style.display === "none" ? next_state = "" : next_state = "none";
+  if (column_cells.length === 0) {
+    return;
+  }
+
+  // Find the header cell (TH) to check current state, not a data cell that might be filtered
+  var header_cell = null;
+  for (var i = 0; i < column_cells.length; i++) {
+    if (column_cells[i].tagName === 'TH') {
+      header_cell = column_cells[i];
+      break;
+    }
+  }
+
+  // If no header found, fall back to first cell
+  var reference_cell = header_cell || column_cells[0];
+  var next_state = reference_cell.style.display === "none" ? "" : "none";
 
   forEach(column_cells, function(cell) {
     cell.style.display = next_state;
@@ -1655,15 +1670,23 @@ function update_random_selection_button() {
 function handleDropdownItemClick(checkboxId, columnType) {
   var checkbox = document.getElementById(checkboxId);
   if (checkbox) {
-    // Toggle checkbox first
-    checkbox.checked = !checkbox.checked;
-
-    // Then toggle column visibility
+    // Toggle column visibility based on current checkbox state
     toggle_column_visibility(columnType);
 
     // Debug: log the state
     console.log('Toggled', columnType, 'checkbox:', checkbox.checked);
   }
+}
+
+function setupColumnVisibilityCheckboxes() {
+  var checkboxes = document.querySelectorAll('[id$="_data_checkbox"]');
+  forEach(checkboxes, function(checkbox) {
+    checkbox.addEventListener('change', function() {
+      var columnType = checkbox.id.replace('_checkbox', '');
+      toggle_column_visibility(columnType);
+      console.log('Toggled', columnType, 'checkbox:', checkbox.checked);
+    });
+  });
 }
 
 /* Clear cell in filters */
@@ -1780,12 +1803,33 @@ function applyDarkMode() {
 }
 
 // Call this function when the document is ready to sync checkbox
+// Handle dropdown overflow issues
+document.addEventListener('DOMContentLoaded', function() {
+  var dropdowns = document.querySelectorAll('.dropdown');
+  var filtersContainer = document.getElementById('filters');
+
+  dropdowns.forEach(function(dropdown) {
+    dropdown.addEventListener('show.bs.dropdown', function() {
+      if (filtersContainer) {
+        filtersContainer.style.overflow = 'visible';
+      }
+    });
+
+    dropdown.addEventListener('hide.bs.dropdown', function() {
+      if (filtersContainer) {
+        filtersContainer.style.overflow = 'hidden';
+      }
+    });
+  });
+});
+
 document.addEventListener('DOMContentLoaded', applyDarkMode);
 document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
 document.addEventListener('DOMContentLoaded', initialize_enhanced_filter_selects);
 document.addEventListener('DOMContentLoaded', initialize_numeric_filter_inputs);
 document.addEventListener('DOMContentLoaded', setup_search_clear_buttons);
 document.addEventListener('DOMContentLoaded', update_random_selection_button);
+document.addEventListener('DOMContentLoaded', setupColumnVisibilityCheckboxes);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
   if (!filters) {
