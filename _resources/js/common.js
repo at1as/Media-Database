@@ -175,8 +175,39 @@ function parse_list_tokens(value) {
     });
 }
 
-function selected_values_in_list(selected_values, item) {
-  var item_list = parse_list_tokens(item);
+function extract_cell_values(cell) {
+  if (!cell) {
+    return [];
+  }
+
+  // Check if cell has genre pills
+  var pills = cell.querySelectorAll('.genre-pill');
+  if (pills.length > 0) {
+    var values = [];
+    forEach(pills, function(pill) {
+      var text = pill.textContent.trim().toLowerCase();
+      if (text !== '') {
+        values.push(text);
+      }
+    });
+    return values;
+  }
+
+  // Fall back to parsing text content
+  return parse_list_tokens(cell.textContent);
+}
+
+function selected_values_in_list(selected_values, item_or_cell) {
+  var item_list;
+
+  // Check if item_or_cell is a DOM element (cell)
+  if (item_or_cell && typeof item_or_cell === 'object' && item_or_cell.nodeType === 1) {
+    item_list = extract_cell_values(item_or_cell);
+  } else {
+    // It's a string
+    item_list = parse_list_tokens(item_or_cell);
+  }
+
   var normalized_selected_values = selected_values.map(function(value) {
     return String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
   }).filter(function(value) {
@@ -197,7 +228,7 @@ function selected_values_in_list(selected_values, item) {
     if (!matched) {
       log_filter_debug('selected_values_in_list:no_match', {
         selected_values: normalized_selected_values,
-        raw_item: item,
+        raw_item: typeof item_or_cell === 'string' ? item_or_cell : 'DOM_ELEMENT',
         item_list: item_list
       });
       return false;
@@ -362,7 +393,11 @@ function initialize_numeric_filter_inputs() {
 }
 
 function populate_select_options(select, values, include_empty_option) {
+  var is_multiple = select.multiple;
   select.innerHTML = '';
+  if (is_multiple) {
+    select.multiple = true;
+  }
   if (include_empty_option) {
     select.appendChild(new Option('', ''));
   }
@@ -376,7 +411,7 @@ function collect_table_values(cell_name) {
   var cells = document.getElementsByName(cell_name);
   var values = {};
 
-  forEach(cells, function(cell) {
+  forEach(cells, function(cell, index) {
     if (cell.tagName === 'TH') {
       return;
     }
@@ -390,9 +425,11 @@ function collect_table_values(cell_name) {
     });
   });
 
-  return Object.keys(values).sort(function(a, b) {
+  var result = Object.keys(values).sort(function(a, b) {
     return a.localeCompare(b);
   });
+
+  return result;
 }
 
 function get_filter_option_cell_name(field_id) {
@@ -424,9 +461,21 @@ function collect_visible_table_value_counts(cell_name) {
     }
 
     var seen_in_row = {};
-    var raw_values = cell.textContent.replace(/\n/g, ',').split(',');
+    var raw_values;
+
+    // Check if cell has been enhanced with genre pills
+    var pills = cell.querySelectorAll('.genre-pill');
+    if (pills.length > 0) {
+      raw_values = [];
+      forEach(pills, function(pill) {
+        raw_values.push(pill.textContent.trim());
+      });
+    } else {
+      raw_values = cell.textContent.replace(/\n/g, ',').split(',');
+    }
+
     forEach(raw_values, function(raw_value) {
-      var value = raw_value.trim();
+      var value = typeof raw_value === 'string' ? raw_value.trim() : String(raw_value).trim();
       if (value === '' || seen_in_row[value]) {
         return;
       }
@@ -567,7 +616,7 @@ function collect_visible_rating_threshold_counts() {
       return;
     }
 
-    var rating_value = parseFloat((rating_cell.textContent || '').trim());
+    var rating_value = parseFloat((rating_cell.textContent || '').replace(/[^\d.]/g, '').trim());
     if (!isNaN(rating_value)) {
       visible_ratings.push(rating_value);
     }
@@ -600,7 +649,7 @@ function refresh_rating_select_options() {
   rating_select.appendChild(new Option('', ''));
 
   forEach(rating_values, function(value) {
-    rating_select.appendChild(new Option(value + ' (' + counts[value] + ')', value));
+    rating_select.appendChild(new Option(value + '+ (' + counts[value] + ')', value));
   });
 
   rating_select.value = selected_value;
@@ -859,6 +908,8 @@ function initialize_enhanced_filter_selects() {
         },
         onDropdownOpen: function() {
           refresh_filter_select_for_visible_rows(config.id);
+          this.setTextboxValue('');
+          this.refreshOptions(false);
         },
         onFocus: function() {
           clear_tom_select_search_state(this);
@@ -921,28 +972,31 @@ function search_movie_table(table_id) {
 
   // Traverse each row and cell. Hide rows whose content fails to match query
   for (var i = 1; i < movie_table.rows.length; i++) {
-    var rating_cell   = movie_table.rows[i].cells[1].innerHTML.toLowerCase();
-    var vote_cell     = movie_table.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
-    var title_cell    = movie_table.rows[i].cells[3].children[0].innerHTML.toLowerCase();
-    var year_cell     = movie_table.rows[i].cells[4].innerHTML.toLowerCase();
-    var genre_cell    = movie_table.rows[i].cells[6].textContent.toLowerCase();
-    var cast_cell     = movie_table.rows[i].cells[7].textContent.toLowerCase();
-    var director_cell = movie_table.rows[i].cells[8].textContent.toLowerCase();
-    var language_cell = movie_table.rows[i].cells[9].textContent.toLowerCase();
+    var row = movie_table.rows[i];
+
+    var rating_cell   = row.cells[1] ? row.cells[1].innerHTML.toLowerCase() : '';
+    var vote_cell     = row.cells[2] ? row.cells[2].innerHTML.toLowerCase().replace(/\,/g, '') : '';
+    var title_cell    = (row.cells[3] && row.cells[3].children[0]) ? row.cells[3].children[0].innerHTML.toLowerCase() : '';
+    var year_cell     = row.cells[4] ? row.cells[4].innerHTML.toLowerCase() : '';
+    var genre_cell_element = row.cells[6];
+    var cast_cell     = row.cells[7] ? row.cells[7].textContent.toLowerCase() : '';
+    var director_cell = row.cells[8] ? row.cells[8].textContent.toLowerCase() : '';
+    var language_cell_element = row.cells[9];
 
     if (filter_debug_enabled() && i <= 5 && (genre_values.length > 0 || language_values.length > 0)) {
       log_filter_debug('search_movie_table:row_sample', {
         row_index: i,
         title_cell: title_cell,
-        raw_genre_cell: movie_table.rows[i].cells[6].textContent,
-        parsed_genre_tokens: parse_list_tokens(movie_table.rows[i].cells[6].textContent),
-        raw_language_cell: movie_table.rows[i].cells[9].textContent,
-        parsed_language_tokens: parse_list_tokens(movie_table.rows[i].cells[9].textContent)
+        raw_genre_cell: genre_cell_element ? genre_cell_element.textContent : '',
+        parsed_genre_tokens: genre_cell_element ? extract_cell_values(genre_cell_element) : [],
+        raw_language_cell: language_cell_element ? language_cell_element.textContent : '',
+        parsed_language_tokens: language_cell_element ? extract_cell_values(language_cell_element) : []
       });
     }
 
     // Discard row if rating is empty, None, or less than query
-    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
+    var rating_numeric = parseFloat(rating_cell.replace(/[^\d.]/g, '').trim());
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || isNaN(rating_numeric) || rating_numeric < parseFloat(rating_query))) {
       movie_table.rows[i].style.display = 'none';
     }
     else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
@@ -957,7 +1011,7 @@ function search_movie_table(table_id) {
     else if (year_max_query !== '' && year_cell !== '' && (parseInt(year_cell) > parseInt(year_max_query))) {
       movie_table.rows[i].style.display = 'none';
     }
-    else if (genre_values.length > 0 && !selected_values_in_list(genre_values, genre_cell)) {
+    else if (genre_values.length > 0 && !selected_values_in_list(genre_values, genre_cell_element)) {
         movie_table.rows[i].style.display = 'none';
     }
     else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
@@ -966,7 +1020,7 @@ function search_movie_table(table_id) {
     else if (!title_match(director_query, director_cell) && !title_match(director_query, remove_diacritics(director_cell)) && director_query !== '') {
       movie_table.rows[i].style.display = 'none';
     }
-    else if (language_values.length > 0 && !selected_values_in_list(language_values, language_cell)) {
+    else if (language_values.length > 0 && !selected_values_in_list(language_values, language_cell_element)) {
         movie_table.rows[i].style.display = 'none';
     }
     else {
@@ -988,7 +1042,8 @@ function search_movie_table(table_id) {
     var language_cell = tile.querySelector('[name="languages_data"]').textContent;
 
     // Discard row if rating is empty, None, or less than query
-    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
+    var rating_numeric = parseFloat(rating_cell.replace(/[^\d.]/g, '').trim());
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || isNaN(rating_numeric) || rating_numeric < parseFloat(rating_query))) {
       tile.style.setProperty('display', 'none', 'important');
     }
     else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
@@ -1084,7 +1139,8 @@ function search_series_table(table_id) {
     }
 
     // Discard row if rating is empty, None, or less than query
-    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || parseFloat(rating_cell) < parseFloat(rating_query))) {
+    var rating_numeric = parseFloat(rating_cell.replace(/[^\d.]/g, '').trim());
+    if (rating_query !== '' && (rating_cell === '' || rating_cell === 'none' || rating_cell.trim() === 'none' || isNaN(rating_numeric) || rating_numeric < parseFloat(rating_query))) {
       series_table.rows[i].style.display = 'none';
     }
     else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
@@ -1398,6 +1454,11 @@ function build_modal_details_url(link_element) {
 function load_details(movie, preserveCurrentElement) {
   var movie_details = build_modal_details_url(movie);
 
+  // Hide all tooltips when opening modal
+  if (typeof $ !== 'undefined' && $('[data-toggle="tooltip"]').length > 0) {
+    $('[data-toggle="tooltip"]').tooltip('hide');
+  }
+
   // Save current scroll position and current element for navigation
   window.scrollPositionBeforeModal = window.pageYOffset || document.documentElement.scrollTop;
   console.log('load_details called with preserveCurrentElement:', preserveCurrentElement);
@@ -1610,27 +1671,18 @@ function clear_all_filters() {
   update_random_selection_button();
 };
 
-function toggle_column_visibility(column_name) {
+function toggle_column_visibility(column_name, checkbox) {
   var column_cells  = document.getElementsByName(column_name);
   if (column_cells.length === 0) {
     return;
   }
 
-  // Find the header cell (TH) to check current state, not a data cell that might be filtered
-  var header_cell = null;
-  for (var i = 0; i < column_cells.length; i++) {
-    if (column_cells[i].tagName === 'TH') {
-      header_cell = column_cells[i];
-      break;
-    }
-  }
-
-  // If no header found, fall back to first cell
-  var reference_cell = header_cell || column_cells[0];
-  var next_state = reference_cell.style.display === "none" ? "" : "none";
+  // Determine visibility based on checkbox state, not current column state
+  var should_show = checkbox && checkbox.checked;
+  var display_state = should_show ? "" : "none";
 
   forEach(column_cells, function(cell) {
-    cell.style.display = next_state;
+    cell.style.display = display_state;
   });
 };
 
@@ -1682,11 +1734,19 @@ function update_random_selection_button() {
   }
 }
 
-function handleDropdownItemClick(checkboxId, columnType) {
+function handleDropdownItemClick(checkboxId, columnType, event) {
+  // Prevent dropdown from closing when clicking the dropdown item
+  if (event) {
+    event.stopPropagation();
+  }
+
   var checkbox = document.getElementById(checkboxId);
   if (checkbox) {
-    // Toggle column visibility based on current checkbox state
-    toggle_column_visibility(columnType);
+    // Toggle the checkbox state first (since clicking dropdown-item doesn't auto-toggle it)
+    checkbox.checked = !checkbox.checked;
+
+    // Then update column visibility based on new checkbox state
+    toggle_column_visibility(columnType, checkbox);
 
     // Debug: log the state
     console.log('Toggled', columnType, 'checkbox:', checkbox.checked);
@@ -1698,7 +1758,7 @@ function setupColumnVisibilityCheckboxes() {
   forEach(checkboxes, function(checkbox) {
     checkbox.addEventListener('change', function() {
       var columnType = checkbox.id.replace('_checkbox', '');
-      toggle_column_visibility(columnType);
+      toggle_column_visibility(columnType, checkbox);
       console.log('Toggled', columnType, 'checkbox:', checkbox.checked);
     });
   });
@@ -1838,6 +1898,44 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+function enhanceTableStyling() {
+  var resultsTable = document.getElementById('results');
+  if (!resultsTable) {
+    return;
+  }
+
+  var genreCells = resultsTable.querySelectorAll('td[name="genres_data"], td[name="genre_data"]');
+  forEach(genreCells, function(cell) {
+    if (cell.dataset.enhanced) {
+      return;
+    }
+    cell.dataset.enhanced = 'true';
+
+    var genres = cell.innerHTML.split(',<br>').map(function(g) {
+      return g.split('<br/>').join('').split(',').join('').trim();
+    }).filter(function(g) { return g !== ''; });
+
+    if (genres.length > 0) {
+      cell.innerHTML = genres.map(function(genre) {
+        return '<span class="genre-pill">' + genre + '</span>';
+      }).join(' ');
+    }
+  });
+
+  var ratingCells = resultsTable.querySelectorAll('td[name="rating_data"]');
+  forEach(ratingCells, function(cell) {
+    if (cell.dataset.enhanced) {
+      return;
+    }
+    cell.dataset.enhanced = 'true';
+
+    var ratingText = cell.textContent.trim();
+    if (ratingText && ratingText !== 'None' && ratingText !== '') {
+      cell.innerHTML = '<span class="rating-with-star"><span class="rating-star">★</span>' + ratingText + '</span>';
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', applyDarkMode);
 document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
 document.addEventListener('DOMContentLoaded', initialize_enhanced_filter_selects);
@@ -1845,6 +1943,7 @@ document.addEventListener('DOMContentLoaded', initialize_numeric_filter_inputs);
 document.addEventListener('DOMContentLoaded', setup_search_clear_buttons);
 document.addEventListener('DOMContentLoaded', update_random_selection_button);
 document.addEventListener('DOMContentLoaded', setupColumnVisibilityCheckboxes);
+document.addEventListener('DOMContentLoaded', enhanceTableStyling);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
   if (!filters) {
