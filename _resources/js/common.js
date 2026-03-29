@@ -89,7 +89,7 @@ function update_clear_button_visibility(field_id) {
 }
 
 function setup_search_clear_buttons() {
-  var search_inputs = document.querySelectorAll('.filter-title-input, #cast-search, #vote-search');
+  var search_inputs = document.querySelectorAll('.filter-title-input, #vote-search');
   forEach(search_inputs, function(input) {
     // Set initial visibility
     update_clear_button_visibility(input.id);
@@ -438,6 +438,10 @@ function get_filter_option_cell_name(field_id) {
 
   if (field_id === 'director-search') {
     return 'director_data';
+  }
+
+  if (field_id === 'cast-search') {
+    return 'stars_data';
   }
 
   return null;
@@ -908,7 +912,8 @@ function initialize_enhanced_filter_selects() {
     [
       { id: 'genre-search', placeholder: 'Any genres', hideSelected: true, refreshOnOpen: true },
       { id: 'language-search', placeholder: 'Any languages', hideSelected: true, refreshOnOpen: true },
-      { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: true }
+      { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: true },
+      { id: 'cast-search', placeholder: 'Any cast members', hideSelected: true, refreshOnOpen: true }
     ].forEach(function(config) {
       var select = document.getElementById(config.id);
       if (select && !select.tomselect) {
@@ -922,13 +927,11 @@ function initialize_enhanced_filter_selects() {
           try {
             var cell_name = get_filter_option_cell_name(config.id);
             var values = collect_table_values(cell_name);
-            console.log('Director values for', config.id, ':', values);
             var counts;
 
             // Directors column is hidden by default, so we need to count all rows
             if (config.id === 'director-search') {
               counts = collect_all_table_value_counts(cell_name);
-              console.log('Director counts for', config.id, ':', counts);
             } else {
               counts = collect_visible_table_value_counts(cell_name);
             }
@@ -1042,6 +1045,7 @@ function search_movie_table(table_id) {
   var genre_query     = get_filter_field_value('genre-search').toLowerCase();
   var genre_values    = get_filter_field_values('genre-search');
   var cast_query      = get_filter_field_value('cast-search').toLowerCase();
+  var cast_values    = get_filter_field_values('cast-search');
   var director_query  = get_filter_field_value('director-search').toLowerCase();
   var director_values = get_filter_field_values('director-search');
   var language_query  = get_filter_field_value('language-search').toLowerCase();
@@ -1064,7 +1068,7 @@ function search_movie_table(table_id) {
     var title_cell    = (row.cells[3] && row.cells[3].children[0]) ? row.cells[3].children[0].innerHTML.toLowerCase() : '';
     var year_cell     = row.cells[4] ? row.cells[4].innerHTML.toLowerCase() : '';
     var genre_cell_element = row.cells[6];
-    var cast_cell     = row.cells[7] ? row.cells[7].textContent.toLowerCase() : '';
+    var cast_cell_element = row.cells[7];
     var director_cell_element = row.cells[8];
     var language_cell_element = row.cells[9];
 
@@ -1099,8 +1103,8 @@ function search_movie_table(table_id) {
     else if (genre_values.length > 0 && !selected_values_in_list(genre_values, genre_cell_element)) {
         movie_table.rows[i].style.display = 'none';
     }
-    else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
-      movie_table.rows[i].style.display = 'none';
+    else if (cast_values.length > 0 && !selected_values_in_list(cast_values, cast_cell_element)) {
+        movie_table.rows[i].style.display = 'none';
     }
     else if (director_values.length > 0 && !selected_values_in_list(director_values, director_cell_element)) {
         movie_table.rows[i].style.display = 'none';
@@ -1190,6 +1194,7 @@ function search_series_table(table_id) {
   var genre_query     = get_filter_field_value('genre-search').toLowerCase();
   var genre_values    = get_filter_field_values('genre-search');
   var cast_query      = get_filter_field_value('cast-search').toLowerCase();
+  var cast_values    = get_filter_field_values('cast-search');
   var language_query  = get_filter_field_value('language-search').toLowerCase();
   var language_values = get_filter_field_values('language-search');
 
@@ -1209,7 +1214,7 @@ function search_series_table(table_id) {
     var start_year_cell = series_table.rows[i].cells[4].innerHTML.trim().substring(0,4).toLowerCase().trim();
     var end_year_cell   = series_table.rows[i].cells[4].innerHTML.trim().substring(5,9).toLowerCase().trim();
     var genre_cell      = series_table.rows[i].cells[5].textContent.toLowerCase();
-    var cast_cell       = series_table.rows[i].cells[6].textContent.toLowerCase();
+    var cast_cell_element = series_table.rows[i].cells[6];
     var language_cell   = series_table.rows[i].cells[7].textContent.toLowerCase();
 
     if (filter_debug_enabled() && i <= 5 && (genre_values.length > 0 || language_values.length > 0)) {
@@ -1243,7 +1248,7 @@ function search_series_table(table_id) {
     else if (genre_values.length > 0 && !selected_values_in_list(genre_values, genre_cell)) {
         series_table.rows[i].style.display = 'none';
     }
-    else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
+    else if (cast_values.length > 0 && !selected_values_in_list(cast_values, cast_cell_element)) {
       series_table.rows[i].style.display = 'none';
     }
     else if (language_values.length > 0 && !selected_values_in_list(language_values, language_cell)) {
