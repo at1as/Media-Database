@@ -308,10 +308,8 @@
             <div class="filter-label-row">
               <label for="cast-search" class="filter-label">Cast</label>
             </div>
-            <div class="filter-input-shell has-inline-help">
-              <input class="form-control modern-filter-input" id="cast-search" type="search" placeholder="Ben Stiller, !Owen Wilson" onkeyup="search_series_table('results')" spellcheck="false">
-              <a href="#" class="tooltip-info filter-inline-help" data-placement="left" data-toggle="tooltip" title="Comma-separated list. '!' preceeding a term will exclude those from the listing [ex. 'Ben Stiller, !Owen Wilson']" tabindex="-1" aria-label="Cast filter help"><i class="fas fa-info-circle question-filter"></i></a>
-              <button type="button" class="filter-clear-btn" onclick="clear_filter('cast-search'); search_series_table('results')" aria-label="Clear cast filter"><i class="fa fa-times-circle clear-filter"></i></button>
+            <div class="filter-input-shell enhanced-filter-select loading">
+              <select class="enhanced-filter-select" id="cast-search" data-filter-type="cast" multiple placeholder="Any cast members"></select>
             </div>
           </div>
 
