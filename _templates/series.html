@@ -319,10 +319,8 @@
             <div class="filter-label-row">
               <label for="director-search" class="filter-label">Directors</label>
             </div>
-            <div class="filter-input-shell has-inline-help">
-              <input class="form-control modern-filter-input" id="director-search" type="search" placeholder="Director names" onkeyup="search_series_table('results')" spellcheck="false">
-              <a href="#" class="tooltip-info filter-inline-help" data-placement="left" data-toggle="tooltip" title="Director by first or last name [ex. 'Coen', 'Stanley Kubrick', 'David', etc]" tabindex="-1" aria-label="Director filter help"><i class="fas fa-info-circle question-filter"></i></a>
-              <button type="button" class="filter-clear-btn" onclick="clear_filter('director-search'); search_series_table('results')" aria-label="Clear director filter"><i class="fa fa-times-circle clear-filter"></i></button>
+            <div class="filter-input-shell enhanced-filter-select loading">
+              <select class="enhanced-filter-select" id="director-search" data-filter-type="director" multiple placeholder="Any directors"></select>
             </div>
           </div>
         </div>
