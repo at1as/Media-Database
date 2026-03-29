@@ -647,6 +647,46 @@ body.dark-theme .filters-results-summary.is-empty{
   font-size:0.85rem !important;
   line-height:1.2 !important;
 }
+
+/* Enhanced select loading states */
+.filter-input-shell.enhanced-filter-select {
+  position: relative;
+}
+.filter-input-shell.enhanced-filter-select::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  z-index: 1;
+  min-height: 42px; /* Match Tom Select control height */
+}
+.filter-input-shell.enhanced-filter-select.loading::after {
+  content: 'Loading...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #6c757d;
+  font-size: 0.85rem;
+  z-index: 2;
+}
+.filter-input-shell.enhanced-filter-select.loaded::before,
+.filter-input-shell.enhanced-filter-select.loaded::after {
+  display: none;
+}
+/* Hide native select during Tom Select initialization */
+.enhanced-filter-select select {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  min-height: 42px; /* Ensure consistent height */
+}
+.enhanced-filter-select.loaded select {
+  opacity: 1;
+}
 .filter-input-shell .ts-wrapper.single .ts-control .item,
 .filter-input-shell .ts-wrapper.single .ts-control input,
 .filter-input-shell .ts-wrapper .ts-control input::placeholder,
@@ -1060,10 +1100,6 @@ body.dark-theme .rating-with-star {
   vertical-align:middle;
 }
 
-/* Ensure all star elements are yellow */
-.star, .star-rating, [class*="star"] {
-  color: #f4b400 !important;
-}
 #item-rating{
   display:inline-block;
   vertical-align:middle;
