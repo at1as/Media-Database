@@ -443,6 +443,43 @@ function get_filter_option_cell_name(field_id) {
   return null;
 }
 
+function collect_all_table_value_counts(cell_name) {
+  var cells = document.getElementsByName(cell_name);
+  var counts = {};
+
+  forEach(cells, function(cell) {
+    if (cell.tagName === 'TH') {
+      return;
+    }
+
+    var seen_in_row = {};
+    var raw_values;
+
+    // Check if cell has been enhanced with genre pills
+    var pills = cell.querySelectorAll('.genre-pill');
+    if (pills.length > 0) {
+      raw_values = [];
+      forEach(pills, function(pill) {
+        raw_values.push(pill.textContent.trim());
+      });
+    } else {
+      raw_values = cell.textContent.replace(/\n/g, ',').split(',');
+    }
+
+    forEach(raw_values, function(raw_value) {
+      var value = typeof raw_value === 'string' ? raw_value.trim() : String(raw_value).trim();
+      if (value === '' || seen_in_row[value]) {
+        return;
+      }
+
+      seen_in_row[value] = true;
+      counts[value] = (counts[value] || 0) + 1;
+    });
+  });
+
+  return counts;
+}
+
 function collect_visible_table_value_counts(cell_name) {
   var cells = document.getElementsByName(cell_name);
   var counts = {};
@@ -871,7 +908,7 @@ function initialize_enhanced_filter_selects() {
     [
       { id: 'genre-search', placeholder: 'Any genres', hideSelected: true, refreshOnOpen: true },
       { id: 'language-search', placeholder: 'Any languages', hideSelected: true, refreshOnOpen: true },
-      { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: false }
+      { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: true }
     ].forEach(function(config) {
       var select = document.getElementById(config.id);
       if (select && !select.tomselect) {
@@ -883,12 +920,27 @@ function initialize_enhanced_filter_selects() {
         // Use setTimeout to make the data collection non-blocking
         setTimeout(function() {
           try {
-            populate_select_options(select, collect_table_values(get_filter_option_cell_name(config.id)), false);
-            new TomSelect(select, {
+            var cell_name = get_filter_option_cell_name(config.id);
+            var values = collect_table_values(cell_name);
+            console.log('Director values for', config.id, ':', values);
+            var counts;
+
+            // Directors column is hidden by default, so we need to count all rows
+            if (config.id === 'director-search') {
+              counts = collect_all_table_value_counts(cell_name);
+              console.log('Director counts for', config.id, ':', counts);
+            } else {
+              counts = collect_visible_table_value_counts(cell_name);
+            }
+
+            populate_select_options(select, values, false);
+
+            var tomselect = new TomSelect(select, {
               allowEmptyOption: true,
               create: false,
               hideSelected: config.hideSelected,
               maxItems: null,
+              maxOptions: null, // Remove limit on number of options displayed
               placeholder: config.placeholder,
               searchField: ['text'],
               refreshThrottle: 0,
@@ -914,9 +966,7 @@ function initialize_enhanced_filter_selects() {
                 }
               },
         onDropdownOpen: function() {
-          if (config.refreshOnOpen) {
-            refresh_filter_select_for_visible_rows(config.id);
-          }
+          refresh_filter_select_for_visible_rows(config.id);
           this.setTextboxValue('');
           this.refreshOptions(false);
         },
@@ -949,6 +999,17 @@ function initialize_enhanced_filter_selects() {
           refresh_filter_select_for_visible_rows(config.id);
         }
       });
+
+      // Add count data to options
+      forEach(values, function(value) {
+        var count = counts[value];
+        tomselect.addOption({
+          value: value,
+          text: value,
+          count: count
+        });
+      });
+      tomselect.refreshOptions(false);
 
       // Remove loading state and mark as loaded
       if (shell) {
