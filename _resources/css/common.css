@@ -665,14 +665,23 @@ body.dark-theme .filters-results-summary.is-empty{
   min-height: 42px; /* Match Tom Select control height */
 }
 .filter-input-shell.enhanced-filter-select.loading::after {
-  content: 'Loading...';
+  content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #6c757d;
-  font-size: 0.85rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #6c757d;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
   z-index: 2;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 .filter-input-shell.enhanced-filter-select.loaded::before,
 .filter-input-shell.enhanced-filter-select.loaded::after {

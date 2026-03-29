@@ -89,7 +89,7 @@ function update_clear_button_visibility(field_id) {
 }
 
 function setup_search_clear_buttons() {
-  var search_inputs = document.querySelectorAll('.filter-title-input, #cast-search, #director-search, #vote-search');
+  var search_inputs = document.querySelectorAll('.filter-title-input, #cast-search, #vote-search');
   forEach(search_inputs, function(input) {
     // Set initial visibility
     update_clear_button_visibility(input.id);
@@ -434,6 +434,10 @@ function get_filter_option_cell_name(field_id) {
 
   if (field_id === 'language-search') {
     return 'languages_data';
+  }
+
+  if (field_id === 'director-search') {
+    return 'director_data';
   }
 
   return null;
@@ -865,8 +869,9 @@ function initialize_enhanced_filter_selects() {
     }
 
     [
-      { id: 'genre-search', placeholder: 'Any genres' },
-      { id: 'language-search', placeholder: 'Any languages' }
+      { id: 'genre-search', placeholder: 'Any genres', hideSelected: true, refreshOnOpen: true },
+      { id: 'language-search', placeholder: 'Any languages', hideSelected: true, refreshOnOpen: true },
+      { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: false }
     ].forEach(function(config) {
       var select = document.getElementById(config.id);
       if (select && !select.tomselect) {
@@ -882,7 +887,7 @@ function initialize_enhanced_filter_selects() {
             new TomSelect(select, {
               allowEmptyOption: true,
               create: false,
-              hideSelected: true,
+              hideSelected: config.hideSelected,
               maxItems: null,
               placeholder: config.placeholder,
               searchField: ['text'],
@@ -909,7 +914,9 @@ function initialize_enhanced_filter_selects() {
                 }
               },
         onDropdownOpen: function() {
-          refresh_filter_select_for_visible_rows(config.id);
+          if (config.refreshOnOpen) {
+            refresh_filter_select_for_visible_rows(config.id);
+          }
           this.setTextboxValue('');
           this.refreshOptions(false);
         },
@@ -975,6 +982,7 @@ function search_movie_table(table_id) {
   var genre_values    = get_filter_field_values('genre-search');
   var cast_query      = get_filter_field_value('cast-search').toLowerCase();
   var director_query  = get_filter_field_value('director-search').toLowerCase();
+  var director_values = get_filter_field_values('director-search');
   var language_query  = get_filter_field_value('language-search').toLowerCase();
   var language_values = get_filter_field_values('language-search');
 
@@ -996,7 +1004,7 @@ function search_movie_table(table_id) {
     var year_cell     = row.cells[4] ? row.cells[4].innerHTML.toLowerCase() : '';
     var genre_cell_element = row.cells[6];
     var cast_cell     = row.cells[7] ? row.cells[7].textContent.toLowerCase() : '';
-    var director_cell = row.cells[8] ? row.cells[8].textContent.toLowerCase() : '';
+    var director_cell_element = row.cells[8];
     var language_cell_element = row.cells[9];
 
     if (filter_debug_enabled() && i <= 5 && (genre_values.length > 0 || language_values.length > 0)) {
@@ -1033,8 +1041,8 @@ function search_movie_table(table_id) {
     else if (!substrings_in_list(cast_query, cast_cell) && cast_query !== '') {
       movie_table.rows[i].style.display = 'none';
     }
-    else if (!title_match(director_query, director_cell) && !title_match(director_query, remove_diacritics(director_cell)) && director_query !== '') {
-      movie_table.rows[i].style.display = 'none';
+    else if (director_values.length > 0 && !selected_values_in_list(director_values, director_cell_element)) {
+        movie_table.rows[i].style.display = 'none';
     }
     else if (language_values.length > 0 && !selected_values_in_list(language_values, language_cell_element)) {
         movie_table.rows[i].style.display = 'none';
