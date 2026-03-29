@@ -340,28 +340,20 @@ function sanitize_numeric_filter_value(input) {
   var original_value = input.value;
   var sanitized_value = original_value;
 
-  if (filter_type === 'decimal') {
-    sanitized_value = sanitized_value.replace(/[^0-9.]/g, '');
-
-    var first_decimal_index = sanitized_value.indexOf('.');
-    if (first_decimal_index !== -1) {
-      sanitized_value = sanitized_value.substring(0, first_decimal_index + 1) + sanitized_value.substring(first_decimal_index + 1).replace(/\./g, '');
+  if (filter_type === 'integer') {
+    sanitized_value = sanitized_value.replace(/[^\d]/g, '');
+  } else if (filter_type === 'decimal') {
+    sanitized_value = sanitized_value.replace(/[^\d.]/g, '');
+    var decimal_points = sanitized_value.match(/\./g);
+    if (decimal_points && decimal_points.length > 1) {
+      var parts = sanitized_value.split('.');
+      sanitized_value = parts[0] + '.' + parts.slice(1).join('');
     }
-  } else {
-    sanitized_value = sanitized_value.replace(/[^0-9]/g, '');
   }
 
-  if (sanitized_value !== original_value) {
-    input.value = sanitized_value;
-    input.classList.add('filter-input-invalid');
+  input.value = sanitized_value;
 
-    window.clearTimeout(input.invalidFilterTimeout);
-    input.invalidFilterTimeout = window.setTimeout(function() {
-      input.classList.remove('filter-input-invalid');
-    }, 900);
-  } else {
-    input.classList.remove('filter-input-invalid');
-  }
+  update_clear_button_visibility(input.id);
 }
 
 function initialize_numeric_filter_inputs() {
@@ -663,7 +655,7 @@ function format_selected_rating_option() {
 
   var selected_option = rating_select.options[rating_select.selectedIndex];
   if (selected_option) {
-    selected_option.text = rating_select.value + '+';
+    selected_option.text = rating_select.value + '/10';
   }
 }
 
@@ -866,46 +858,56 @@ function initialize_enhanced_filter_selects() {
   refresh_year_select_options();
   format_selected_year_options();
 
-  if (typeof TomSelect === 'undefined') {
-    return;
-  }
+  // Initialize enhanced selects asynchronously to prevent UI blocking
+  setTimeout(function() {
+    if (typeof TomSelect === 'undefined') {
+      return;
+    }
 
-  [
-    { id: 'genre-search', placeholder: 'Any genres' },
-    { id: 'language-search', placeholder: 'Any languages' }
-  ].forEach(function(config) {
-    var select = document.getElementById(config.id);
-    if (select && !select.tomselect) {
-      populate_select_options(select, collect_table_values(get_filter_option_cell_name(config.id)), false);
-      new TomSelect(select, {
-        allowEmptyOption: true,
-        create: false,
-        hideSelected: true,
-        maxItems: null,
-        placeholder: config.placeholder,
-        searchField: ['text'],
-        refreshThrottle: 0,
-        dropdownParent: 'body',
-        plugins: {
-          remove_button: {
-            title: 'Remove'
-          },
-          no_active_items: {}
-        },
-        render: {
-          option: function(data, escape) {
-            var option_label = escape(data.text || '');
+    [
+      { id: 'genre-search', placeholder: 'Any genres' },
+      { id: 'language-search', placeholder: 'Any languages' }
+    ].forEach(function(config) {
+      var select = document.getElementById(config.id);
+      if (select && !select.tomselect) {
+        var shell = select.closest('.filter-input-shell');
+        if (shell) {
+          shell.classList.add('loading');
+        }
 
-            if (typeof data.count === 'number') {
-              option_label += ' <span class="filter-option-count">(' + escape(String(data.count)) + ')</span>';
-            }
+        // Use setTimeout to make the data collection non-blocking
+        setTimeout(function() {
+          try {
+            populate_select_options(select, collect_table_values(get_filter_option_cell_name(config.id)), false);
+            new TomSelect(select, {
+              allowEmptyOption: true,
+              create: false,
+              hideSelected: true,
+              maxItems: null,
+              placeholder: config.placeholder,
+              searchField: ['text'],
+              refreshThrottle: 0,
+              dropdownParent: 'body',
+              plugins: {
+                remove_button: {
+                  title: 'Remove'
+                },
+                no_active_items: {}
+              },
+              render: {
+                option: function(data, escape) {
+                  var option_label = escape(data.text || '');
 
-            return '<div>' + option_label + '</div>';
-          },
-          item: function(data, escape) {
-            return '<div>' + escape(data.text || '') + '</div>';
-          }
-        },
+                  if (typeof data.count === 'number') {
+                    option_label += ' <span class="filter-option-count">(' + escape(String(data.count)) + ')</span>';
+                  }
+
+                  return '<div>' + option_label + '</div>';
+                },
+                item: function(data, escape) {
+                  return '<div>' + escape(data.text || '') + '</div>';
+                }
+              },
         onDropdownOpen: function() {
           refresh_filter_select_for_visible_rows(config.id);
           this.setTextboxValue('');
@@ -940,8 +942,22 @@ function initialize_enhanced_filter_selects() {
           refresh_filter_select_for_visible_rows(config.id);
         }
       });
+
+      // Remove loading state and mark as loaded
+      if (shell) {
+        shell.classList.remove('loading');
+        shell.classList.add('loaded');
+      }
+    } catch (error) {
+      console.error('Error initializing TomSelect for', config.id, error);
+      if (shell) {
+        shell.classList.remove('loading');
+      }
     }
-  });
+        }, 0); // Small delay to allow UI to update
+      }
+    });
+  }, 100); // Delay initialization to allow page to render
 
 }
 
