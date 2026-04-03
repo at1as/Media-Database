@@ -1,134 +1,166 @@
-# Movie-Database
+# Media Database
 
-Gathers information about movies and TV series stored in a local directory and compiles it into static searchable HTML documents.
+Media Database exists because most streaming interfaces are designed for TVs, not for serious browsing. That pushes them toward large poster grids, shallow filtering, and recommendation-driven discovery. Those products want to keep you inside their algorithm: learn your preferences, surface suggested titles, and decide what you should see next.
 
-## Demo
+This project takes the opposite approach. It is built to be used in a web browser, where dense tables, richer filters, sorting, and text search are far easier to support well. The goal is not algorithmic curation based on personal data. The goal is to give you direct control over your own library so you can refine it across many dimensions and find exactly what you want to watch.
 
-Script output loaded with some randomly chosen sample data is available [here](http://www.jasonwillems.com/sites/mediadatabase/output/). I've tried to include several foreign titles to ensure that they're tagged correctly. Commit used for these reports is now *significantly behind this repo*.
+In practice, Media Database indexes locally stored media, enriches it with IMDb metadata, saves that data to local JSON files, and renders a static website for browsing movies, series, and standup.
 
-## Screenshots
-*As of 20 August 2017*
+## What It Does
 
-### List of Content
-<img src="http://at1as.github.io/github_repo_assets/imdb-scrape3.png" width="700px">
+- Scans configured local directories for media files
+- Fetches metadata from IMDb using the scraper configured in `conf.json`
+- Persists normalized metadata to local JSON repositories in `_data/`
+- Builds a static HTML site in `_output/`
+- Supports browser-based filtering and sorting across many fields
 
-### Movie Details
-<img src="http://at1as.github.io/github_repo_assets/imdb-scrape4.png" width="700px">
+The table view is intentional. This project favors dense, searchable, sortable rows over streaming-style poster browsing.
 
+## How It Works
 
-## Usage
+1. Configure your media library paths in `conf.json`
+2. Run the indexer
+3. New titles are looked up on IMDb and stored in local JSON files
+4. The site generator renders static pages from those saved JSON files
+5. Open the generated site in a browser and use the filters there
 
-Download the repository here, set the appropriate permissions and launch Media-Database via:
+Current saved data files:
+
+- `_data/movie_data.json`
+- `_data/series_data.json`
+- `_data/standup_data.json`
+
+Generated site output:
+
+- `_output/index.html`
+- `_output/series.html`
+- `_output/standup.html`
+
+## Quick Start
+
 ```bash
-$ git clone https://github.com/at1as/Media-Database.git
-$ cd Media-Database
-$ vim conf.json
-$ sudo python3 run.py
+git clone https://github.com/at1as/Media-Database.git
+cd Media-Database
+make deps
+vim conf.json
+make run
 ```
 
-Titles will be fetched from IMDB the first time the script is run, and then be saved in `_data/movie_data.json`, which the templates are built from. On subsequent runs, only newly added items to the directory will have their data fetched from IMDB.
+To rebuild the static site from the existing saved JSON data without scraping new titles:
 
-#### Dry Run
-
-Run with the `--dry-run` flag to rebuild site from an existing json dump in `_data/movie_data.json`, without adding new entries or needing access to the physical files.
 ```bash
-$ python run --dry-run
+make dryrun
 ```
 
-#### Environment Configuration
+To open the generated site locally:
 
-Set your environment in `conf.json`:
-
-* *max_quantity* [Integer] => the maximum number of entries to retrieve from IMDB. Play nice; ramp this number up slowly as you build your local database
-* *asset_location* [String] => the absolute path to the folder containing the files
-* *exclude_files* [Array of Strings] => Exclude these files from retrieval (even if their extensions are included)
-* *include_extensions* [Array of Strings] => files will these extensions (or folders) will be retrieved from IMDB. These should all be lower case
-
-
-#### Removing Entries
-
-For items tagged incorrectly, remove them using the bundled script
 ```bash
-$ python scripts/remove_entry.py --movie "<movie_title>" "<YYYY>"
-$ python scripts/remove_entry.py --series "<series_title>" "<YYYY>"
+open _output/index.html
 ```
-Year is optional. If not provided, first entry with a matching name will removed.
 
-See `$ python scripts/remove_entry.py --help` for more details
+## Configuration
 
+The project is configured through `conf.json`.
 
-#### Playback
+Top-level settings:
 
-Some movie listing pages will show an embedded video player. This currently only works in Safari with H264 content which is not a subdirectory
+- `assets`: per-media-type settings for `movies`, `series`, and `standup`
+- `exclude_files`: titles or directories to skip even if they match normal indexing rules
+- `include_extensions`: allowed media extensions
+- `file_override`: manual IMDb ID overrides for known mismatches
+- `pause_time_sec`: delay between remote requests
+- `imdb_source`: scraper implementation to use
 
+Each entry in `assets` supports:
 
-#### Apache
+- `location`: absolute path to the media directory
+- `saved_data`: path to the JSON repository for that media type
+- `index_asset`: whether that media type should be scanned
+- `max_assets`: cap on how many filesystem entries to inspect
+- `max_assets_chunk`: cap on how many new items to process in a single run
 
-As the generated output is static content, it can easily be set up for access to generated files across an internal network. Symlink the Apache Documents directory to the root of this repo (Media-Database), and then access the page at <ip>/Media-Database/_output/index.html.
+## Running and Maintenance
 
+Run the full pipeline:
 
-## Usage Notes
-
-#### General Notes
-
-* To view the site in your browser : `$ open _output/index.html`
-* All dependencies are listed in `setup.py`
-* Script will only search files in the folder specified by asset_location. Will not search subdirectories (see below for details)
-* Only works for movies, television and documentaries (documentaries will be listed under the movies section, anime will be listed under Series)
-
-
-#### Movie Asset Locations
-
-Movies should be titled as `Inception (2010).mp4`. If multiple files exist (split movie or separate subtitle files), this format is also acceptable:
-
+```bash
+make run
 ```
+
+Run tests:
+
+```bash
+make test
+```
+
+Remove a bad saved entry so it can be re-scraped:
+
+```bash
+python3 scripts/remove_entry.py --movie "<movie_title>" "<YYYY>"
+python3 scripts/remove_entry.py --series "<series_title>" "<YYYY>"
+```
+
+The year is optional. If omitted, the first matching entry is removed.
+
+## Library Layout
+
+Movies can be single files:
+
+```text
+Inception (2010).mp4
+```
+
+Or a directory containing the video file and related assets:
+
+```text
 Inception (2010)/
-|── Inception (2010).mp4
-└── Inception (2010).srt
+|-- Inception (2010).mp4
+`-- Inception (2010).srt
 ```
 
-These pathes are relative to movie location set it `conf.json`
+Series should use a top-level directory named after the show and start year, with episodes inside child directories such as seasons:
 
-
-#### Series Asset Locations
-
-* Series should be titled by the name and year, such as `Firefly (2002)` where the year is the start date of the series
-* Subtitles should be stored in the same directory as the episodes and should have the exact same title with a different extension
-* Episodes may optionally contain titles after the series title and episodes number
-
-```
+```text
 Firefly (2002)/
-└── Firefly Season 1
-    └── Firefly S01E01.mp4
-    └── Firefly S01E01.srt
-    └── Firefly S01E02 The Train Job.mp4
-    └── Firefly S01E02 The Train Job.srt
+`-- Firefly Season 1
+    |-- Firefly S01E01.mp4
+    |-- Firefly S01E01.srt
+    |-- Firefly S01E02 The Train Job.mp4
+    `-- Firefly S01E02 The Train Job.srt
 ```
 
-These pathes are relative to series location set it `conf.json`
+## Filtering Model
 
+The generated site is meant to be explored in a browser, not through recommendation feeds. Filtering happens client-side on the rendered data, which makes it easy to combine structured and text-based refinement.
 
-#### Filters
+Examples of fields commonly available for filtering or sorting include:
 
-To use the search filters, items should be comma separated and can be negated with a preceding "!"
+- title
+- year
+- rating
+- genre
+- languages
+- cast
+- director or creator
+- running time
 
-For example, in the case of the language input:
+Some filters support comma-separated matching and negation with `!`, for example:
 
-* `"English, French, German"` => Returns movies with languages matching English, French, and German
-* `"English, !Klingon, Welsh"` => Returns movies with languages matching both English and Welsh, but filters out any matches with the presence of Klingon
-* `"Ger, P"` => Returns movies with languages matching Ger... (i.e., German), P... (i.e., Portuguese, Persian, etc)
+- `English, French`
+- `English, !Klingon`
+- `Ger, Port`
 
+## Notes
 
-## Disclaimer
+- Metadata quality depends on IMDb lookup quality, scraper behavior, and local file naming
+- The site is static output, so it can be hosted locally or served on an internal network
+- The project currently indexes movies, series, and standup
+- Browser filtering is a core product decision, not a secondary feature
 
-* This product works by scraping the IMDB website. Therefore, problems may arise due to even minor changes to the website layout
-* Retrieval is only as good as your movie titles, and IMDB search. Meticulously named files will virtually always be correct, but there may still be some misses
-* Media-Database was written and tested on Python 2.7.10 on macOS 10.11
+## Related Files
 
-
-### TODO
-
-* FIXME: locally stored glyphicons won't render in Firefox unless they're stored in a child directory
-* Add support for other clients (themoviedb, etc)
-* Search by Alternative Title
-* Improvements to Scraper. Currently small schema changes break the scraper. There are some small changes to the XPaths being used to make this slightly more robust (see comments in `src/scrapers/imdb.py`)
+- `run.py`: entry point for normal and dry-run execution
+- `src/worker.py`: indexing pipeline and JSON persistence
+- `src/site_generator.py`: static HTML generation
+- `src/scrapers/imdb_suggest.py`: current configured IMDb scraper
+- `docs/llm_overview.md`: current architecture and filter behavior overview
