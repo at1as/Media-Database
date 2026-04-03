@@ -10,6 +10,29 @@ class SiteGenerator(object):
     pass
 
   @staticmethod
+  def _asset_is_renderable(asset, mediatype):
+    if not isinstance(asset, dict):
+      return False
+
+    title = asset.get('title')
+    year = asset.get('year')
+
+    if title in [None, ""] or year in [None, "", []]:
+      return False
+
+    if mediatype == 'series':
+      return asset.get('directory') not in [None, "", []]
+
+    return asset.get('file_metadata') not in [None, "", []]
+
+  @staticmethod
+  def _filter_renderable_assets(saved_assets, mediatype):
+    return {
+      key: value for key, value in saved_assets.items()
+      if SiteGenerator._asset_is_renderable(value, mediatype)
+    }
+
+  @staticmethod
   def sanitize_filename(title):
     """Sanitize title for use as HTML filename"""
     # Replace problematic characters that cause file system or URL issues
@@ -45,6 +68,10 @@ class SiteGenerator(object):
       Generate static HTML files
     """
     movie_location = helpers.get_movie_location()
+
+    saved_movies = SiteGenerator._filter_renderable_assets(saved_movies, 'movie')
+    saved_series = SiteGenerator._filter_renderable_assets(saved_series, 'series')
+    saved_standup = SiteGenerator._filter_renderable_assets(saved_standup, 'standup')
 
     num_movies = len(saved_movies)
     num_series = len(saved_series)
@@ -183,4 +210,3 @@ class SiteGenerator(object):
 
       with open(output_dir, "w") as f:
         f.write(standup_page)
-

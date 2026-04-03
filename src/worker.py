@@ -19,6 +19,23 @@ class Worker():
     self.series_scraper = None
     self.movie_scraper = None
 
+  def asset_has_required_fields(self, asset, mediatype):
+    if not isinstance(asset, dict):
+      return False
+
+    required = ['title', 'year']
+    if mediatype == "series":
+      required.append('directory')
+    else:
+      required.append('file_metadata')
+
+    for field in required:
+      value = asset.get(field)
+      if value in [None, "", []]:
+        return False
+
+    return True
+
   def start(self, dry_run=False):
     script_started = datetime.now()
 
@@ -247,6 +264,10 @@ class Worker():
           continue
 
       if file_attributes != None:
+        if not self.asset_has_required_fields(file_attributes, mediatype):
+          Message.warn("Skipping {} '{}' due to incomplete metadata payload".format(mediatype, file_details['name']))
+          continue
+
         if mediatype == "movie" or mediatype == "standup":
           file_attributes['media'] = video_media_details(file_details['full_path'])
 
