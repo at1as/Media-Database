@@ -6,6 +6,8 @@ This project takes the opposite approach. It is built to be used in a web browse
 
 In practice, Media Database indexes locally stored media, enriches it with IMDb metadata, saves that data to local JSON files, and renders a static website for browsing movies, series, and standup.
 
+It is static on purpose. That keeps setup simple, makes the output portable, avoids needing a constantly running local server, and reduces the amount of dependency and runtime management required to use it.
+
 ## What It Does
 
 - Scans configured local directories for media files
@@ -13,8 +15,22 @@ In practice, Media Database indexes locally stored media, enriches it with IMDb 
 - Persists normalized metadata to local JSON repositories in `_data/`
 - Builds a static HTML site in `_output/`
 - Supports browser-based filtering and sorting across many fields
+- Supports movies, series, and standup
+- Includes random selection from the current filtered result set
+- Lets you customize visible columns in the list view
+- Can play media directly in the browser when the file format is supported by the browser
 
 The table view is intentional. This project favors dense, searchable, sortable rows over streaming-style poster browsing.
+
+## Interface
+
+List view is the main working surface: filter aggressively, sort results, and show only the columns you care about.
+
+![List view with dense filtering and configurable columns](docs/images/list-view.png)
+
+Each title also has a detail page for deeper browsing, and compatible files can be played directly in the browser.
+
+![Detail view with title metadata and playback](docs/images/instance-view.png)
 
 ## How It Works
 
@@ -144,6 +160,12 @@ Examples of fields commonly available for filtering or sorting include:
 - director or creator
 - running time
 
+The browser UI also supports:
+
+- random selection from the current filtered results
+- customizable visible columns in list views
+- direct playback on detail pages when the browser supports the media format
+
 Some filters support comma-separated matching and negation with `!`, for example:
 
 - `English, French`
@@ -153,7 +175,7 @@ Some filters support comma-separated matching and negation with `!`, for example
 ## Notes
 
 - Metadata quality depends on IMDb lookup quality, scraper behavior, and local file naming
-- The site is static output, so it can be hosted locally or served on an internal network
+- The site is static output, so it can be opened directly from disk, hosted locally, or served on an internal network
 - The project currently indexes movies, series, and standup
 - Browser filtering is a core product decision, not a secondary feature
 
