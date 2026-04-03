@@ -4,7 +4,6 @@
 
 from .helpers import HEADERS
 from .scrapers.imdbv1 import IMDBV1
-from .scrapers.imdbv2 import IMDBV2
 from .scrapers.imdb_suggest import IMDB_SUGGEST
 
 class Scraper(object):
@@ -15,19 +14,20 @@ class Scraper(object):
 
   def __new__(cls, source, *args, **kwargs):
     """
-      If no supported scraper is set, use IMDBV2 scraper by default
+      If no supported scraper is set, use IMDB_SUGGEST scraper by default
     """
 
     if source not in Scraper.sources:
-      return IMDBV2(*args, **kwargs)
+      return IMDB_SUGGEST(*args, **kwargs)
 
     elif source == "IMDBV1":
       # Deprecated, in house scraper
       return IMDBV1(*args, **kwargs)
 
     elif source == "IMDBV2":
-      # Preferred scraper for IMDB, maintined using cinemagoer dependency
-      return IMDBV2(*args, **kwargs)
+      # Legacy alias retained for config compatibility
+      print("DEBUG: Scraper factory remapping legacy source='IMDBV2' to IMDB_SUGGEST")
+      return IMDB_SUGGEST(*args, **kwargs)
 
     elif source == "IMDB_SUGGEST" or source == "IMDB_API":
       # Alternative IMDb scraper using Suggestions API for ID resolution

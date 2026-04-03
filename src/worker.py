@@ -200,7 +200,7 @@ class Worker():
     for file_details in new_files:
 
       # Select scraper implementation based on config
-      imdb_source = self.config.get("imdb_source", "IMDBV2")
+      imdb_source = self.config.get("imdb_source", "IMDB_SUGGEST")
       print("DEBUG: Using imdb_source='{}' for mediatype='{}'".format(imdb_source, mediatype))
 
       if mediatype == "movie":
