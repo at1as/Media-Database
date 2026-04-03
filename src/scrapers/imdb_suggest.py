@@ -164,6 +164,13 @@ class IMDB_SUGGEST(object):
 
     return names
 
+  def __cast_names_from_imdbinfo(self, data: dict):
+    categories = data.get('categories') or {}
+    cast_names = self.__extract_names(categories.get('cast'))
+    if cast_names:
+      return cast_names
+    return self.__extract_names(data.get('stars'))
+
   def __unique_values(self, values):
     result = []
     for value in values:
@@ -247,7 +254,7 @@ class IMDB_SUGGEST(object):
 
     creators = self.__extract_names(info_series.get('creators'))
     directors = self.__extract_names(data.get('directors'))
-    stars = self.__extract_names(data.get('stars'))
+    stars = self.__cast_names_from_imdbinfo(data)
     languages = data.get('languages_text') or data.get('languages')
     year = data.get('year')
     preferred_title, alternative_title = self.__preferred_title_fields(data, mediatype)

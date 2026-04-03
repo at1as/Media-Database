@@ -10,7 +10,7 @@ venv:
 	@$(PIP) install --upgrade pip
 
 deps: venv
-	@$(PIP) install --upgrade cinemagoer imdbinfo jinja2 lxml requests pymediainfo
+	@$(PIP) install --upgrade imdbinfo jinja2 lxml requests pymediainfo
 
 test: deps
 		$(PY) -m unittest discover -s tests
