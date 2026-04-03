@@ -16,6 +16,7 @@ class IMDBV2(object):
   def __init__(self, title, foreign_id=None):
     self.scraper = Cinemagoer()
     self.config = verify_config_file()
+    self.movie_id = None
 
     print("Scraping IMDB for: '{}'".format(title))
 
@@ -55,6 +56,7 @@ class IMDBV2(object):
       best = self.__select_best_hit(self.hits, base_title, year)
       movie_id = best.movieID
 
+    self.movie_id = str(movie_id).replace("tt", "")
     print(("Searching for movie with id: {}".format(movie_id)))
 
     self.detailed_hit = self.scraper.get_movie(movie_id)
@@ -119,7 +121,7 @@ class IMDBV2(object):
     """ Scrape movie page for attributes specified below """
 
     return {
-        'url':                self.__assemble_url(self.detailed_hit['imdbID']),
+        'url':                self.__assemble_url(self.movie_id),
         'info_retrieved':     time.strftime("%Y-%m-%d"),
         'title':              self.detailed_hit.get('title'),
         'alternative_title':  self.detailed_hit.get('original title'),
@@ -142,7 +144,7 @@ class IMDBV2(object):
     """ Scrape series page for attributes specified below """
 
     return {
-        'url':               self.__assemble_url(self.detailed_hit['imdbID']),
+        'url':               self.__assemble_url(self.movie_id),
         'info_retrieved':    time.strftime("%Y-%m-%d"),
         'title':             self.detailed_hit.get('title'),
         'alternative_title': self.detailed_hit.get('akas'),
