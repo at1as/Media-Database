@@ -1,12 +1,19 @@
 # Media Database
 
-Media Database exists because most streaming interfaces are designed for TVs, not for serious browsing. That pushes them toward large poster grids, shallow filtering, and recommendation-driven discovery. Those products want to keep you inside their algorithm: learn your preferences, surface suggested titles, and decide what you should see next.
+Media Database is a local media catalog for people who want direct control over how their collection is searched and browsed.
 
-This project takes the opposite approach. It is built to be used in a web browser, where dense tables, richer filters, sorting, and text search are far easier to support well. The goal is not algorithmic curation based on personal data. The goal is to give you direct control over your own library so you can refine it across many dimensions and find exactly what you want to watch.
+Most modern streaming platforms are optimized for TVs and recommendation feeds. That works well for passive viewing, but it is a poor fit for people who want to investigate a library in detail. These systems are built around algorithmic curation, limited search controls, and platform lock-in. They decide what to surface and make it harder to compare titles on your own terms.
 
-In practice, Media Database indexes locally stored media, enriches it with IMDb metadata, saves that data to local JSON files, and renders a static website for browsing movies, series, and standup.
+Media Database takes the opposite approach. It is designed for computers, where dense tables, granular filters, sorting, and text search are practical and effective. The goal is to make your library easier to explore without relying on a platform’s recommendation engine or being tied to a single streaming ecosystem.
 
-It is static on purpose. That keeps setup simple, makes the output portable, avoids needing a constantly running local server, and reduces the amount of dependency and runtime management required to use it.
+The project indexes locally stored media, enriches it with IMDb metadata, stores that data in local JSON files, and generates a static website for browsing movies, series, and standup.
+
+## Why It Exists
+
+- Browsing a large library is easier on a desktop than on a TV interface
+- Detailed filters are more useful than recommendation-driven discovery
+- Local data ownership keeps the catalog portable and independent
+- Static output makes the workflow simple to run, share, and host
 
 ## What It Does
 
@@ -18,13 +25,13 @@ It is static on purpose. That keeps setup simple, makes the output portable, avo
 - Supports movies, series, and standup
 - Includes random selection from the current filtered result set
 - Lets you customize visible columns in the list view
-- Can play media directly in the browser when the file format is supported by the browser
+- Can play media directly in the browser when the format is supported
 
-The table view is intentional. This project favors dense, searchable, sortable rows over streaming-style poster browsing.
+The table view is intentional. This project favors dense, searchable rows over poster-grid browsing.
 
 ## Interface
 
-List view is the main working surface: filter aggressively, sort results, and show only the columns you care about.
+List view is the primary working surface: filter aggressively, sort results, and show only the columns you care about.
 
 ![List view with dense filtering and configurable columns](docs/images/list-view.png)
 
@@ -147,9 +154,9 @@ Firefly (2002)/
 
 ## Filtering Model
 
-The generated site is meant to be explored in a browser, not through recommendation feeds. Filtering happens client-side on the rendered data, which makes it easy to combine structured and text-based refinement.
+Filtering happens client-side on the rendered data, which keeps the browsing experience fast and makes it easy to combine structured and text-based refinement.
 
-Examples of fields commonly available for filtering or sorting include:
+Common fields available for filtering or sorting include:
 
 - title
 - year
@@ -166,11 +173,7 @@ The browser UI also supports:
 - customizable visible columns in list views
 - direct playback on detail pages when the browser supports the media format
 
-Some filters support comma-separated matching and negation with `!`, for example:
-
-- `English, French`
-- `English, !Klingon`
-- `Ger, Port`
+The interface is designed around precise control rather than recommendation feeds. It is built for users who already know something about what they want and want to narrow a large library quickly.
 
 ## Notes
 
