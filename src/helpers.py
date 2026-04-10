@@ -64,7 +64,15 @@ def verify_config_file():
 
 def get_config_file():
   # Read configuration file. Raises exception if not found
-  with open(relative_path('../conf.json')) as config_json:
+  config_path = relative_path('../conf.json')
+
+  if not os.path.isfile(config_path):
+    Message.error(
+      "Missing conf.json. Copy conf.json.template to conf.json before running the project.\n"
+    )
+    raise SystemExit
+
+  with open(config_path) as config_json:
     return json.load(config_json)
 
 
