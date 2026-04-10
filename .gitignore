@@ -16,3 +16,5 @@ movie_data.json
 *.wmv
 mediadb/
 .cache/
+conf.json
+backup/

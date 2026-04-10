@@ -65,9 +65,12 @@ Generated site output:
 git clone https://github.com/at1as/Media-Database.git
 cd Media-Database
 make deps
+make config
 vim conf.json
 make run
 ```
+
+`make config` creates `conf.json` from [`conf.json.template`](conf.json.template) and refuses to overwrite an existing `conf.json`. Run it once, then edit the generated file with your local paths before starting the app.
 
 To rebuild the static site from the existing saved JSON data without scraping new titles:
 
@@ -83,7 +86,9 @@ open _output/index.html
 
 ## Configuration
 
-The project is configured through `conf.json`.
+The project is configured through `conf.json`, which should be created from `conf.json.template` using `make config`.
+
+If `conf.json` is missing, the app exits with a clear error telling you to copy the template first.
 
 Top-level settings:
 
