@@ -209,7 +209,7 @@ class IMDB_SUGGEST(object):
 
     content_rating = data.get('mpaa')
     if content_rating:
-      return str(content_rating).strip()
+      return self.__normalize_certificate_value(content_rating)
 
     return None
 
@@ -220,6 +220,7 @@ class IMDB_SUGGEST(object):
 
     value = re.sub(r"\s+certificate.*$", "", value, flags=re.IGNORECASE).strip()
     value = re.sub(r"\s+cert#.*$", "", value, flags=re.IGNORECASE).strip()
+    value = re.sub(r"\s+self[- ]applied.*$", "", value, flags=re.IGNORECASE).strip()
     return value
 
   def __running_time_from_imdbinfo(self, data: dict):
