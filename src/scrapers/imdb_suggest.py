@@ -7,9 +7,11 @@ import urllib.parse
 from unicodedata import normalize
 
 import requests
+from imdbinfo import ImdbinfoError, get_series_creators
 from imdbinfo import get_movie as imdbinfo_get_movie
 
 from ..helpers import HEADERS, verify_config_file
+from ..message import Message
 
 
 class IMDB_SUGGEST(object):
@@ -285,8 +287,13 @@ class IMDB_SUGGEST(object):
       'type': 'tvSeries' if mediatype == 'series' else 'movie',
     }
 
-    if mediatype == 'series' and not payload['creator'] and directors:
-      payload['creator'] = directors
+    if mediatype == 'series':
+      try:
+        full_creators = self.__extract_names(get_series_creators(imdb_id))
+        payload['creator'] = self.__unique_values(full_creators + creators)
+      except ImdbinfoError as exc:
+        Message.warn("Could not fetch full creator credits for {}: {}".format(imdb_id, exc))
+        payload['_creator_lookup_failed'] = True
 
     return payload
 
