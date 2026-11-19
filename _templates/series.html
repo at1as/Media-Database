@@ -69,6 +69,11 @@
         appearance: textfield;
       }
 
+      /* Sorttable adds its own arrow when a column is sorted. */
+      #results thead th::after {
+        content: none;
+      }
+
       /* Dark mode styles */
       body.dark-theme {
         background-color: #333;
@@ -315,10 +320,10 @@
 
           <div class="filter-card filter-card-half">
             <div class="filter-label-row">
-              <label for="director-search" class="filter-label">Directors</label>
+              <label for="creator-search" class="filter-label">Creators</label>
             </div>
             <div class="filter-input-shell enhanced-filter-select loading">
-              <select class="enhanced-filter-select" id="director-search" data-filter-type="director" multiple placeholder="Any directors"></select>
+              <select class="enhanced-filter-select" id="creator-search" data-filter-type="creator" multiple placeholder="Any creators"></select>
             </div>
           </div>
         </div>
@@ -375,6 +380,12 @@
                 <label class="form-check-label" for="languages_data_checkbox" onclick="event.stopPropagation()">Languages</label>
               </div>
             </div>
+            <div class="dropdown-item" onclick="handleDropdownItemClick('creator_data_checkbox', 'creator_data', event)">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="creator_data_checkbox" name="creator_data_checkbox" onclick="event.stopPropagation()">
+                <label class="form-check-label" for="creator_data_checkbox" onclick="event.stopPropagation()">Creators</label>
+              </div>
+            </div>
           </div>
         </div>
         <div id="random_selection">
@@ -395,13 +406,14 @@
           <thead>
             <tr id="table_header" onclick="stripe_table()">
               <th name="image_data" class="sorttable_nosort" style="vertical-align:top;"><!-- Image --></th>
-              <th name="rating_data" style="vertical-align:middle !important;" class="sorttable_numeric">Rating</th>
+              <th name="rating_data" class="sorttable_numeric">Rating</th>
               <th name="vote_data" style="vertical-align:top; display:none" class="sorttable_numeric">Votes</th>
               <th style="vertical-align:top" class="sorttable_alpha">Title</th>
               <th name="year_data" class="hidden-sm hidden-xs" style="vertical-align:top" class="sorttable_alpha">Years</th>
               <th name="genre_data" style="vertical-align:top">Genres</th>
               <th name="stars_data" class="hidden-sm hidden-xs" style="vertical-align:top">Cast</th>
               <th name="languages_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Languages</th>
+              <th name="creator_data" class="hidden-sm hidden-xs" style="vertical-align:top; display:none">Creators</th>
             </tr>
           </thead>
           <tbody>
@@ -447,6 +459,14 @@
                     {{ series_list[series].languages|default([])|join(', ') }}
                   {% else %}
 
+                  {% endif %}
+                </td>
+                <td name="creator_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
+                  {% set creators = series_list[series].creator %}
+                  {% if creators is string %}
+                    {{ creators | e }}
+                  {% elif creators %}
+                    {{ creators | map('e') | join(',<br>') }}
                   {% endif %}
                 </td>
               </tr>

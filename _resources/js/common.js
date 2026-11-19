@@ -440,6 +440,10 @@ function get_filter_option_cell_name(field_id) {
     return 'director_data';
   }
 
+  if (field_id === 'creator-search') {
+    return 'creator_data';
+  }
+
   if (field_id === 'cast-search') {
     return 'stars_data';
   }
@@ -913,6 +917,7 @@ function initialize_enhanced_filter_selects() {
       { id: 'genre-search', placeholder: 'Any genres', hideSelected: true, refreshOnOpen: true },
       { id: 'language-search', placeholder: 'Any languages', hideSelected: true, refreshOnOpen: true },
       { id: 'director-search', placeholder: 'Any directors', hideSelected: true, refreshOnOpen: true },
+      { id: 'creator-search', placeholder: 'Any creators', hideSelected: true, refreshOnOpen: true },
       { id: 'cast-search', placeholder: 'Any cast members', hideSelected: true, refreshOnOpen: true }
     ].forEach(function(config) {
       var select = document.getElementById(config.id);
@@ -1195,6 +1200,7 @@ function search_series_table(table_id) {
   var genre_values    = get_filter_field_values('genre-search');
   var cast_query      = get_filter_field_value('cast-search').toLowerCase();
   var cast_values    = get_filter_field_values('cast-search');
+  var creator_values = get_filter_field_values('creator-search');
   var language_query  = get_filter_field_value('language-search').toLowerCase();
   var language_values = get_filter_field_values('language-search');
 
@@ -1216,6 +1222,7 @@ function search_series_table(table_id) {
     var genre_cell      = series_table.rows[i].cells[5].textContent.toLowerCase();
     var cast_cell_element = series_table.rows[i].cells[6];
     var language_cell   = series_table.rows[i].cells[7].textContent.toLowerCase();
+    var creator_cell_element = series_table.rows[i].cells[8];
 
     if (filter_debug_enabled() && i <= 5 && (genre_values.length > 0 || language_values.length > 0)) {
       log_filter_debug('search_series_table:row_sample', {
@@ -1249,6 +1256,9 @@ function search_series_table(table_id) {
         series_table.rows[i].style.display = 'none';
     }
     else if (cast_values.length > 0 && !selected_values_in_list(cast_values, cast_cell_element)) {
+      series_table.rows[i].style.display = 'none';
+    }
+    else if (creator_values.length > 0 && !selected_values_in_list(creator_values, creator_cell_element)) {
       series_table.rows[i].style.display = 'none';
     }
     else if (language_values.length > 0 && !selected_values_in_list(language_values, language_cell)) {

@@ -373,6 +373,19 @@
           <p>{{series.description}}</p>
         </div>
 
+        {% if series.creator %}
+        <div class="info-block">
+          <h3>Creators</h3>
+          <div>
+            {% if series.creator is string %}
+              {{ series.creator | e }}
+            {% else %}
+              {{ series.creator | map('e') | join('<br>') }}
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
         <div class="info-block">
           <h3>Cast</h3>
           <div>
