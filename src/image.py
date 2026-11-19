@@ -1,6 +1,8 @@
 import requests
 from .helpers import HEADERS
 import shutil
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 class Image(object):
   def __init__(self):
@@ -10,10 +12,11 @@ class Image(object):
   def fetch_remote_image(url):
     """ Fetch remote image, return raw image or return a null response """
     try:
-      img = requests.get(url, headers=HEADERS, stream=True)
+      img = requests.get(url, headers=HEADERS, stream=True, timeout=15)
 
-      if img.status_code == 200:
+      if img.status_code == 200 and img.headers.get("Content-Type", "").startswith("image/"):
         return img.raw
+      img.close()
     except:
       pass
 
@@ -35,10 +38,21 @@ class Image(object):
     elif mediatype == "standup":
       media_dir = "standup"
 
+    destination = Path("_output", "images", media_dir, name + ".png")
+    temporary_path = None
     try:
-      # TODO use relative_path helper function
-      with open('_output/images/' + media_dir + '/' + name + '.png', 'wb') as f:
+      with NamedTemporaryFile(dir=destination.parent, delete=False) as f:
+        temporary_path = Path(f.name)
         img.decode_content = True
         shutil.copyfileobj(img, f)
-    except:
+        if not f.tell():
+          return
+      mode = destination.stat().st_mode & 0o777 if destination.exists() else 0o644
+      temporary_path.chmod(mode)
+      temporary_path.replace(destination)
+    except (OSError, ValueError):
       pass
+    finally:
+      img.close()
+      if temporary_path is not None:
+        temporary_path.unlink(missing_ok=True)

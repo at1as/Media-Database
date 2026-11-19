@@ -253,6 +253,8 @@ class IMDB_SUGGEST(object):
       raise Exception("imdbinfo returned no details for {}".format(imdb_id))
 
     data = detail.model_dump() if hasattr(detail, 'model_dump') else detail
+    if mediatype == 'series' and data.get('imdbId') not in (None, imdb_id):
+      raise ValueError("IMDb returned {} for {}".format(data['imdbId'], imdb_id))
     info_series = data.get('info_series') or {}
 
     creators = self.__extract_names(info_series.get('creators'))
@@ -263,7 +265,8 @@ class IMDB_SUGGEST(object):
     preferred_title, alternative_title = self.__preferred_title_fields(data, mediatype)
 
     if mediatype == 'series' and year not in [None, ""]:
-      year = str(year)
+      year_end = data.get('year_end')
+      year = "{}-{}".format(year, year_end) if year_end and year_end != year else str(year)
 
     payload = {
       'url': data.get('url') or self.__assemble_url(imdb_id),
@@ -284,7 +287,7 @@ class IMDB_SUGGEST(object):
       'awards': "",
       'image_url': data.get('cover_url'),
       'trailer_url': (data.get('trailers') or [None])[0],
-      'type': 'tvSeries' if mediatype == 'series' else 'movie',
+      'type': (data.get('kind') or 'tvSeries') if mediatype == 'series' else 'movie',
     }
 
     if mediatype == 'series':
