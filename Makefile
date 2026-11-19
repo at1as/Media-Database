@@ -5,6 +5,7 @@ CWD = $(shell pwd)
 VENV = ./mediadb
 PY   = $(VENV)/bin/python
 PIP  = $(VENV)/bin/pip
+IMDBINFO_REQUIREMENT = imdbinfo @ git+https://github.com/at1as/imdbinfo.git@8f9cc97ebd5c7557bed9f73ad8571c0ee043bfb1
 TYPE ?= movie
 COUNT ?= 10
 
@@ -30,7 +31,7 @@ venv:
 	@$(PIP) install --upgrade pip
 
 deps: venv
-	@$(PIP) install --upgrade imdbinfo jinja2 lxml requests pymediainfo
+	@$(PIP) install --upgrade "$(IMDBINFO_REQUIREMENT)" jinja2 lxml requests pymediainfo
 
 config:
 	@test -f conf.json.template || (echo "conf.json.template is missing" && exit 1)

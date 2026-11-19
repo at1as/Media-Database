@@ -116,8 +116,16 @@ def video_media_details(filepath):
   if not filepath:
     return
 
-  # Get media file resolution
-  media_info = MediaInfo.parse(filepath)
+  # MediaInfo can fail to open some Unicode paths even when Python can read them.
+  try:
+    try:
+      media_info = MediaInfo.parse(filepath)
+    except RuntimeError:
+      with open(filepath, "rb") as media_file:
+        media_info = MediaInfo.parse(media_file)
+  except (OSError, RuntimeError) as exc:
+    Message.warn("Could not read media details for '{}': {}".format(filepath, exc))
+    return
 
   try:
     video_track = [t for t in media_info.tracks if t.track_type == 'Video'][0]

@@ -512,6 +512,8 @@ class Worker():
         existing_asset = saved_assets.get(asset_key, {})
         merged_asset = dict(existing_asset)
         merged_asset.update(asset)
+        if merged_asset.pop('_creator_lookup_failed', False) and existing_asset.get('creator'):
+          merged_asset['creator'] = existing_asset['creator']
         saved_assets[asset_key] = merged_asset
 
       # Write combined asset contents to JSON file
