@@ -1,4 +1,5 @@
-.PHONY: test run dryrun refresh refresh-movie refresh-series refresh-standup config config-check venv deps
+.DEFAULT_GOAL := help
+.PHONY: help test run dryrun refresh refresh-movie refresh-series refresh-standup config config-check venv deps
 
 CWD = $(shell pwd)
 VENV = ./mediadb
@@ -6,6 +7,23 @@ PY   = $(VENV)/bin/python
 PIP  = $(VENV)/bin/pip
 TYPE ?= movie
 COUNT ?= 10
+
+help:
+	@printf '%s\n' \
+	  'Available commands' \
+	  '  make help                              Show this command list' \
+	  '  make venv                              Create the local virtual environment and upgrade pip' \
+	  '  make deps                              Install or upgrade Python dependencies' \
+	  '  make config                            Create conf.json from the template' \
+	  '  make config-check                      Check that conf.json exists' \
+	  '  make run                               Index new media and rebuild the site' \
+	  '  make run COUNT=1                       Try up to one new title per enabled category' \
+	  '  make dryrun                            Rebuild the site from saved metadata' \
+	  '  make test                              Run the test suite' \
+	  '  make refresh TYPE=movie COUNT=10        Refresh the oldest saved entries' \
+	  '  make refresh-movie COUNT=10             Refresh the oldest movies' \
+	  '  make refresh-series COUNT=10            Refresh the oldest series' \
+	  '  make refresh-standup COUNT=10           Refresh the oldest standup specials'
 
 venv:
 	@test -d $(VENV) || python3 -m venv $(VENV)
@@ -25,8 +43,9 @@ config-check:
 test: config-check deps
 		$(PY) -m unittest discover -s tests
 
+run: export MEDIA_DATABASE_RUN_COUNT = $(COUNT)
 run: config-check deps
-		$(PY) run.py
+		$(PY) run.py $(if $(filter-out file,$(origin COUNT)),--count "$$MEDIA_DATABASE_RUN_COUNT")
 
 dryrun: config-check deps
 		$(PY) run.py --dry-run
