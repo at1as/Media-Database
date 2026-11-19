@@ -108,7 +108,7 @@ class IMDB_SUGGEST(object):
   def __select_best_suggestion(self, items, base_title: str, year: int | None):
     base_clean = self.__clean(base_title)
     best = None
-    acceptable_qid = {"movie", "tvSeries", "tvMiniSeries", "video"}
+    acceptable_qid = {"movie", "tvSeries", "tvMiniSeries", "tvSpecial", "video"}
     excluded_qid = {"short", "videoGame", "podcastEpisode"}
 
     def is_acceptable_title(item):

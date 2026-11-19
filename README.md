@@ -115,6 +115,15 @@ Run the full pipeline:
 make run
 ```
 
+To try up to one new title per enabled category in a single run:
+
+```bash
+make run COUNT=1
+```
+
+`COUNT` caps new lookup attempts for each category, including misses. A lower
+`max_assets_chunk` in `conf.json` still applies, and a value of `0` skips new lookups.
+
 Run tests:
 
 ```bash
