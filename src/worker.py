@@ -2,7 +2,11 @@
 # -*- coding: utf8 -*-
 
 
-from datetime import datetime
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from fcntl import LOCK_EX, flock
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 from .site_generator import SiteGenerator
 from . import helpers
 from .helpers import video_media_details, get_filepath_from_dir, path_of_depth
@@ -10,7 +14,7 @@ from .image import Image
 import json
 from .message import Message
 import os
-from . import scraper
+from . import scraper, series_refresh
 
 
 class Worker():
@@ -56,11 +60,10 @@ class Worker():
       count = self.validate_refresh_count(refresh_count)
 
       added_movies = self.refresh_oldest_entries("movies", "movie", count) if asset_type == "movies" else []
-      added_series = self.refresh_oldest_entries("series", "series", count) if asset_type == "series" else []
       added_standup = self.refresh_oldest_entries("standup", "standup", count) if asset_type == "standup" else []
 
       saved_movies = self.write_scraped_data("movies", added_movies)
-      saved_series = self.write_scraped_data("series", added_series)
+      saved_series  = self.refresh_series_entries(count) if asset_type == "series" else self.write_scraped_data("series", [])
       saved_standup = self.write_scraped_data("standup", added_standup)
 
       SiteGenerator.build_site(saved_movies, saved_series, saved_standup)
@@ -114,13 +117,14 @@ class Worker():
     return asset['directory']['name']
 
   def parse_info_retrieved(self, value):
-    if value in [None, ""]:
-      return datetime.min
-
     try:
-      return datetime.strptime(value, "%Y-%m-%d")
-    except Exception:
-      return datetime.min
+      timestamp = datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+      return datetime.min.replace(tzinfo=timezone.utc)
+
+    if timestamp.tzinfo is None:
+      return timestamp.replace(tzinfo=timezone.utc)
+    return timestamp.astimezone(timezone.utc)
 
   def build_path_from_relative(self, base_path, relative_path):
     if not base_path or not relative_path:
@@ -248,6 +252,89 @@ class Worker():
       mediatype,
       self.config['assets'][base_path]['location']
     )
+
+  def refresh_series_entries(self, count):
+    saved = self.load_saved_assets("series")
+    candidates = sorted(saved, key=lambda key: (
+      not series_refresh.needs_metadata(saved[key]),
+      self.parse_info_retrieved(saved[key].get("info_retrieved")),
+      key.casefold(),
+    ))[:count]
+
+    source = self.config.get("imdb_source", "IMDB_SUGGEST")
+    overrides = self.config.get("file_override", {})
+    updated_count = 0
+    for index, key in enumerate(candidates, start=1):
+      existing = saved[key]
+      imdb_id = series_refresh.imdb_id_from_url(existing.get("url"))
+      Message.info("Refreshing series {}/{}: {}".format(index, len(candidates), key))
+      if imdb_id is None:
+        Message.warn("Skipping '{}': no saved IMDb title ID".format(key))
+        continue
+
+      relative_path = (existing.get("directory") or {}).get("relative_path") or key
+      override = overrides.get(relative_path)
+      if override and "tt" + str(override).removeprefix("tt") != imdb_id:
+        Message.warn("Skipping '{}': the configured override differs from {}".format(key, imdb_id))
+        continue
+
+      try:
+        if source == "IMDBV1":
+          self.series_scraper = scraper.Scraper(source)
+        else:
+          self.series_scraper = scraper.Scraper(source, key, imdb_id)
+        fetched = self.series_scraper.get_series_details(None, existing["url"])
+      except Exception as exc:
+        Message.warn("Skipping '{}': {}".format(key, exc))
+        continue
+
+      retrieved_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+      merged = series_refresh.merge_metadata(existing, fetched)
+      if merged is None:
+        Message.warn("Keeping '{}': IMDb returned no usable improvement or a different title ID".format(key))
+        continue
+
+      with self.catalog_lock("series"):
+        current = self.load_saved_assets("series")
+        if current.get(key) != existing:
+          Message.warn("Keeping '{}': the saved record changed during the refresh".format(key))
+          continue
+        poster = merged.get("image_url")
+        if poster and poster != existing.get("image_url"):
+          Image.save_remote_image(poster, key, "series")
+        merged.update(info_retrieved=retrieved_at, source_lib=source)
+        current[key] = merged
+        self.save_catalog("series", current)
+      updated_count += 1
+      Message.success("Saved refreshed metadata for '{}'".format(key))
+
+    Message.info("Saved {} of {} series refresh candidates".format(updated_count, len(candidates)))
+    return self.load_saved_assets("series")
+
+  @contextmanager
+  def catalog_lock(self, base_path):
+    catalog = Path(self.config["assets"][base_path]["saved_data"])
+    # Lock the directory because the catalog is replaced with a new inode on save.
+    fd = os.open(catalog.parent, os.O_RDONLY)
+    try:
+      flock(fd, LOCK_EX)
+      yield
+    finally:
+      os.close(fd)
+
+  def save_catalog(self, base_path, catalog):
+    path = Path(self.config["assets"][base_path]["saved_data"])
+    temporary_path = None
+    try:
+      with NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as handle:
+        temporary_path = Path(handle.name)
+        json.dump(catalog, handle, indent=4)
+      if path.exists():
+        temporary_path.chmod(path.stat().st_mode & 0o777)
+      temporary_path.replace(path)
+    finally:
+      if temporary_path is not None:
+        temporary_path.unlink(missing_ok=True)
 
   def fetch_new_files(self, base_path, mediatype):
     """
@@ -499,26 +586,20 @@ class Worker():
       # TODO: this function doesn't belong in this class
     """
 
-    # Import all pre-existing data from JSON file
-    # TODO use relative path helper
-    print(("Reading current saved info from path: " + self.config['assets'][base_path]['saved_data']))
-    saved_assets = self.load_saved_assets(base_path)
+    print("Reading current saved info from path: " + self.config["assets"][base_path]["saved_data"])
+    if not additional_assets:
+      return self.load_saved_assets(base_path)
 
-    if additional_assets != []:
-
-      # Add new saved assets to JSON file
+    with self.catalog_lock(base_path):
+      saved_assets = self.load_saved_assets(base_path)
       for asset in additional_assets:
         asset_key = self.asset_storage_key(base_path, asset)
         existing_asset = saved_assets.get(asset_key, {})
         merged_asset = dict(existing_asset)
         merged_asset.update(asset)
-        if merged_asset.pop('_creator_lookup_failed', False) and existing_asset.get('creator'):
-          merged_asset['creator'] = existing_asset['creator']
+        if merged_asset.pop("_creator_lookup_failed", False) and existing_asset.get("creator"):
+          merged_asset["creator"] = existing_asset["creator"]
         saved_assets[asset_key] = merged_asset
 
-      # Write combined asset contents to JSON file
-      # TODO: use relative path helper
-      with open(self.config['assets'][base_path]['saved_data'], 'w+') as asset_feed:
-        json.dump(saved_assets, asset_feed, indent=4)
-
+      self.save_catalog(base_path, saved_assets)
     return saved_assets
