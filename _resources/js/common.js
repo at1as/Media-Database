@@ -1862,6 +1862,41 @@ function show_more_tiles() {
   append_catalog_tiles()?.focus();
 }
 
+function initialize_movie_list_descriptions() {
+  const cells = document.querySelectorAll('.movie-title-cell[data-movie-description]');
+  if (!cells.length) {
+    return;
+  }
+
+  function renderDescription(cell) {
+    const paragraph = document.createElement('p');
+    paragraph.className = 'movie-list-description';
+    paragraph.textContent = cell.dataset.movieDescription;
+    cell.append(paragraph);
+    return paragraph;
+  }
+
+  if (typeof IntersectionObserver !== 'function') {
+    cells.forEach(renderDescription);
+    return;
+  }
+
+  const rendered = new Map();
+  const observer = new IntersectionObserver(entries => {
+    for (const {target, isIntersecting} of entries) {
+      if (isIntersecting) {
+        if (!rendered.has(target)) {
+          rendered.set(target, renderDescription(target));
+        }
+      } else {
+        rendered.get(target)?.remove();
+        rendered.delete(target);
+      }
+    }
+  }, {rootMargin: '480px 0px'});
+  cells.forEach(cell => observer.observe(cell));
+}
+
 function setup_results_scroll() {
   const container = document.getElementById('results-container');
   const table = document.getElementById('results');
@@ -1932,6 +1967,7 @@ document.addEventListener('DOMContentLoaded', setupColumnVisibilityCheckboxes);
 document.addEventListener('DOMContentLoaded', enhanceTableStyling);
 document.addEventListener('DOMContentLoaded', setup_results_scroll);
 document.addEventListener('DOMContentLoaded', initialize_catalog_view);
+document.addEventListener('DOMContentLoaded', initialize_movie_list_descriptions);
 document.addEventListener('catalogviewchange', apply_catalog_view);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
