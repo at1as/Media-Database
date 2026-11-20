@@ -19,6 +19,15 @@ def needs_metadata(record, credit_field="creator"):
   return is_missing(record.get(credit_field)) or is_missing(record.get("description"))
 
 
+def movie_metadata_gaps(record):
+  core_fields = ("description", "director", "stars", "genre", "running_time")
+  extra_fields = ("languages", "content_rating", "image_url")
+  core = sum(is_missing(record.get(field)) for field in core_fields)
+  extra = sum(is_missing(record.get(field)) for field in extra_fields)
+  extra += sum(valid_stat(field, record.get(field)) is None for field in ("rating", "votes"))
+  return core, extra
+
+
 def imdb_id_from_url(value):
   if not isinstance(value, str):
     return None
@@ -44,7 +53,19 @@ def valid_stat(field, value):
   return int(number) if number.is_integer() and number > 0 else None
 
 
-def merge_metadata(existing, fetched):
+def movie_detail_would_shrink(field, old, new):
+  if is_missing(old):
+    return False
+  if field in ("title", "year", "type"):
+    return True
+  if isinstance(old, list):
+    return not isinstance(new, list) or len(new) < len(old)
+  if field in ("description", "content_rating") and isinstance(old, str):
+    return not isinstance(new, str) or len(new.strip()) < len(old.strip())
+  return False
+
+
+def merge_metadata(existing, fetched, preserve_movie_details=False):
   """Return an improved same-title record, keeping local and unavailable fields."""
   expected_id = imdb_id_from_url(existing.get("url"))
   if not isinstance(fetched, dict) or not expected_id or imdb_id_from_url(fetched.get("url")) != expected_id:
@@ -55,7 +76,7 @@ def merge_metadata(existing, fetched):
   for field in METADATA_FIELDS:
     old = existing.get(field)
     new = fetched.get(field)
-    if is_missing(new):
+    if is_missing(new) or (preserve_movie_details and (field == "image_url" or movie_detail_would_shrink(field, old, new))):
       continue
 
     if field in ("rating", "votes"):
@@ -90,6 +111,8 @@ def merge_metadata(existing, fetched):
       changes[field] = new
       improved = improved or is_missing(old) or (
         isinstance(new, list) and isinstance(old, list) and len(new) > len(old)
+      ) or (
+        preserve_movie_details and field == "description" and isinstance(old, str) and len(new.strip()) > len(old.strip())
       )
 
   if not improved:

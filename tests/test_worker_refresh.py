@@ -2,6 +2,8 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 from src.worker import Worker
 
@@ -162,3 +164,57 @@ class TestWorkerRefresh(unittest.TestCase):
     self.assertEqual("2026-04-09", saved_assets["Movie A"]["info_retrieved"])
     self.assertEqual("8.1", saved_assets["Movie A"]["rating"])
     self.assertEqual("mp4", saved_assets["Movie A"]["file_metadata"]["extension"])
+
+  def test_cutoff_and_priorities_use_saved_timestamps(self):
+    worker = self.build_worker("/tmp/unused.json")
+    cutoff = worker.parse_refresh_cutoff("2026-11-19T00:00:00Z")
+    self.assertEqual(cutoff, worker.parse_refresh_cutoff("2026-11-19"))
+    self.assertEqual(cutoff, worker.parse_refresh_cutoff("2026-11-18T16:00:00-08:00"))
+    with self.assertRaises(ValueError):
+      worker.parse_refresh_cutoff("not-a-date")
+    complete = {
+      "info_retrieved": "2021-01-02", "description": "A plot.", "director": ["A"],
+      "stars": ["B"], "genre": ["Drama"], "running_time": 90,
+    }
+    records = {
+      "Older": complete,
+      "Missing director": {**complete, "info_retrieved": "2024-07-30", "director": []},
+      "At cutoff": {**complete, "info_retrieved": "2026-11-18T16:00:00-08:00"},
+      "Already attempted": {**complete, "last_refresh_attempt": {"at": "2026-11-20", "result": "failed"}},
+    }
+    self.assertEqual(["Missing director", "Older"], worker.select_refresh_candidates(records, "movies", 10, cutoff, "missing"))
+    self.assertEqual(["Older", "Missing director"], worker.select_refresh_candidates(records, "movies", 10, cutoff, "oldest"))
+
+  def test_movie_refresh_preserves_details_and_checkpoints_failures(self):
+    saved = {
+      "url": "https://www.imdb.com/title/tt1234567/", "title": "Original title", "year": 2001,
+      "type": "documentary", "info_retrieved": "2022-01-01", "votes": 100,
+      "description": "A fuller saved description with context.", "stars": ["Actor A", "Actor B"],
+      "file_metadata": {"filename": "Movie A", "absolute_path": "/library/Movie A.mp4"},
+      "media": {"resolution": "1080p"}, "director": ["Director A"],
+    }
+    with tempfile.TemporaryDirectory() as folder:
+      path = Path(folder) / "movies.json"
+      path.write_text(json.dumps({"Movie A": saved, "Movie B": saved, "Movie C": saved}))
+      worker = self.build_worker(str(path))
+      cutoff = worker.parse_refresh_cutoff("2024-01-01")
+      fetched = {
+        "url": saved["url"], "title": "Different locale", "year": 2002,
+        "type": "movie", "description": "A short replacement.", "stars": ["Actor A"],
+        "director": [], "file_metadata": None, "media": None, "votes": 150,
+      }
+      with patch("src.worker.scraper.Scraper") as scraper:
+        fetch = scraper.return_value.get_movie_details
+        fetch.side_effect = [fetched, OSError("timeout"), {"url": saved["url"]}]
+        result = worker.refresh_saved_entries("movies", 3, cutoff)
+        worker.refresh_saved_entries("movies", 3, cutoff)
+        self.assertEqual(3, fetch.call_count)
+      self.assertEqual(150, result["Movie A"]["votes"])
+      self.assertGreater(worker.parse_info_retrieved(result["Movie A"]["info_retrieved"]), cutoff)
+      for field in ("title", "year", "type", "description", "stars", "director", "media", "file_metadata"):
+        self.assertEqual(saved[field], result["Movie A"][field])
+      self.assertEqual("updated", result["Movie A"]["last_refresh_attempt"]["result"])
+      self.assertEqual("failed", result["Movie B"]["last_refresh_attempt"]["result"])
+      self.assertEqual("unchanged", result["Movie C"]["last_refresh_attempt"]["result"])
+      self.assertEqual(saved["info_retrieved"], result["Movie B"]["info_retrieved"])
+      self.assertEqual(saved["info_retrieved"], result["Movie C"]["info_retrieved"])

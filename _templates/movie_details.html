@@ -226,7 +226,6 @@
         font-size: 0.95rem;
         transition: transform 0.2s, box-shadow 0.2s;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        margin: 1.5rem auto;
       }
 
       .imdb-button:hover {
@@ -237,8 +236,23 @@
       }
 
       .button-container {
-        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
         margin: 1.5rem 0;
+      }
+
+      .trailer-button {
+        background: #f1effb;
+        color: #463276;
+        box-shadow: none;
+      }
+
+      .trailer-button:hover {
+        background: #e8e3f8;
+        color: #38265f;
+        box-shadow: none;
       }
 
       .info-block a {
@@ -386,6 +400,10 @@
         </div>
 
         <div class="button-container">
+          {% set trailer = movie.trailer_url | imdb_trailer_url %}
+          {% if trailer %}
+            <a href="{{ trailer }}" target="_blank" rel="noopener noreferrer" class="imdb-button trailer-button">See trailer</a>
+          {% endif %}
           <a href="{{movie.url}}" target="_blank" class="imdb-button">Go to IMDB</a>
         </div>
 

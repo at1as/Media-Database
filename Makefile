@@ -21,10 +21,11 @@ help:
 	  '  make run COUNT=1                       Try up to one new title per enabled category' \
 	  '  make dryrun                            Rebuild the site from saved metadata' \
 	  '  make test                              Run the test suite' \
-	  '  make refresh TYPE=movie COUNT=10        Refresh the oldest saved entries' \
+	  '  make refresh TYPE=movie COUNT=10        Refresh saved entries' \
 	  '  make refresh-movie COUNT=10             Refresh the oldest movies' \
 	  '  make refresh-series COUNT=10            Refresh series, prioritizing missing creators or descriptions' \
-	  '  make refresh-standup COUNT=10           Refresh standup, prioritizing missing directors or descriptions'
+	  '  make refresh-standup COUNT=10           Refresh standup, prioritizing missing directors or descriptions' \
+	  '  Refresh options: UPDATED_BEFORE=<ISO date or timestamp> PRIORITY=missing|oldest'
 
 venv:
 	@test -d $(VENV) || python3 -m venv $(VENV)
@@ -51,14 +52,20 @@ run: config-check deps
 dryrun: config-check deps
 		$(PY) run.py --dry-run
 
+refresh refresh-movie refresh-series refresh-standup: export MEDIA_DATABASE_REFRESH_COUNT = $(COUNT)
+refresh refresh-movie refresh-series refresh-standup: export MEDIA_DATABASE_UPDATED_BEFORE = $(UPDATED_BEFORE)
+refresh refresh-movie refresh-series refresh-standup: export MEDIA_DATABASE_REFRESH_PRIORITY = $(PRIORITY)
+refresh_options = $(if $(strip $(UPDATED_BEFORE)),--updated-before "$$MEDIA_DATABASE_UPDATED_BEFORE") $(if $(strip $(PRIORITY)),--priority "$$MEDIA_DATABASE_REFRESH_PRIORITY")
+
+refresh: export MEDIA_DATABASE_REFRESH_TYPE = $(TYPE)
 refresh: config-check deps
-		$(PY) run.py --refresh $(TYPE) $(COUNT)
+		$(PY) run.py --refresh "$$MEDIA_DATABASE_REFRESH_TYPE" "$$MEDIA_DATABASE_REFRESH_COUNT" $(refresh_options)
 
 refresh-movie: config-check deps
-		$(PY) run.py --refresh movie $(COUNT)
+		$(PY) run.py --refresh movie "$$MEDIA_DATABASE_REFRESH_COUNT" $(refresh_options)
 
 refresh-series: config-check deps
-		$(PY) run.py --refresh series $(COUNT)
+		$(PY) run.py --refresh series "$$MEDIA_DATABASE_REFRESH_COUNT" $(refresh_options)
 
 refresh-standup: config-check deps
-		$(PY) run.py --refresh standup $(COUNT)
+		$(PY) run.py --refresh standup "$$MEDIA_DATABASE_REFRESH_COUNT" $(refresh_options)

@@ -68,6 +68,21 @@ class SiteGenerator(object):
       return str(number)
 
   @staticmethod
+  def imdb_trailer_url(value):
+    """Normalize saved IMDb video links before exposing them in a page."""
+    if not isinstance(value, str):
+      return None
+
+    video = re.fullmatch(
+      r"https?://(?:(?:www|m)\.)?imdb\.com/video/(vi[0-9]+)/?(?:[?#]\S*)?",
+      value.strip(),
+      re.IGNORECASE,
+    )
+    if video:
+      return "https://www.imdb.com/video/{}/".format(video.group(1).lower())
+    return None
+
+  @staticmethod
   def content_rating_parts(value):
     """Separate the badge label from the saved certificate text."""
     values = value if isinstance(value, (list, tuple)) else [value]
@@ -112,6 +127,7 @@ class SiteGenerator(object):
     env.filters['sanitize_title'] = SiteGenerator.sanitize_title_filter
     env.filters['format_number'] = SiteGenerator.format_number_filter
     env.filters['content_rating_parts'] = SiteGenerator.content_rating_parts
+    env.filters['imdb_trailer_url'] = SiteGenerator.imdb_trailer_url
 
     movie_index     = env.get_template("index.html")
     series_index    = env.get_template("series.html")
