@@ -1101,6 +1101,47 @@ th{
   border-bottom-right-radius: 8px;
 }
 
+.movie-title-cell > a {
+  font-weight: 600;
+}
+
+.movie-list-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  max-width: 36ch;
+  margin: 0.6rem 0 0;
+  color: #4b5563;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.dark-theme .movie-list-description {
+  color: #d8dfea;
+}
+
+.body-container:has(#image_data_checkbox:not(:checked)) .movie-list-description {
+  -webkit-line-clamp: 2;
+}
+
+@media (max-width: 767px) {
+  .movie-list-description {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 575px) {
+  .movie-list-poster {
+    width: min(110px, 26vw);
+  }
+
+  .movie-title-cell {
+    min-width: min(11rem, 46vw);
+  }
+}
+
 /* Genre pills styling */
 .genre-pill {
   display: inline-block;
