@@ -1,0 +1,30 @@
+<section id="tile-view" aria-label="Results by poster" hidden>
+  <ul id="catalog-tiles" class="catalog-tiles"></ul>
+  <div class="catalog-tile-pagination">
+    <div id="tile-scroll-sentinel" aria-hidden="true" hidden></div>
+    <button type="button" class="btn media-action-btn" id="show-more-tiles" onclick="show_more_tiles()" hidden>Show more titles</button>
+    <span id="tile-results-status" class="sr-only" role="status"></span>
+  </div>
+</section>
+
+<template id="catalog-tile-template">
+  <li>
+    <a class="catalog-tile">
+      <span class="catalog-tile-poster">
+        <img alt="" loading="lazy" decoding="async">
+        <span class="catalog-tile-no-poster" aria-hidden="true" hidden>No poster</span>
+      </span>
+      <span class="catalog-tile-caption">
+        <span class="catalog-tile-title"></span>
+        <span class="catalog-tile-meta">
+          <span class="catalog-tile-year"></span>
+          <span class="catalog-tile-rating">
+            <span aria-hidden="true" class="rating-star">★</span>
+            <span class="sr-only">IMDb rating</span>
+            <span class="catalog-tile-score"></span>
+          </span>
+        </span>
+      </span>
+    </a>
+  </li>
+</template>

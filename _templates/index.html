@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Local Movie Database</title>
     <script src="../_resources/js/theme.js"></script>
+    <script src="../_resources/js/catalog_view.js"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css">
@@ -285,7 +286,8 @@
             <span class="media-action-btn-label">Hide Search Filters</span>
           </button>
         </div>
-        <div class="dropdown">
+        {% include "catalog_view_toggle.html" %}
+        <div class="dropdown" id="table-columns">
           <button class="btn media-action-btn dropdown-toggle" type="button" id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="media-action-btn-icon" aria-hidden="true">⚙</span>
             <span class="media-action-btn-label">Columns</span>
@@ -375,7 +377,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="./movies/{{movie_list[movie].title|sanitize_title|urlencode}}({{movie_list[movie].year}}).html" data-title-details onclick="return open_details(event, this)">
-                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png" loading="lazy"><!-- ' -->
+                    <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename|urlencode}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -429,6 +431,8 @@
           </tbody>
         </table>
       </div>
+
+      {% include "tile_results.html" %}
     </div>
 
     {% include "details_modal.html" %}

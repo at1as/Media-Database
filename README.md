@@ -27,7 +27,7 @@ The project indexes locally stored media, enriches it with IMDb metadata, stores
 - Lets you customize visible columns in the list view
 - Can play media directly in the browser when the format is supported
 
-The table view is intentional. This project favors dense, searchable rows over poster-grid browsing.
+The table is the default view. Select **Tiles** to browse the same filtered results by poster. Tiles load as you scroll, and the site remembers your view across catalog pages. Select a title in either view to open its details.
 
 ## Interface
 

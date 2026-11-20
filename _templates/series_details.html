@@ -318,7 +318,7 @@
       <!-- Left: Poster -->
       <div class="poster-section">
         <div id="poster-position-badge" class="poster-position-badge"></div>
-        <img src="../images/series/{{series.directory.name}}.png" alt="{{series.title}}">
+        <img src="../images/series/{{series.directory.name|urlencode}}.png" alt="{{series.title}}">
         {% with media = series %}
           {% include "detail_actions.html" %}
         {% endwith %}

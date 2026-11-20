@@ -213,7 +213,7 @@
       <!-- Left: Poster -->
       <div class="poster-section">
         <div id="poster-position-badge" class="poster-position-badge"></div>
-        <img src="../images/standup/{{standup.file_metadata.filename}}.png" alt="{{standup.title}}">
+        <img src="../images/standup/{{standup.file_metadata.filename|urlencode}}.png" alt="{{standup.title}}">
         {% with media = standup %}
           {% include "detail_actions.html" %}
         {% endwith %}
