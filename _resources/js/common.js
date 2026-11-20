@@ -1461,16 +1461,16 @@ function remove_diacritics(str) {
   return str;
 };
 
-function get_visible_modal_links() {
+function get_table_modal_links({includeHidden = false} = {}) {
   const rows = document.querySelectorAll('#results tbody tr');
   return Array.from(rows)
-    .filter(row => row.style.display !== 'none')
+    .filter(row => includeHidden || row.style.display !== 'none')
     .map(row => row.querySelector('a[data-title-details]'))
     .filter(Boolean);
 }
 
 function get_catalog_modal_links() {
-  return showTiles ? tileLinks : get_visible_modal_links();
+  return showTiles ? tileLinks : get_table_modal_links();
 }
 
 let modalLink = null;
@@ -1707,6 +1707,7 @@ const tileTitleCollator = new Intl.Collator(document.documentElement.lang || und
 });
 let showTiles = false;
 let tileLinks = [];
+let shuffledTileLinks = null;
 let renderedTileCount = 0;
 let tileScrollObserver;
 
@@ -1733,7 +1734,10 @@ function apply_catalog_view() {
 }
 
 function initialize_catalog_view() {
-  document.getElementById('tile-sort')?.addEventListener('change', refresh_catalog_tiles);
+  document.getElementById('tile-sort')?.addEventListener('change', () => {
+    shuffledTileLinks = null;
+    refresh_catalog_tiles();
+  });
   if (typeof IntersectionObserver === 'function') {
     const preloadDistance = 240;
     tileScrollObserver = new IntersectionObserver(entries => {
@@ -1754,6 +1758,19 @@ function get_catalog_tile_labels(row) {
 }
 
 function sort_catalog_tile_links(links, sort) {
+  if (sort === 'random') {
+    if (!shuffledTileLinks) {
+      shuffledTileLinks = get_table_modal_links({includeHidden: true});
+      for (let index = shuffledTileLinks.length - 1; index > 0; index--) {
+        const otherIndex = Math.floor(Math.random() * (index + 1));
+        [shuffledTileLinks[index], shuffledTileLinks[otherIndex]] =
+          [shuffledTileLinks[otherIndex], shuffledTileLinks[index]];
+      }
+    }
+    const visible = new Set(links);
+    return shuffledTileLinks.filter(link => visible.has(link));
+  }
+
   if (sort !== 'title' && sort !== 'rating') {
     return links;
   }
@@ -1773,7 +1790,7 @@ function sort_catalog_tile_links(links, sort) {
 
 function refresh_catalog_tiles() {
   const sort = document.getElementById('tile-sort')?.value;
-  tileLinks = sort_catalog_tile_links(get_visible_modal_links(), sort);
+  tileLinks = sort_catalog_tile_links(get_table_modal_links(), sort);
   renderedTileCount = 0;
   document.getElementById('catalog-tiles').replaceChildren();
   document.getElementById('tile-view').hidden = tileLinks.length === 0;
