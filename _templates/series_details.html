@@ -239,12 +239,23 @@
         transform: translateY(0.1rem) rotate(225deg);
       }
 
-      .season-count,
-      .episode-resolution {
+      .season-count {
         color: #4b5563;
         font-size: 0.75rem;
         font-weight: 500;
         white-space: nowrap;
+      }
+
+      .episode-resolution {
+        align-self: center;
+        min-width: 3rem;
+        background: #e8edf4;
+        color: #374151;
+        font-size: 0.75rem;
+      }
+
+      .dark-theme .media-detail .episode-resolution {
+        background: #393f49;
       }
 
       .season-container {
@@ -404,7 +415,7 @@
                     <li class="episode-container">
                       <span class="episode-name">{{ episode }}</span>
                       {% if season[episode] and season[episode].resolution %}
-                        <span class="episode-resolution">{{ season[episode].resolution }}</span>
+                        <span class="custom-pill episode-resolution">{{ season[episode].resolution }}</span>
                       {% endif %}
                     </li>
                   {% endfor %}
