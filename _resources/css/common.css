@@ -1175,6 +1175,62 @@ body.dark-theme .rating-with-star {
 .movie-row{
 }
 
+.content-rating-disclosure {
+  position: relative;
+}
+
+.content-rating-disclosure > summary {
+  display: block;
+  list-style: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.content-rating-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.content-rating-disclosure > summary::after {
+  content: " (+)";
+}
+
+.content-rating-disclosure[open] > summary::after {
+  content: " (−)";
+}
+
+.content-rating-disclosure > summary:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.content-rating-notes {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 3rem));
+  margin: 0;
+  padding: 0.65rem 0.9rem 0.65rem 1.8rem;
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.content-rating-notes li + li {
+  margin-top: 0.35rem;
+}
+
 /* Pills */
 .custom-pill {
   display: inline-block;

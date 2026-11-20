@@ -15,8 +15,8 @@ def is_missing(value):
   return value in (None, [], {})
 
 
-def needs_metadata(record):
-  return is_missing(record.get("creator")) or is_missing(record.get("description"))
+def needs_metadata(record, credit_field="creator"):
+  return is_missing(record.get(credit_field)) or is_missing(record.get("description"))
 
 
 def imdb_id_from_url(value):

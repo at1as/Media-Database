@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
     <link href="../../_resources/css/common.css" rel="stylesheet" type="text/css" />
-    <script src="../../_resources/js/series.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -242,56 +241,93 @@
         margin: 1.5rem 0;
       }
 
-      .season-header {
-        background: #f8f9fa;
-        color: #374151;
-        padding: 0.5rem 0.75rem;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        cursor: pointer;
-        margin-bottom: 0.75rem;
+      .info-block .season-list {
+        overflow: hidden;
+        padding-left: 0;
         border: 1px solid #e5e7eb;
-        transition: background 0.2s;
+        border-radius: 8px;
+      }
+
+      .season + .season {
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .season-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto 0.6rem;
+        align-items: center;
+        gap: 0.65rem;
+        min-height: 2.25rem;
+        margin: 0;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0;
+        list-style: none;
+        background: #f8f9fa;
+        color: #1f2937;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: left;
+        overflow-wrap: anywhere;
+        cursor: pointer;
       }
 
       .season-header:hover {
-        background: #e5e7eb;
+        background: #eef2f7;
+      }
+
+      .season-header:focus-visible {
+        outline: 2px solid #667eea;
+        outline-offset: -2px;
+      }
+
+      .season-header::-webkit-details-marker {
+        display: none;
+      }
+
+      .season-header::after {
+        content: "";
+        justify-self: center;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: translateY(-0.1rem) rotate(45deg);
+      }
+
+      .season[open] > .season-header::after {
+        transform: translateY(0.1rem) rotate(225deg);
+      }
+
+      .season-count,
+      .episode-resolution {
+        color: #4b5563;
+        font-size: 0.75rem;
+        font-weight: 500;
+        white-space: nowrap;
       }
 
       .season-container {
-        margin-bottom: 1.5rem;
-        padding-left: 0;
-        background: #f8f9fa;
-        border-radius: 6px;
-        padding: 0.5rem;
+        margin: 0;
+        padding: 0;
+        border-top: 1px solid #e5e7eb;
+        list-style: none;
       }
 
       .episode-container {
-        padding: 0.6rem 0.75rem;
-        margin-bottom: 0.25rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.65rem;
+        align-items: start;
+        padding: 0.3rem 0.75rem 0.3rem 1rem;
         color: #374151;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        transition: background 0.2s, border-color 0.2s;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        text-align: left;
+        overflow-wrap: anywhere;
       }
 
-      .episode-container:hover {
-        background: #f9fafb;
-        border-color: #d1d5db;
-      }
-
-      .episode-container:last-child {
-        margin-bottom: 0;
-      }
-
-      .episode-container .badge {
-        margin-left: 0.5rem;
-        font-size: 0.75rem;
-        padding: 0.2rem 0.5rem;
+      .episode-container + .episode-container {
+        border-top: 1px solid #eef0f2;
       }
 
       @media (max-width: 768px) {
@@ -352,13 +388,9 @@
         </div>
 
         <div class="meta-badges">
-          {% if series.content_rating %}
-            {% if series.content_rating is string %}
-              <span class="badge-rating">{{series.content_rating}}</span>
-            {% else %}
-              <span class="badge-rating">{{series.content_rating[0]}}</span>
-            {% endif %}
-          {% endif %}
+          {% with content_rating = series.content_rating %}
+            {% include "content_rating_badge.html" %}
+          {% endwith %}
           {% if series.running_time %}
             <span class="badge-runtime">{{series.running_time}} mins</span>
           {% endif %}
@@ -406,26 +438,42 @@
         </div>
         {% endif %}
 
-        <div class="info-block">
+        {% set seasons = series.episodes | select | list %}
+        {% if seasons %}
+        <section class="info-block">
           <h3>Episodes</h3>
-          <div style="padding-left: 0;">
-            {% for season in series.episodes %}
-            <div class="season-header" onclick="toggle_visibility('season-{{loop.index}}-container')">
-              Season {{season.keys()[0] | seasonnumber}}
-            </div>
-              <div class="season-container" id="season-{{loop.index}}-container" style="display:none">
-                {% for episode in season | sort %}
-                  <div class="episode-container">
-                    {{episode}}
-                    {% if season and season[episode] and 'resolution' in season[episode] %}
-                      <span class="badge badge-secondary">{{season[episode].resolution}}</span>
+          <div class="season-list">
+            {% for season in seasons %}
+              {% set season_number = season | seasonnumber %}
+              <details class="season">
+                <summary class="season-header">
+                  <span>
+                    {% if season_number is not none %}
+                      Season {{ season_number }}
+                    {% elif season | length == 1 and loop.length > 1 %}
+                      {{ season | first | e }}
+                    {% else %}
+                      Season {{ loop.index }}
                     {% endif %}
-                  </div>
-                {% endfor %}
-              </div>
+                  </span>
+                  {% set count = season | length %}
+                  <span class="season-count">{{ count }} {{ 'episode' if count == 1 else 'episodes' }}</span>
+                </summary>
+                <ul class="season-container">
+                  {% for episode in season | sort %}
+                    <li class="episode-container">
+                      <span class="episode-name">{{ episode }}</span>
+                      {% if season[episode] and season[episode].resolution %}
+                        <span class="episode-resolution">{{ season[episode].resolution }}</span>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </details>
             {% endfor %}
           </div>
-        </div>
+        </section>
+        {% endif %}
 
         <div class="button-container">
           <a href="{{series.url}}" target="_blank" class="imdb-button">Go to IMDB</a>

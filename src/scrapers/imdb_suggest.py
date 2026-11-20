@@ -253,7 +253,7 @@ class IMDB_SUGGEST(object):
       raise Exception("imdbinfo returned no details for {}".format(imdb_id))
 
     data = detail.model_dump() if hasattr(detail, 'model_dump') else detail
-    if mediatype == 'series' and data.get('imdbId') not in (None, imdb_id):
+    if mediatype in ('series', 'standup') and data.get('imdbId') not in (None, imdb_id):
       raise ValueError("IMDb returned {} for {}".format(data['imdbId'], imdb_id))
     info_series = data.get('info_series') or {}
 
@@ -287,10 +287,11 @@ class IMDB_SUGGEST(object):
       'awards': "",
       'image_url': data.get('cover_url'),
       'trailer_url': (data.get('trailers') or [None])[0],
-      'type': (data.get('kind') or 'tvSeries') if mediatype == 'series' else 'movie',
+      'type': data.get('kind') if mediatype != 'movie' else 'movie',
     }
 
     if mediatype == 'series':
+      payload['type'] = payload['type'] or 'tvSeries'
       try:
         full_creators = self.__extract_names(get_series_creators(imdb_id))
         payload['creator'] = self.__unique_values(full_creators + creators)
@@ -300,17 +301,17 @@ class IMDB_SUGGEST(object):
 
     return payload
 
-  def get_movie_details(self, movie, movie_url):
+  def __get_details(self, mediatype):
     if not self.imdb_id:
-      raise Exception("No IMDb id available for movie")
+      raise Exception("No IMDb id available for {}".format(mediatype))
     self.__sleep()
-    return self.__fetch_details_from_imdbinfo('movie')
+    return self.__fetch_details_from_imdbinfo(mediatype)
+
+  def get_movie_details(self, movie, movie_url):
+    return self.__get_details('movie')
 
   def get_series_details(self, series, series_url):
-    if not self.imdb_id:
-      raise Exception("No IMDb id available for series")
-    self.__sleep()
-    return self.__fetch_details_from_imdbinfo('series')
+    return self.__get_details('series')
 
   def get_standup_details(self, standup, standup_url):
-    return self.get_movie_details(standup, standup_url)
+    return self.__get_details('standup')

@@ -60,11 +60,9 @@ class Worker():
       count = self.validate_refresh_count(refresh_count)
 
       added_movies = self.refresh_oldest_entries("movies", "movie", count) if asset_type == "movies" else []
-      added_standup = self.refresh_oldest_entries("standup", "standup", count) if asset_type == "standup" else []
-
       saved_movies = self.write_scraped_data("movies", added_movies)
-      saved_series  = self.refresh_series_entries(count) if asset_type == "series" else self.write_scraped_data("series", [])
-      saved_standup = self.write_scraped_data("standup", added_standup)
+      saved_series = self.refresh_series_entries(count) if asset_type == "series" else self.write_scraped_data("series", [])
+      saved_standup = self.refresh_saved_entries("standup", count) if asset_type == "standup" else self.write_scraped_data("standup", [])
 
       SiteGenerator.build_site(saved_movies, saved_series, saved_standup)
     else:
@@ -254,9 +252,13 @@ class Worker():
     )
 
   def refresh_series_entries(self, count):
-    saved = self.load_saved_assets("series")
+    return self.refresh_saved_entries("series", count)
+
+  def refresh_saved_entries(self, asset_type, count):
+    saved = self.load_saved_assets(asset_type)
+    priority_field = "creator" if asset_type == "series" else "director"
     candidates = sorted(saved, key=lambda key: (
-      not series_refresh.needs_metadata(saved[key]),
+      not series_refresh.needs_metadata(saved[key], priority_field),
       self.parse_info_retrieved(saved[key].get("info_retrieved")),
       key.casefold(),
     ))[:count]
@@ -267,12 +269,13 @@ class Worker():
     for index, key in enumerate(candidates, start=1):
       existing = saved[key]
       imdb_id = series_refresh.imdb_id_from_url(existing.get("url"))
-      Message.info("Refreshing series {}/{}: {}".format(index, len(candidates), key))
+      Message.info("Refreshing {} {}/{}: {}".format(asset_type, index, len(candidates), key))
       if imdb_id is None:
         Message.warn("Skipping '{}': no saved IMDb title ID".format(key))
         continue
 
-      relative_path = (existing.get("directory") or {}).get("relative_path") or key
+      file_field = "directory" if asset_type == "series" else "file_metadata"
+      relative_path = (existing.get(file_field) or {}).get("relative_path") or key
       override = overrides.get(relative_path)
       if override and "tt" + str(override).removeprefix("tt") != imdb_id:
         Message.warn("Skipping '{}': the configured override differs from {}".format(key, imdb_id))
@@ -280,10 +283,15 @@ class Worker():
 
       try:
         if source == "IMDBV1":
-          self.series_scraper = scraper.Scraper(source)
+          metadata_scraper = scraper.Scraper(source)
         else:
-          self.series_scraper = scraper.Scraper(source, key, imdb_id)
-        fetched = self.series_scraper.get_series_details(None, existing["url"])
+          metadata_scraper = scraper.Scraper(source, key, imdb_id)
+        if asset_type == "series":
+          fetched = metadata_scraper.get_series_details(None, existing["url"])
+        elif source == "IMDBV1":
+          fetched = metadata_scraper.get_movie_details(None, existing["url"])
+        else:
+          fetched = metadata_scraper.get_standup_details(None, existing["url"])
       except Exception as exc:
         Message.warn("Skipping '{}': {}".format(key, exc))
         continue
@@ -294,22 +302,22 @@ class Worker():
         Message.warn("Keeping '{}': IMDb returned no usable improvement or a different title ID".format(key))
         continue
 
-      with self.catalog_lock("series"):
-        current = self.load_saved_assets("series")
+      with self.catalog_lock(asset_type):
+        current = self.load_saved_assets(asset_type)
         if current.get(key) != existing:
           Message.warn("Keeping '{}': the saved record changed during the refresh".format(key))
           continue
         poster = merged.get("image_url")
         if poster and poster != existing.get("image_url"):
-          Image.save_remote_image(poster, key, "series")
+          Image.save_remote_image(poster, key, asset_type)
         merged.update(info_retrieved=retrieved_at, source_lib=source)
         current[key] = merged
-        self.save_catalog("series", current)
+        self.save_catalog(asset_type, current)
       updated_count += 1
       Message.success("Saved refreshed metadata for '{}'".format(key))
 
-    Message.info("Saved {} of {} series refresh candidates".format(updated_count, len(candidates)))
-    return self.load_saved_assets("series")
+    Message.info("Saved {} of {} {} refresh candidates".format(updated_count, len(candidates), asset_type))
+    return self.load_saved_assets(asset_type)
 
   @contextmanager
   def catalog_lock(self, base_path):
