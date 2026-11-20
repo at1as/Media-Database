@@ -1,4 +1,5 @@
 
+from collections import Counter
 from datetime import datetime
 from . import helpers
 import jinja2
@@ -40,11 +41,15 @@ class SiteGenerator(object):
     return sanitized
 
   @staticmethod
-  def season_filter(episode_name):
-    """
-      Extract 'S01' from "Doctor Who S01E01.mkv"
-    """
-    return re.sub(r".*[sS]([0-9]{2})[eE][0-9]{2}.*", "\\1", str(episode_name))
+  def season_filter(episodes):
+    """Find the season number most often used in this group's episode filenames."""
+    pattern = r"(?<![A-Za-z0-9])(?:s([0-9]{1,3})[ ._-]*e[0-9]|([0-9]{1,2})x[0-9]{1,3}(?![0-9]))"
+    numbers = Counter()
+    for episode_name in episodes:
+      match = re.search(pattern, episode_name, re.IGNORECASE)
+      if match:
+        numbers[int(match.group(1) or match.group(2))] += 1
+    return numbers.most_common(1)[0][0] if numbers else None
 
   @staticmethod
   def sanitize_title_filter(title):
@@ -61,6 +66,22 @@ class SiteGenerator(object):
       return f"{int(number):,}"
     except (ValueError, TypeError):
       return str(number)
+
+  @staticmethod
+  def content_rating_parts(value):
+    """Separate the badge label from the saved certificate text."""
+    values = value if isinstance(value, (list, tuple)) else [value]
+    entries = [
+      part.strip()
+      for rating in values if isinstance(rating, str)
+      for part in rating.split("::") if part.strip()
+    ]
+    if not entries:
+      return "", entries
+
+    primary = entries[0]
+    code = re.match(r"(?:TV-[A-Z0-9]+(?:-[A-Z0-9]+)*|[0-9]{1,2}\+?|NC-17|PG-13|PG|G|R)(?=\s|$)", primary, re.IGNORECASE)
+    return (code.group() if code else primary), entries
 
   @staticmethod
   def build_site(saved_movies, saved_series, saved_standup):
@@ -90,6 +111,7 @@ class SiteGenerator(object):
     env.filters['seasonnumber'] = SiteGenerator.season_filter
     env.filters['sanitize_title'] = SiteGenerator.sanitize_title_filter
     env.filters['format_number'] = SiteGenerator.format_number_filter
+    env.filters['content_rating_parts'] = SiteGenerator.content_rating_parts
 
     movie_index     = env.get_template("index.html")
     series_index    = env.get_template("series.html")

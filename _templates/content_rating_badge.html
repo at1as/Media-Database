@@ -1,0 +1,25 @@
+{% set label, entries = content_rating | content_rating_parts %}
+{% if entries %}
+  {% if entries | length > 1 or entries[0] != label %}
+    <details class="content-rating-disclosure">
+      <summary class="badge-rating" aria-label="{{ label | e }} content rating details">
+        {{ label | e }}
+      </summary>
+      <ul class="content-rating-notes">
+        {% for entry in entries %}
+          <li>{{ entry | e }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+    <script>
+      document.addEventListener('click', function(event) {
+        const rating = document.querySelector('.content-rating-disclosure[open]');
+        if (rating && !rating.contains(event.target)) {
+          rating.open = false;
+        }
+      }, true);
+    </script>
+  {% else %}
+    <span class="badge-rating">{{ label | e }}</span>
+  {% endif %}
+{% endif %}

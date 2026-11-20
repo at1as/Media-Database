@@ -286,13 +286,9 @@
         </div>
 
         <div class="meta-badges">
-          {% if standup.content_rating %}
-            {% if standup.content_rating is string %}
-              <span class="badge-rating">{{standup.content_rating}}</span>
-            {% else %}
-              <span class="badge-rating">{{standup.content_rating[0]}}</span>
-            {% endif %}
-          {% endif %}
+          {% with content_rating = standup.content_rating %}
+            {% include "content_rating_badge.html" %}
+          {% endwith %}
           {% if standup.running_time %}
             <span class="badge-runtime">{{standup.running_time}} mins</span>
           {% endif %}

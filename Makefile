@@ -24,7 +24,7 @@ help:
 	  '  make refresh TYPE=movie COUNT=10        Refresh the oldest saved entries' \
 	  '  make refresh-movie COUNT=10             Refresh the oldest movies' \
 	  '  make refresh-series COUNT=10            Refresh series, prioritizing missing creators or descriptions' \
-	  '  make refresh-standup COUNT=10           Refresh the oldest standup specials'
+	  '  make refresh-standup COUNT=10           Refresh standup, prioritizing missing directors or descriptions'
 
 venv:
 	@test -d $(VENV) || python3 -m venv $(VENV)
