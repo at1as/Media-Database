@@ -206,68 +206,70 @@
           </div>
         </div>
 
-        <div class="filters-section-title">Search Filters</div>
+        <div id="advanced-filters">
+          <div class="filters-section-title">Search Filters</div>
 
-        <div class="filters-grid">
+          <div class="filters-grid">
 
-          <div class="filter-card filter-card-half filter-card-inline-group">
-            <div class="filter-prefixed-control filter-prefixed-control-rating">
-              <span class="filter-prefix" aria-hidden="true"><span class="filter-prefix-star">★</span> MIN RATING</span>
-              <select class="native-filter-select filter-inline-input" id="rating-search" data-filter-type="rating"></select>
+            <div class="filter-card filter-card-half filter-card-inline-group">
+              <div class="filter-prefixed-control filter-prefixed-control-rating">
+                <span class="filter-prefix" aria-hidden="true"><span class="filter-prefix-star">★</span> MIN RATING</span>
+                <select class="native-filter-select filter-inline-input" id="rating-search" data-filter-type="rating"></select>
+              </div>
+              <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
+                <span class="filter-prefix" aria-hidden="true">MIN VOTES</span>
+                <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" spellcheck="false">
+                <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
+              </div>
             </div>
-            <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
-              <span class="filter-prefix" aria-hidden="true">MIN VOTES</span>
-              <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" spellcheck="false">
-              <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
-            </div>
-          </div>
 
-          <div class="filter-card filter-card-half filter-card-inline-group">
-            <div class="filter-prefixed-control">
-              <span class="filter-prefix" aria-hidden="true">From</span>
-              <select class="native-filter-select filter-inline-input" id="year-min-search" data-filter-type="year"></select>
+            <div class="filter-card filter-card-half filter-card-inline-group">
+              <div class="filter-prefixed-control">
+                <span class="filter-prefix" aria-hidden="true">From</span>
+                <select class="native-filter-select filter-inline-input" id="year-min-search" data-filter-type="year"></select>
+              </div>
+              <div class="filter-prefixed-control">
+                <span class="filter-prefix" aria-hidden="true">To</span>
+                <select class="native-filter-select filter-inline-input" id="year-max-search" data-filter-type="year"></select>
+              </div>
             </div>
-            <div class="filter-prefixed-control">
-              <span class="filter-prefix" aria-hidden="true">To</span>
-              <select class="native-filter-select filter-inline-input" id="year-max-search" data-filter-type="year"></select>
-            </div>
-          </div>
 
-          <div class="filters-row-break"></div>
+            <div class="filters-row-break"></div>
 
-          <div class="filter-card filter-card-half">
-            <div class="filter-label-row">
-              <label for="genre-search" class="filter-label">Genres</label>
+            <div class="filter-card filter-card-half">
+              <div class="filter-label-row">
+                <label for="genre-search" class="filter-label">Genres</label>
+              </div>
+              <div class="filter-input-shell enhanced-filter-select loading">
+                <select class="enhanced-filter-select" id="genre-search" data-filter-type="genre" multiple placeholder="Any genres"></select>
+              </div>
             </div>
-            <div class="filter-input-shell enhanced-filter-select loading">
-              <select class="enhanced-filter-select" id="genre-search" data-filter-type="genre" multiple placeholder="Any genres"></select>
-            </div>
-          </div>
 
-          <div class="filter-card filter-card-half">
-            <div class="filter-label-row">
-              <label for="language-search" class="filter-label">Languages</label>
+            <div class="filter-card filter-card-half">
+              <div class="filter-label-row">
+                <label for="language-search" class="filter-label">Languages</label>
+              </div>
+              <div class="filter-input-shell enhanced-filter-select loading">
+                <select class="enhanced-filter-select" id="language-search" data-filter-type="language" multiple placeholder="Any languages"></select>
+              </div>
             </div>
-            <div class="filter-input-shell enhanced-filter-select loading">
-              <select class="enhanced-filter-select" id="language-search" data-filter-type="language" multiple placeholder="Any languages"></select>
-            </div>
-          </div>
 
-          <div class="filter-card filter-card-half">
-            <div class="filter-label-row">
-              <label for="cast-search" class="filter-label">Cast</label>
+            <div class="filter-card filter-card-half">
+              <div class="filter-label-row">
+                <label for="cast-search" class="filter-label">Cast</label>
+              </div>
+              <div class="filter-input-shell enhanced-filter-select loading">
+                <select class="enhanced-filter-select" id="cast-search" data-filter-type="cast" multiple placeholder="Any cast members"></select>
+              </div>
             </div>
-            <div class="filter-input-shell enhanced-filter-select loading">
-              <select class="enhanced-filter-select" id="cast-search" data-filter-type="cast" multiple placeholder="Any cast members"></select>
-            </div>
-          </div>
 
-          <div class="filter-card filter-card-half">
-            <div class="filter-label-row">
-              <label for="director-search" class="filter-label">Directors</label>
-            </div>
-            <div class="filter-input-shell enhanced-filter-select loading">
-              <select class="enhanced-filter-select" id="director-search" data-filter-type="director" multiple placeholder="Any directors"></select>
+            <div class="filter-card filter-card-half">
+              <div class="filter-label-row">
+                <label for="director-search" class="filter-label">Directors</label>
+              </div>
+              <div class="filter-input-shell enhanced-filter-select loading">
+                <select class="enhanced-filter-select" id="director-search" data-filter-type="director" multiple placeholder="Any directors"></select>
+              </div>
             </div>
           </div>
         </div>
@@ -277,7 +279,7 @@
       <!-- Show / Hide filter toggle -->
       <div class="page-action-group">
         <div id="filter_toggle">
-          <button id="filter_toggle_btn" class="btn media-action-btn" onclick="filter_toggle()">
+          <button id="filter_toggle_btn" type="button" class="btn media-action-btn" aria-controls="advanced-filters" aria-expanded="true" onclick="filter_toggle()">
             <span class="media-action-btn-icon" aria-hidden="true">▲</span>
             <span class="media-action-btn-label">Hide Search Filters</span>
           </button>
@@ -351,7 +353,7 @@
       </div>
 
       <!-- Results Table -->
-      <div id="results-container" style="width:100%">
+      <div id="results-container" role="region" aria-label="Results table" tabindex="0">
         <table id="results" class="table table-striped table-bordered sortable scalable_table" data-sortable>
           <thead>
             <tr id="table_header" onclick="stripe_table()">
