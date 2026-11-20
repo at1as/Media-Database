@@ -1,0 +1,7 @@
+<div class="button-container">
+  {% set trailer = media.trailer_url | imdb_trailer_url %}
+  {% if trailer %}
+    <a href="{{ trailer }}" target="_blank" rel="noopener noreferrer" class="imdb-button trailer-button">See trailer</a>
+  {% endif %}
+  <a href="{{ media.url }}" target="_blank" class="imdb-button">Go to IMDB</a>
+</div>

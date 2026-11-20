@@ -215,46 +215,6 @@
         padding-left: 0.5rem;
       }
 
-      .imdb-button {
-        display: inline-block;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      }
-
-      .imdb-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        text-decoration: none;
-        color: white;
-      }
-
-      .button-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.75rem;
-        margin: 1.5rem 0;
-      }
-
-      .trailer-button {
-        background: #f1effb;
-        color: #463276;
-        box-shadow: none;
-      }
-
-      .trailer-button:hover {
-        background: #e8e3f8;
-        color: #38265f;
-        box-shadow: none;
-      }
-
       .info-block a {
         color: #667eea;
         text-decoration: none;
@@ -399,13 +359,9 @@
           </div>
         </div>
 
-        <div class="button-container">
-          {% set trailer = movie.trailer_url | imdb_trailer_url %}
-          {% if trailer %}
-            <a href="{{ trailer }}" target="_blank" rel="noopener noreferrer" class="imdb-button trailer-button">See trailer</a>
-          {% endif %}
-          <a href="{{movie.url}}" target="_blank" class="imdb-button">Go to IMDB</a>
-        </div>
+        {% with media = movie %}
+          {% include "detail_actions.html" %}
+        {% endwith %}
 
         <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
 
