@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" style="background-color:#f8f9fa">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Local Movie Database</title>
+    <script src="../../_resources/js/theme.js"></script>
+    <script src="../../_resources/js/detail_keys.js" defer></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -238,7 +240,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="media-detail">
     <script>
       (function() {
         var params = new URLSearchParams(window.location.search);
@@ -363,7 +365,7 @@
           {% include "detail_actions.html" %}
         {% endwith %}
 
-        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
+        <hr class="detail-divider">
 
         <div id="data-retrieved">
           <div>Data Retrieved: {{movie.info_retrieved}}</div>

@@ -4,48 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Local Movie Database - About</title>
-    <script>
-      // Apply dark mode immediately to prevent flash - MUST be before any stylesheets
-      (function() {
-        // Check URL parameter first (for static file:// protocol)
-        var urlParams = new URLSearchParams(window.location.search);
-        var urlDarkMode = urlParams.get('dark');
-        var isDarkMode;
-
-        if (urlDarkMode !== null) {
-          isDarkMode = urlDarkMode === '1';
-          localStorage.setItem('darkMode', isDarkMode.toString());
-        } else {
-          isDarkMode = localStorage.getItem('darkMode') === 'true';
-        }
-
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark-theme');
-          if (document.body) {
-            document.body.classList.add('dark-theme');
-          } else {
-            document.addEventListener('DOMContentLoaded', function() {
-              document.body.classList.add('dark-theme');
-            });
-          }
-        } else {
-          document.documentElement.classList.remove('dark-theme');
-          if (document.body) {
-            document.body.classList.remove('dark-theme');
-          } else {
-            document.addEventListener('DOMContentLoaded', function() {
-              document.body.classList.remove('dark-theme');
-            });
-          }
-        }
-      })();
-    </script>
+    <script src="../_resources/js/theme.js"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link href="../_resources/css/common.css" rel="stylesheet" type="text/css" />
     <link href="../_resources/favicon.png" rel="shortcut icon" type="image/png"/>
-    <script src="../_resources/js/common.js" type="text/javascript"></script>
 
     <style>
       body {
@@ -151,57 +115,66 @@
         font-weight: 600;
       }
 
+      .about-description {
+        font-size: 1.05rem;
+        color: #4a5568;
+        line-height: 1.7;
+      }
+      .dark-theme .about-description {
+        color: #d0d5dd;
+      }
+
       /* Dark mode styles */
-      body.dark-theme {
+      .dark-theme body {
         background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
         color: #fff;
       }
-      body.dark-theme .navbar {
+      .dark-theme .navbar {
         background-color: #222 !important;
       }
-      body.dark-theme .about-card {
+      .dark-theme .about-card {
         background-color: #2d3748;
         color: #fff;
         box-shadow: 0 10px 30px rgba(0,0,0,.4);
       }
-      body.dark-theme .about-header h1 {
+      .dark-theme .about-header h1 {
         color: #fff;
       }
-      body.dark-theme .about-header p {
+      .dark-theme .about-header p {
         color: #cbd5e0;
       }
-      body.dark-theme .info-section h4 {
+      .dark-theme .info-section h4 {
         color: #fff;
       }
-      body.dark-theme .info-section h4 i {
+      .dark-theme .info-section h4 i {
         color: #66b3ff;
       }
-      body.dark-theme .info-item {
+      .dark-theme .info-item {
         background-color: #1a202c;
         border-left-color: #66b3ff;
       }
-      body.dark-theme .info-item:hover {
+      .dark-theme .info-item:hover {
         box-shadow: 0 4px 12px rgba(102, 179, 255, 0.3);
       }
-      body.dark-theme .info-item strong {
+      .dark-theme .info-item strong {
         color: #a0aec0;
       }
-      body.dark-theme .info-item a {
+      .dark-theme .info-item a {
         color: #66b3ff;
       }
-      body.dark-theme .info-item a:hover {
+      .dark-theme .info-item a:hover {
         color: #99ccff;
       }
-      body.dark-theme .about-card hr {
+      .dark-theme .about-card hr {
         background: linear-gradient(to right, #66b3ff, #99ccff);
       }
-      body.dark-theme .timestamp-footer {
+      .dark-theme .timestamp-footer {
         background: linear-gradient(135deg, #66b3ff15 0%, #99ccff15 100%);
       }
-      body.dark-theme .timestamp-footer strong {
+      .dark-theme .timestamp-footer strong {
         color: #e2e8f0;
       }
-      body.dark-theme .timestamp-footer span {
+      .dark-theme .timestamp-footer span {
         color: #66b3ff;
       }
 
@@ -216,7 +189,7 @@
         border-bottom: 3px solid #66b3ff;
         padding-bottom: 4px;
       }
-      body.dark-theme .navbar-dark .navbar-nav .nav-link.active {
+      .dark-theme .navbar-dark .navbar-nav .nav-link.active {
         color: #66b3ff !important;
         font-weight: 700;
         border-bottom: 3px solid #66b3ff;
@@ -230,7 +203,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse order-2 order-lg-0" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <a class="nav-link" href="./index.html">Movies
@@ -257,11 +230,8 @@
             <a class="nav-link active" href="./about.html">About</a>
           </li>
         </ul>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-          <label class="form-check-label" for="darkModeToggle" style="color: gray;">Dark Mode</label>
-        </div>
       </div>
+      {% include "theme_toggle.html" %}
     </nav>
 
     <div class="container body-container">
@@ -274,7 +244,7 @@
             </div>
 
             <div class="info-section">
-              <p style="font-size: 1.05rem; color: #4a5568; line-height: 1.7;">
+              <p class="about-description">
                 Media Database creates a local movie database containing information related to your movie collection.
                 Webpages are statically generated and uploaded to the <em>_output/</em> directory. Rerun the script every
                 time a new file is added to the directory.

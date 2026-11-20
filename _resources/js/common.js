@@ -8,6 +8,10 @@ function get_filter_field_value(field_id) {
     return '';
   }
 
+  if (field.multiple && !field.tomselect) {
+    return get_filter_field_values(field_id).join(', ');
+  }
+
   if (field.tomselect) {
     function normalize_select_value(value) {
       return String(value || '').replace(/\s\(\d+\)$/, '');
@@ -48,6 +52,10 @@ function get_filter_field_values(field_id) {
     }).filter(function(value) {
       return value !== '';
     });
+  }
+
+  if (field.multiple) {
+    return Array.from(field.selectedOptions, option => option.value).filter(Boolean);
   }
 
   var single_value = get_filter_field_value(field_id).trim();
@@ -97,6 +105,7 @@ function setup_search_clear_buttons() {
     // Add input event listener
     input.addEventListener('input', function() {
       update_clear_button_visibility(input.id);
+      trigger_page_search();
     });
   });
 }
@@ -909,10 +918,6 @@ function initialize_enhanced_filter_selects() {
 
   // Initialize enhanced selects asynchronously to prevent UI blocking
   setTimeout(function() {
-    if (typeof TomSelect === 'undefined') {
-      return;
-    }
-
     [
       { id: 'genre-search', placeholder: 'Any genres', hideSelected: true, refreshOnOpen: true },
       { id: 'language-search', placeholder: 'Any languages', hideSelected: true, refreshOnOpen: true },
@@ -932,6 +937,16 @@ function initialize_enhanced_filter_selects() {
           try {
             var cell_name = get_filter_option_cell_name(config.id);
             var values = collect_table_values(cell_name);
+            populate_select_options(select, values, false);
+            if (typeof TomSelect === 'undefined') {
+              select.classList.add('form-control');
+              select.addEventListener('change', trigger_page_search);
+              if (shell) {
+                shell.classList.remove('loading');
+                shell.classList.add('loaded');
+              }
+              return;
+            }
             var counts;
 
             // Directors column is hidden by default, so we need to count all rows
@@ -940,8 +955,6 @@ function initialize_enhanced_filter_selects() {
             } else {
               counts = collect_visible_table_value_counts(cell_name);
             }
-
-            populate_select_options(select, values, false);
 
             var tomselect = new TomSelect(select, {
               allowEmptyOption: true,
@@ -1070,7 +1083,7 @@ function search_movie_table(table_id) {
 
     var rating_cell   = row.cells[1] ? row.cells[1].innerHTML.toLowerCase() : '';
     var vote_cell     = row.cells[2] ? row.cells[2].innerHTML.toLowerCase().replace(/\,/g, '') : '';
-    var title_cell    = (row.cells[3] && row.cells[3].children[0]) ? row.cells[3].children[0].innerHTML.toLowerCase() : '';
+    var title_cell    = (row.cells[3] && row.cells[3].children[0]) ? row.cells[3].children[0].textContent.trim().toLowerCase() : '';
     var year_cell     = row.cells[4] ? row.cells[4].innerHTML.toLowerCase() : '';
     var genre_cell_element = row.cells[6];
     var cast_cell_element = row.cells[7];
@@ -1216,7 +1229,7 @@ function search_series_table(table_id) {
   for (var i = 1; i < series_table.rows.length; i++) {
     var rating_cell     = series_table.rows[i].cells[1].innerHTML.toLowerCase();
     var vote_cell       = series_table.rows[i].cells[2].innerHTML.toLowerCase().replace(/\,/g, '');
-    var title_cell      = series_table.rows[i].cells[3].children[0].innerHTML.toLowerCase();
+    var title_cell      = series_table.rows[i].cells[3].children[0].textContent.trim().toLowerCase();
     var start_year_cell = series_table.rows[i].cells[4].innerHTML.trim().substring(0,4).toLowerCase().trim();
     var end_year_cell   = series_table.rows[i].cells[4].innerHTML.trim().substring(5,9).toLowerCase().trim();
     var genre_cell      = series_table.rows[i].cells[5].textContent.toLowerCase();
@@ -1243,7 +1256,7 @@ function search_series_table(table_id) {
     else if (vote_query !== '' && (vote_cell === '' || vote_cell === 'none' || vote_cell.trim() === 'none' || parseFloat(vote_cell) < parseFloat(vote_query))) {
       series_table.rows[i].style.display = 'none';
     }
-    else if (title_cell.indexOf(title_query) === -1 && remove_diacritics(title_cell).indexOf(title_query) === -1 && title_query !== '') {
+    else if (!title_match(title_query, title_cell) && !title_match(title_query, remove_diacritics(title_cell)) && title_query !== '') {
       series_table.rows[i].style.display = 'none';
     }
     else if (year_min_query !== '' && start_year_cell !== '' && (parseInt(start_year_cell) < parseInt(year_min_query))) {
@@ -1349,22 +1362,10 @@ function substrings_in_list(query, item, filter_type) {
 };
 
 // Search for "||" separated query list for any entry to match listing
-function title_match(query, listing){
-  // Split query string at '||' and remove empty elements from array, or partial search string
-  // (trailing '|' or trailing ' ')
-  queries = query.split('||').map(function(x){
-    return x.trim().replace(/\|/, '').trim();
-  }).filter(function(x){
-    return x !== '';
-  });
-
-  for(var i=0; i<query.length; i++){
-    // TODO: Strip more than just the ':' (such as '-', '.', etc)
-    if (listing.replace(':', '').indexOf(queries[i] ? queries[i].replace(':','') : queries[i]) !== -1){
-      return true;
-    }
-  }
-  return false;
+function title_match(query, listing) {
+  const terms = query.split('||').map(term => term.replace(/[|:]/g, '').trim()).filter(Boolean);
+  const normalizedTitle = listing.replace(/:/g, '');
+  return terms.length === 0 || terms.some(term => normalizedTitle.includes(term));
 }
 
 // Restripe the table rows after filtering out rows
@@ -1505,238 +1506,122 @@ function remove_diacritics(str) {
 };
 
 function get_visible_modal_links() {
-  var visible_links = [];
-  var rows = document.querySelectorAll('.table > tbody > tr');
-
-  for (var i = 0; i < rows.length; i++) {
-    if (rows[i].style.display === 'none') {
-      continue;
-    }
-
-    var row_link = rows[i].querySelector('a[href*=".html"]');
-    if (row_link) {
-      visible_links.push(row_link);
-    }
-  }
-
-  return visible_links;
+  const rows = document.querySelectorAll('#results tbody tr');
+  return Array.from(rows)
+    .filter(row => row.style.display !== 'none')
+    .map(row => row.querySelector('a[data-title-details]'))
+    .filter(Boolean);
 }
 
-function build_modal_details_url(link_element) {
-  var movie_details = link_element.href.substring(link_element.href.indexOf('#') + 1);
-  var visible_links = get_visible_modal_links();
-  var current_index = -1;
-  var target_href = link_element.href;
+let modalLink = null;
+let modalOpener = null;
+let modalScrollPosition = 0;
 
-  for (var i = 0; i < visible_links.length; i++) {
-    if (visible_links[i].href === target_href) {
-      current_index = i;
-      break;
-    }
-  }
-
-  try {
-    var details_url = new URL(movie_details, window.location.href);
-
-    if (current_index !== -1) {
-      details_url.searchParams.set('position', String(current_index + 1));
-      details_url.searchParams.set('total', String(visible_links.length));
-    }
-
-    return details_url.pathname + details_url.search + details_url.hash;
-  } catch (err) {
-    return movie_details;
-  }
+function modal_link_index(links, link) {
+  const row = link.closest('tr');
+  return links.findIndex(candidate => candidate.closest('tr') === row);
 }
 
-
-// Load iFrame with specific title
-function load_details(movie, preserveCurrentElement) {
-  var movie_details = build_modal_details_url(movie);
-
-  // Hide all tooltips when opening modal
-  if (typeof $ !== 'undefined' && $('[data-toggle="tooltip"]').length > 0) {
+function open_details(event, link) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return true;
+  }
+  modalOpener = link;
+  modalScrollPosition = window.scrollY;
+  document.body.style.top = '-' + modalScrollPosition + 'px';
+  document.body.classList.add('modal-open');
+  document.getElementById('backdrop').style.display = '';
+  if (typeof $ !== 'undefined' && $.fn.tooltip) {
     $('[data-toggle="tooltip"]').tooltip('hide');
   }
-
-  // Save current scroll position and current element for navigation
-  window.scrollPositionBeforeModal = window.pageYOffset || document.documentElement.scrollTop;
-  console.log('load_details called with preserveCurrentElement:', preserveCurrentElement);
-  if (!preserveCurrentElement) {
-    console.log('Setting currentModalElement to new movie');
-    window.currentModalElement = movie;
-    window.currentModalUrl = movie.href; // Store URL for navigation
-  } else {
-    console.log('Preserving currentModalElement');
-    // During navigation, we still need to update the URL for next navigation
-    window.currentModalUrl = movie.href;
-  }
-
-  // Prevent body scroll
-  document.body.classList.add('modal-open');
-  document.body.style.top = `-${window.scrollPositionBeforeModal}px`;
-
-  console.log('About to show modal - backdrop display:', document.getElementById('backdrop').style.display, 'modal display:', document.getElementById('modal-alert').style.display);
-  document.getElementById('backdrop').style.display     = '';
-  document.getElementById('modal-alert').style.display  = '';
-  console.log('Modal shown - backdrop display:', document.getElementById('backdrop').style.display, 'modal display:', document.getElementById('modal-alert').style.display);
-
-  // Create navigation buttons and close button
-  var prevBtn = '<div id="modal-prev-btn" onclick="navigate_modal(\'prev\')" title="Previous (←)">‹</div>';
-  var nextBtn = '<div id="modal-next-btn" onclick="navigate_modal(\'next\')" title="Next (→)">›</div>';
-  var closeBtn = '<div id="modal-close-btn" onclick="close_details()" title="Close (Esc)">×</div>';
-  var navButtons = prevBtn + nextBtn + closeBtn;
-
-  var iframe = "<iframe id='frame' style='z-index: 12; max-width:1000px; height:100%; width:100%; border:none; border-radius:16px; background-color:#fff;' frameborder='0' scrolling='yes' src='" + movie_details + "'></iframe>";
-  document.getElementById('modal-alert').innerHTML = navButtons + iframe;
-
-  // Close modal when clicking backdrop (but not during navigation)
-  document.getElementById('backdrop').onclick = function() {
-    if (!window.isNavigating) {
-      close_details();
-    }
-  };
-
-  // Close modal with Escape key and navigation with arrow keys
-  document.onkeydown = function(evt) {
-    evt = evt || window.event;
-    if (evt.keyCode == 27) {
-      close_details();
-    } else if (evt.keyCode == 37) {
-      navigate_modal('prev');
-    } else if (evt.keyCode == 39) {
-      navigate_modal('next');
-    }
-  };
-
-  /* iFrame won't scroll on Desktop Safari unless this state is toggled */
-  var ua = navigator.userAgent.toLowerCase();
-  if (ua.indexOf('safari') != -1) {
-    if (ua.indexOf('chrome') > -1) {
-      // Chrome
-    } else {
-      // Safari
-      if (!( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
-        // Desktop Safari
-        document.getElementById('frame').scrolling = 'no';
-        setTimeout(function() { document.getElementById('frame').scrolling = 'yes'; }, 1);
-      }
-    }
-  }
-
-  // Update navigation button visibility after a short delay
-  setTimeout(update_navigation_buttons, 100);
-
+  load_details(link);
+  document.getElementById('modal-close-btn').focus();
   return false;
 }
 
-// Navigate to next/previous item in modal
+function load_details(link) {
+  modalLink = link;
+  const visible = get_visible_modal_links();
+  const index = modal_link_index(visible, link);
+  const details = new URL(link.href);
+  details.searchParams.set('dark', document.documentElement.classList.contains('dark-theme') ? '1' : '0');
+  if (index >= 0) {
+    details.searchParams.set('position', String(index + 1));
+    details.searchParams.set('total', String(visible.length));
+  }
+
+  const dialog = document.getElementById('modal-alert');
+  document.getElementById('frame')?.remove();
+  const frame = document.createElement('iframe');
+  frame.id = 'frame';
+  frame.title = 'Title details';
+  frame.src = details.href;
+  dialog.append(frame);
+
+  // Preserve scrolling on desktop Safari when a new details frame opens.
+  if (/safari/i.test(navigator.userAgent) && !/chrome|android|mobile/i.test(navigator.userAgent)) {
+    frame.scrolling = 'no';
+    setTimeout(() => { frame.scrolling = 'yes'; }, 1);
+  }
+
+  const previous = document.getElementById('modal-prev-btn');
+  const next = document.getElementById('modal-next-btn');
+  previous.style.display = index > 0 ? '' : 'none';
+  next.style.display = index >= 0 && index < visible.length - 1 ? '' : 'none';
+  if ((previous.style.display === 'none' && document.activeElement === previous) ||
+      (next.style.display === 'none' && document.activeElement === next)) {
+    document.getElementById('modal-close-btn').focus();
+  }
+}
+
 function navigate_modal(direction) {
-if (!window.currentModalUrl) {
-return;
-}
-
-var visibleLinks = get_visible_modal_links();
-
-if (visibleLinks.length === 0) return;
-
-// Find current index by URL
-var currentIndex = -1;
-for (var j = 0; j < visibleLinks.length; j++) {
-var linkUrl = visibleLinks[j].href;
-if (window.currentModalUrl.includes(linkUrl.split('#')[1])) {
-currentIndex = j;
-break;
-}
-}
-
-if (currentIndex === -1) return;
-
-// Calculate next index (no wrap-around)
-var nextIndex;
-if (direction === 'next') {
-nextIndex = currentIndex + 1;
-if (nextIndex >= visibleLinks.length) return; // No next item
-} else {
-nextIndex = currentIndex - 1;
-if (nextIndex < 0) return; // No previous item
-}
-
-// Load next item
-var nextElement = visibleLinks[nextIndex];
-window.currentModalElement = nextElement; // Update for consistency
-window.currentModalUrl = nextElement.href; // Store URL for next navigation
-window.isNavigating = true; // Set navigation flag to block close calls
-load_details(nextElement, false); // Don't preserve current element during navigation
-
-// Reset navigation flag after a short delay
-  setTimeout(function() {
-    window.isNavigating = false;
-  }, 1000);
-}
-
-// Update navigation button visibility
-function update_navigation_buttons() {
-  if (!window.currentModalUrl) return;
-
-  var visibleLinks = get_visible_modal_links();
-
-  if (visibleLinks.length === 0) return;
-
-  // Find current index by URL
-  var currentIndex = -1;
-  for (var j = 0; j < visibleLinks.length; j++) {
-    var linkUrl = visibleLinks[j].href;
-    if (window.currentModalUrl.includes(linkUrl.split('#')[1])) {
-      currentIndex = j;
-      break;
-    }
-  }
-
-  if (currentIndex === -1) return;
-
-  // Show/hide buttons based on availability
-  var prevBtn = document.getElementById('modal-prev-btn');
-  var nextBtn = document.getElementById('modal-next-btn');
-
-  if (prevBtn) {
-    prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
-  }
-  if (nextBtn) {
-    nextBtn.style.display = currentIndex < visibleLinks.length - 1 ? 'flex' : 'none';
-  }
-}
-
-// Close modal function
-function close_details_internal() {
-  console.log('CLOSE_DETAILS_INTERNAL CALLED');
-  document.getElementById('backdrop').style.display = 'none';
-  document.getElementById('modal-alert').style.display = 'none';
-  document.getElementById('modal-alert').innerHTML = '';
-  document.getElementById('backdrop').onclick = null;
-  document.onkeydown = null;
-  window.currentModalElement = null;
-
-  // Re-enable body scroll and restore position
-  document.body.classList.remove('modal-open');
-  document.body.style.top = '';
-
-  // Restore scroll position
-  if (window.scrollPositionBeforeModal !== undefined) {
-    window.scrollTo(0, window.scrollPositionBeforeModal);
-    window.scrollPositionBeforeModal = undefined;
-  }
-}
-
-// Public close function that can be called by our buttons
-function close_details() {
-  // Block close calls only during navigation (when iframe is loading)
-  if (window.isNavigating) {
+  if (!modalLink) {
     return;
   }
-
-  close_details_internal();
+  const visible = get_visible_modal_links();
+  const index = modal_link_index(visible, modalLink);
+  const target = visible[index + (direction === 'next' ? 1 : -1)];
+  if (index >= 0 && target) {
+    load_details(target);
+  }
 }
+
+function close_details() {
+  if (!modalLink) {
+    return;
+  }
+  document.getElementById('frame')?.remove();
+  document.getElementById('backdrop').style.display = 'none';
+  document.body.classList.remove('modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, modalScrollPosition);
+  modalOpener.focus({preventScroll: true});
+  modalOpener = null;
+  modalLink = null;
+}
+
+function handle_detail_key(key) {
+  if (key === 'Escape') {
+    close_details();
+  } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
+    navigate_modal(key === 'ArrowLeft' ? 'prev' : 'next');
+  }
+}
+
+document.addEventListener('keydown', event => {
+  if (modalLink && !event.altKey && !event.ctrlKey && !event.metaKey &&
+      ['Escape', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    event.preventDefault();
+    handle_detail_key(event.key);
+  }
+});
+
+window.addEventListener('message', event => {
+  const frame = document.getElementById('frame');
+  if (frame && event.source === frame.contentWindow) {
+    handle_detail_key(event.data?.detailKey);
+  }
+});
 
 // Toggle Display of Search Filters
 function filter_toggle() {
@@ -1802,9 +1687,7 @@ function random_selection() {
   if (visible_rows.length > 0) {
     var random_index = Math.floor(Math.random() * visible_rows.length);
     var table_row = visible_rows[random_index];
-    var table_row_name = table_row.querySelectorAll('td')[3];
-    var table_row_name_link = table_row_name.querySelectorAll('a')[0];
-    table_row_name_link.click();
+    table_row.querySelector('a[data-title-details]').click();
   }
 };
 
@@ -1892,92 +1775,6 @@ return;
   this.search_movie_table('results');
 }
 
-// Dark Mode
-function toggleDarkMode() {
-  // Toggle on body first to get the new state
-  const isDarkMode = document.body.classList.toggle('dark-theme');
-  // Apply same state to html element
-  document.documentElement.classList.toggle('dark-theme', isDarkMode);
-  // Save to localStorage
-  localStorage.setItem('darkMode', isDarkMode.toString());
-  console.log('[Dark Mode] Toggled to:', isDarkMode, 'Saved to localStorage:', localStorage.getItem('darkMode'));
-  // Update checkbox
-  updateDarkModeToggle(isDarkMode);
-  // Update all navigation links to include dark mode parameter
-  updateNavigationLinks(isDarkMode);
-}
-
-function updateNavigationLinks(isDarkMode) {
-  // Update all internal navigation links to include the dark mode state
-  // Match links ending in .html OR containing .html? (with query params)
-  const links = document.querySelectorAll('a[href*=".html"]');
-  links.forEach(link => {
-    try {
-      const url = new URL(link.href);
-      // Skip movie detail links (they're loaded in iframes and shouldn't have dark mode)
-      if (url.pathname.includes('movie_details') || url.pathname.includes('series_details') || url.pathname.includes('standup_details')) {
-        return;
-      }
-      // Only update if it's a local HTML file
-      if (url.pathname.endsWith('.html')) {
-        if (isDarkMode) {
-          url.searchParams.set('dark', '1');
-        } else {
-          url.searchParams.delete('dark');
-        }
-        link.href = url.toString();
-      }
-    } catch (e) {
-      // Skip invalid URLs
-      console.warn('[Dark Mode] Could not update link:', link.href, e);
-    }
-  });
-  console.log('[Dark Mode] Updated', links.length, 'navigation links. Dark mode:', isDarkMode);
-}
-
-function updateDarkModeToggle(isDarkMode) {
-  const toggle = document.getElementById('darkModeToggle');
-  if (toggle) {
-    toggle.checked = isDarkMode;
-    console.log('[Dark Mode] Checkbox updated to:', isDarkMode);
-  }
-}
-
-function applyDarkMode() {
-  // Check URL parameter first (for static file:// protocol)
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlDarkMode = urlParams.get('dark');
-
-  let isDarkMode;
-  if (urlDarkMode !== null) {
-    // URL parameter takes precedence
-    isDarkMode = urlDarkMode === '1';
-    // Save to localStorage for this page
-    localStorage.setItem('darkMode', isDarkMode.toString());
-    console.log('[Dark Mode] URL parameter found:', urlDarkMode, 'Setting dark mode to:', isDarkMode);
-  } else {
-    // Fall back to localStorage
-    const storedValue = localStorage.getItem('darkMode');
-    isDarkMode = storedValue === 'true';
-    console.log('[Dark Mode] No URL parameter. localStorage value:', storedValue, 'Parsed as:', isDarkMode);
-  }
-
-  console.log('[Dark Mode] HTML has dark-theme:', document.documentElement.classList.contains('dark-theme'));
-  console.log('[Dark Mode] Body has dark-theme:', document.body.classList.contains('dark-theme'));
-
-  // Early script already applied theme to html and body
-  // We just need to sync the checkbox state
-  updateDarkModeToggle(isDarkMode);
-
-  // IMPORTANT: Update all navigation links on this page to reflect current state
-  // This ensures links are correct even if we navigated from a page with different state
-  setTimeout(function() {
-    updateNavigationLinks(isDarkMode);
-    console.log('[Dark Mode] Navigation links updated to:', isDarkMode ? 'include ?dark=1' : 'remove ?dark=1');
-  }, 0);
-}
-
-// Call this function when the document is ready to sync checkbox
 // Handle dropdown overflow issues
 document.addEventListener('DOMContentLoaded', function() {
   var dropdowns = document.querySelectorAll('.dropdown');
@@ -2036,7 +1833,6 @@ function enhanceTableStyling() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', applyDarkMode);
 document.addEventListener('DOMContentLoaded', update_clear_all_filters_button);
 document.addEventListener('DOMContentLoaded', initialize_enhanced_filter_selects);
 document.addEventListener('DOMContentLoaded', initialize_numeric_filter_inputs);
