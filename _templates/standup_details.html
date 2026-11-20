@@ -41,33 +41,6 @@
         margin: 0;
       }
 
-      .poster-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .poster-section img {
-        width: 100%;
-        max-width: 280px;
-        height: auto;
-        max-height: 85vh;
-        object-fit: contain;
-        border-radius: 12px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        transition: transform 0.3s ease;
-      }
-
-      .poster-section img:hover {
-        transform: scale(1.02);
-      }
-
       .poster-position-badge {
         position: absolute;
         top: 1rem;
@@ -208,10 +181,6 @@
         .container {
           grid-template-columns: 1fr;
         }
-        .poster-section {
-          padding: 1.5rem;
-          min-height: 400px;
-        }
         .details-section {
           padding: 1.5rem;
         }
@@ -245,6 +214,9 @@
       <div class="poster-section">
         <div id="poster-position-badge" class="poster-position-badge"></div>
         <img src="../images/standup/{{standup.file_metadata.filename}}.png" alt="{{standup.title}}">
+        {% with media = standup %}
+          {% include "detail_actions.html" %}
+        {% endwith %}
       </div>
 
       <!-- Right: Details -->
@@ -339,10 +311,6 @@
             {% endif %}
           </div>
         </div>
-
-        {% with media = standup %}
-          {% include "detail_actions.html" %}
-        {% endwith %}
 
         <hr class="detail-divider">
 
