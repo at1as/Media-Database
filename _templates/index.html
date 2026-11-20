@@ -3,42 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Local Movie Database</title>
-    <script>
-      // Apply dark mode immediately to prevent flash - MUST be before any stylesheets
-      (function() {
-        // Check URL parameter first (for static file:// protocol)
-        var urlParams = new URLSearchParams(window.location.search);
-        var urlDarkMode = urlParams.get('dark');
-        var isDarkMode;
-
-        if (urlDarkMode !== null) {
-          isDarkMode = urlDarkMode === '1';
-          localStorage.setItem('darkMode', isDarkMode.toString());
-        } else {
-          isDarkMode = localStorage.getItem('darkMode') === 'true';
-        }
-
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark-theme');
-          if (document.body) {
-            document.body.classList.add('dark-theme');
-          } else {
-            document.addEventListener('DOMContentLoaded', function() {
-              document.body.classList.add('dark-theme');
-            });
-          }
-        } else {
-          document.documentElement.classList.remove('dark-theme');
-          if (document.body) {
-            document.body.classList.remove('dark-theme');
-          } else {
-            document.addEventListener('DOMContentLoaded', function() {
-              document.body.classList.remove('dark-theme');
-            });
-          }
-        }
-      })();
-    </script>
+    <script src="../_resources/js/theme.js"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css">
@@ -69,91 +34,91 @@
       }
 
       /* Dark mode styles */
-      body.dark-theme {
+      .dark-theme body {
         background-color: #333;
         color: #fff;
       }
-      body.dark-theme .navbar {
+      .dark-theme .navbar {
         background-color: #222 !important;
       }
-      body.dark-theme .jumbotron {
+      .dark-theme .jumbotron {
         background-color: #444;
         color: #fff;
         border: 1px solid #666;
       }
-      body.dark-theme .card {
+      .dark-theme .card {
         background-color: #444;
         color: #fff;
       }
-      body.dark-theme .table {
+      .dark-theme .table {
         color: #fff;
         background-color: #444;
       }
-      body.dark-theme .table-striped tbody tr:nth-of-type(odd) {
+      .dark-theme .table-striped tbody tr:nth-of-type(odd) {
         background-color: rgba(255,255,255,.05);
       }
-      body.dark-theme .table thead th {
+      .dark-theme .table thead th {
         background-color: #555;
         color: #fff;
         border-color: #666;
       }
-      body.dark-theme .table td, body.dark-theme .table th {
+      .dark-theme .table td, .dark-theme .table th {
         border-color: #666;
       }
-      body.dark-theme .form-control {
+      .dark-theme .form-control {
         background-color: #555;
         border-color: #666;
         color: #fff;
       }
-      body.dark-theme .form-control:focus {
+      .dark-theme .form-control:focus {
         background-color: #666;
         border-color: #777;
         color: #fff;
         box-shadow: 0 0 0 0.2rem rgba(102, 179, 255, 0.25);
       }
-      body.dark-theme .badge-secondary {
+      .dark-theme .badge-secondary {
         background-color: #666;
         color: #fff;
       }
-      body.dark-theme .tooltip-inner {
+      .dark-theme .tooltip-inner {
         background-color: #555;
         color: #fff;
       }
-      body.dark-theme .modal-content {
+      .dark-theme .modal-content {
         background-color: #444;
         color: #fff;
       }
-      body.dark-theme .col-form-label {
+      .dark-theme .col-form-label {
         color: #fff;
       }
-      body.dark-theme .clear-filter {
+      .dark-theme .clear-filter {
         color: #ccc;
       }
-      body.dark-theme .clear-filter:hover {
+      .dark-theme .clear-filter:hover {
         color: #ff6b6b;
       }
-      body.dark-theme .question-filter {
+      .dark-theme .question-filter {
         color: #66b3ff;
       }
-      body.dark-theme .question-filter:hover {
+      .dark-theme .question-filter:hover {
         color: #99ccff;
       }
-      body.dark-theme .tooltip-info {
+      .dark-theme .tooltip-info {
         color: #66b3ff;
       }
-      body.dark-theme .form-check-label {
+      .dark-theme .form-check-label {
         color: #ddd;
       }
-      body.dark-theme .table-columns-toggle-section {
+      .dark-theme .table-columns-toggle-section {
         background-color: #555;
         color: #fff;
         border: 1px solid #666;
       }
-      body.dark-theme .stripe-on {
+      .dark-theme .stripe-on {
         background-color: #444 !important;
         color: #fff !important;
       }
-      body.dark-theme .stripe-off {
+      .dark-theme .stripe-off {
         background-color: #555 !important;
         color: #fff !important;
       }
@@ -169,7 +134,7 @@
         border-bottom: 3px solid #66b3ff;
         padding-bottom: 4px;
       }
-      body.dark-theme .navbar-dark .navbar-nav .nav-link.active {
+      .dark-theme .navbar-dark .navbar-nav .nav-link.active {
         color: #66b3ff !important;
         font-weight: 700;
         border-bottom: 3px solid #66b3ff;
@@ -183,7 +148,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<div class="collapse navbar-collapse order-2 order-lg-0" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
 						<a class="nav-link active" href="./index.html">Movies
@@ -213,11 +178,8 @@
 						<a class="nav-link" href="./about.html">About</a>
 					</li>
 				</ul>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-          <label class="form-check-label" for="darkModeToggle" style="color: gray;">Dark Mode</label>
-        </div>
 			</div>
+      {% include "theme_toggle.html" %}
     </nav>
     <div class="container-fluid theme-showcase body-container" role="main">
 
@@ -226,8 +188,8 @@
         <div class="filters-toolbar">
           <div class="filter-prefixed-control filter-search-control has-inline-clear">
             <span class="filter-prefix" aria-hidden="true">⌕</span>
-            <input class="filter-inline-input filter-title-input" id="title-search" type="search" placeholder="Search by title" onkeyup="search_movie_table('results')" spellcheck="false">
-            <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search'); search_movie_table('results')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
+            <input class="filter-inline-input filter-title-input" id="title-search" type="search" placeholder="Search by title" spellcheck="false">
+            <button type="button" class="filter-clear-btn" onclick="clear_filter('title-search')" aria-label="Clear title filter"><i class="fa fa-times-circle clear-filter"></i></button>
           </div>
           <div class="filters-results-summary">
             <span class="filters-results-label">Results</span>
@@ -256,8 +218,8 @@
             </div>
             <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
               <span class="filter-prefix" aria-hidden="true">MIN VOTES</span>
-              <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" onkeyup="search_movie_table('results')" spellcheck="false">
-              <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search'); search_movie_table('results')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
+              <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" spellcheck="false">
+              <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
             </div>
           </div>
 
@@ -410,7 +372,7 @@
             {% for movie in movie_list %}
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
-                  <a href="#./movies/{{movie_list[movie].title|sanitize_title}}({{movie_list[movie].year}}).html" onclick="load_details(this)">
+                  <a href="./movies/{{movie_list[movie].title|sanitize_title|urlencode}}({{movie_list[movie].year}}).html" data-title-details onclick="return open_details(event, this)">
                     <img width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
@@ -422,8 +384,8 @@
                 </td>
                 <td sorttable_customkey="{{ movie_list[movie].title }}" class="vertical-row">
                   <a
-                    href="#./movies/{{movie_list[movie].title|sanitize_title}}({{movie_list[movie].year}}).html"
-                    onclick="load_details(this)"
+                    href="./movies/{{movie_list[movie].title|sanitize_title|urlencode}}({{movie_list[movie].year}}).html"
+                    data-title-details onclick="return open_details(event, this)"
                     class="tooltip-info"
                     data-placement="right"
                     data-toggle="tooltip"
@@ -467,11 +429,7 @@
       </div>
     </div>
 
-    <!-- Modal: Asset Content-->
-    <div id="backdrop" style="display:none" onclick="close_details()">
-      <div id="modal-alert" class="centered" tabindex="-1" role="dialog" style="display:none;">
-      </div>
-    </div>
+    {% include "details_modal.html" %}
 
   </body>
 </html>
