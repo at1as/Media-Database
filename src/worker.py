@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 
+from collections import Counter
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from fcntl import LOCK_EX, flock
@@ -47,7 +48,8 @@ class Worker():
 
     return True
 
-  def start(self, dry_run=False, refresh_media_type=None, refresh_count=0):
+  def start(self, dry_run=False, refresh_media_type=None, refresh_count=0,
+            updated_before=None, refresh_priority=None):
     script_started = datetime.now()
 
     if dry_run:
@@ -59,12 +61,10 @@ class Worker():
       asset_type = self.normalize_refresh_media_type(refresh_media_type)
       count = self.validate_refresh_count(refresh_count)
 
-      added_movies = self.refresh_oldest_entries("movies", "movie", count) if asset_type == "movies" else []
-      saved_movies = self.write_scraped_data("movies", added_movies)
-      saved_series = self.refresh_series_entries(count) if asset_type == "series" else self.write_scraped_data("series", [])
-      saved_standup = self.refresh_saved_entries("standup", count) if asset_type == "standup" else self.write_scraped_data("standup", [])
-
-      SiteGenerator.build_site(saved_movies, saved_series, saved_standup)
+      refreshed = self.refresh_saved_entries(asset_type, count, updated_before, refresh_priority)
+      saved = [refreshed if category == asset_type else self.load_saved_assets(category)
+               for category in ("movies", "series", "standup")]
+      SiteGenerator.build_site(*saved)
     else:
       added_movies = self.fetch_new_files("movies", "movie")
       added_series = self.fetch_new_files("series", "series")
@@ -114,15 +114,21 @@ class Worker():
 
     return asset['directory']['name']
 
-  def parse_info_retrieved(self, value):
+  @staticmethod
+  def parse_refresh_cutoff(value):
     try:
       timestamp = datetime.fromisoformat(value)
-    except (TypeError, ValueError):
-      return datetime.min.replace(tzinfo=timezone.utc)
+      if timestamp.tzinfo is None:
+        return timestamp.replace(tzinfo=timezone.utc)
+      return timestamp.astimezone(timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+      raise ValueError("expected an ISO date or timestamp") from None
 
-    if timestamp.tzinfo is None:
-      return timestamp.replace(tzinfo=timezone.utc)
-    return timestamp.astimezone(timezone.utc)
+  def parse_info_retrieved(self, value):
+    try:
+      return self.parse_refresh_cutoff(value)
+    except ValueError:
+      return datetime.min.replace(tzinfo=timezone.utc)
 
   def build_path_from_relative(self, base_path, relative_path):
     if not base_path or not relative_path:
@@ -205,18 +211,14 @@ class Worker():
 
   def get_refresh_candidates(self, base_path, mediatype, count):
     saved_assets = self.load_saved_assets(base_path)
-    sorted_assets = sorted(
-      saved_assets.items(),
-      key=lambda item: (self.parse_info_retrieved(item[1].get('info_retrieved')), item[0].lower())
-    )
-
+    ordered = self.select_refresh_candidates(saved_assets, base_path, len(saved_assets), priority="oldest")
     refresh_candidates = []
 
-    for asset_name, asset in sorted_assets:
+    for asset_name in ordered:
       file_details = self.build_refresh_file_details(
         self.config['assets'][base_path]['location'],
         asset_name,
-        asset,
+        saved_assets[asset_name],
         mediatype
       )
 
@@ -231,92 +233,114 @@ class Worker():
 
     return refresh_candidates
 
-  def refresh_oldest_entries(self, base_path, mediatype, count):
-    refresh_candidates = self.get_refresh_candidates(base_path, mediatype, count)
-
-    if not refresh_candidates:
-      Message.warn("No saved {} entries are available to refresh.".format(base_path))
-      return []
-
-    Message.success(
-      "Refreshing {} oldest {} entr{} based on info_retrieved".format(
-        len(refresh_candidates),
-        mediatype,
-        "y" if len(refresh_candidates) == 1 else "ies"
-      )
-    )
-    return self.scrape_file_details(
-      refresh_candidates,
-      mediatype,
-      self.config['assets'][base_path]['location']
-    )
-
   def refresh_series_entries(self, count):
     return self.refresh_saved_entries("series", count)
 
-  def refresh_saved_entries(self, asset_type, count):
-    saved = self.load_saved_assets(asset_type)
-    priority_field = "creator" if asset_type == "series" else "director"
-    candidates = sorted(saved, key=lambda key: (
-      not series_refresh.needs_metadata(saved[key], priority_field),
-      self.parse_info_retrieved(saved[key].get("info_retrieved")),
-      key.casefold(),
-    ))[:count]
+  def select_refresh_candidates(self, saved, asset_type, count, updated_before=None, priority=None):
+    prioritize_gaps = priority == "missing" or (priority is None and asset_type != "movies")
+    credit_field = "creator" if asset_type == "series" else "director"
+    ranked = []
+    for key, record in saved.items():
+      if not isinstance(record, dict):
+        continue
+      retrieved = self.parse_info_retrieved(record.get("info_retrieved"))
+      attempt = record.get("last_refresh_attempt")
+      checked = max(retrieved, self.parse_info_retrieved(attempt.get("at"))) if isinstance(attempt, dict) else retrieved
+      if updated_before is not None and checked >= updated_before:
+        continue
+      gaps = ()
+      if prioritize_gaps:
+        if asset_type == "movies":
+          gaps = tuple(-count for count in series_refresh.movie_metadata_gaps(record))
+        else:
+          gaps = (not series_refresh.needs_metadata(record, credit_field),)
+      ranked.append((gaps, checked, key.casefold(), key))
+    return [item[-1] for item in sorted(ranked)[:count]]
 
+  def fetch_refresh_metadata(self, asset_type, key, existing, source):
+    imdb_id = series_refresh.imdb_id_from_url(existing.get("url"))
+    if imdb_id is None:
+      Message.warn("Skipping '{}': no saved IMDb title ID".format(key))
+      return None, "missing_id"
+
+    file_field = "directory" if asset_type == "series" else "file_metadata"
+    relative_path = (existing.get(file_field) or {}).get("relative_path") or key
+    override = self.config.get("file_override", {}).get(relative_path)
+    if override and "tt" + str(override).removeprefix("tt") != imdb_id:
+      Message.warn("Skipping '{}': the configured override differs from {}".format(key, imdb_id))
+      return None, "override_mismatch"
+
+    try:
+      metadata_scraper = scraper.Scraper(source) if source == "IMDBV1" else scraper.Scraper(source, key, imdb_id)
+      if asset_type == "series":
+        fetch = metadata_scraper.get_series_details
+      elif asset_type == "movies" or source == "IMDBV1":
+        fetch = metadata_scraper.get_movie_details
+      else:
+        fetch = metadata_scraper.get_standup_details
+      fetched = fetch(None, existing["url"])
+    except Exception as exc:
+      Message.warn("Skipping '{}': {}".format(key, exc))
+      return None, "failed"
+
+    if not isinstance(fetched, dict) or series_refresh.imdb_id_from_url(fetched.get("url")) != imdb_id:
+      Message.warn("Keeping '{}': IMDb did not return the saved title ID {}".format(key, imdb_id))
+      return None, "title_mismatch"
+    return fetched, "unchanged"
+
+  def refresh_saved_entries(self, asset_type, count, updated_before=None, priority=None):
+    saved = self.load_saved_assets(asset_type)
+    candidates = self.select_refresh_candidates(saved, asset_type, count, updated_before, priority)
     source = self.config.get("imdb_source", "IMDB_SUGGEST")
-    overrides = self.config.get("file_override", {})
-    updated_count = 0
+    cutoff = updated_before.isoformat() if updated_before is not None else None
+    if cutoff:
+      Message.info("Refresh cutoff (UTC): {}".format(cutoff))
+
+    outcomes = Counter()
     for index, key in enumerate(candidates, start=1):
       existing = saved[key]
-      imdb_id = series_refresh.imdb_id_from_url(existing.get("url"))
       Message.info("Refreshing {} {}/{}: {}".format(asset_type, index, len(candidates), key))
-      if imdb_id is None:
-        Message.warn("Skipping '{}': no saved IMDb title ID".format(key))
+      fetched, result = self.fetch_refresh_metadata(asset_type, key, existing, source)
+      retrieved_at = datetime.now(timezone.utc).isoformat()
+      is_movie = asset_type == "movies"
+      if fetched is None and cutoff is None:
         continue
-
-      file_field = "directory" if asset_type == "series" else "file_metadata"
-      relative_path = (existing.get(file_field) or {}).get("relative_path") or key
-      override = overrides.get(relative_path)
-      if override and "tt" + str(override).removeprefix("tt") != imdb_id:
-        Message.warn("Skipping '{}': the configured override differs from {}".format(key, imdb_id))
-        continue
-
-      try:
-        if source == "IMDBV1":
-          metadata_scraper = scraper.Scraper(source)
-        else:
-          metadata_scraper = scraper.Scraper(source, key, imdb_id)
-        if asset_type == "series":
-          fetched = metadata_scraper.get_series_details(None, existing["url"])
-        elif source == "IMDBV1":
-          fetched = metadata_scraper.get_movie_details(None, existing["url"])
-        else:
-          fetched = metadata_scraper.get_standup_details(None, existing["url"])
-      except Exception as exc:
-        Message.warn("Skipping '{}': {}".format(key, exc))
-        continue
-
-      retrieved_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-      merged = series_refresh.merge_metadata(existing, fetched)
-      if merged is None:
-        Message.warn("Keeping '{}': IMDb returned no usable improvement or a different title ID".format(key))
+      merged = series_refresh.merge_metadata(existing, fetched, preserve_movie_details=is_movie)
+      if merged is None and cutoff is None and not (is_movie and fetched):
+        Message.info("Keeping '{}': no usable improvement".format(key))
         continue
 
       with self.catalog_lock(asset_type):
         current = self.load_saved_assets(asset_type)
         if current.get(key) != existing:
           Message.warn("Keeping '{}': the saved record changed during the refresh".format(key))
+          outcomes["concurrent_change"] += 1
           continue
-        poster = merged.get("image_url")
-        if poster and poster != existing.get("image_url"):
-          Image.save_remote_image(poster, key, asset_type)
-        merged.update(info_retrieved=retrieved_at, source_lib=source)
-        current[key] = merged
-        self.save_catalog(asset_type, current)
-      updated_count += 1
-      Message.success("Saved refreshed metadata for '{}'".format(key))
+        if is_movie and fetched:
+          poster = fetched.get("image_url") or existing.get("image_url")
+          poster_path = Path("_output/images/movies") / (key + ".png")
+          if poster and not poster_path.is_file() and Image.save_remote_image(poster, key, "movie"):
+            merged = {**(merged or existing), "image_url": poster}
+        elif merged and merged.get("image_url") != existing.get("image_url"):
+          Image.save_remote_image(merged["image_url"], key, asset_type)
 
-    Message.info("Saved {} of {} {} refresh candidates".format(updated_count, len(candidates), asset_type))
+        if merged is not None:
+          merged.update(info_retrieved=retrieved_at, source_lib=source)
+          result = "updated"
+        if merged is not None or cutoff:
+          updated = merged if merged is not None else dict(existing)
+          if cutoff:
+            updated["last_refresh_attempt"] = {"at": retrieved_at, "result": result, "updated_before": cutoff}
+          current[key] = updated
+          self.save_catalog(asset_type, current)
+      outcomes[result] += 1
+      if result == "updated":
+        Message.success("Saved refreshed metadata for '{}'".format(key))
+      elif result == "unchanged":
+        Message.info("Keeping '{}': no usable improvement".format(key))
+
+    counts = ", ".join("{} {}".format(total, result.replace("_", " ")) for result, total in sorted(outcomes.items()))
+    Message.info("Checked {} {} refresh candidates ({})".format(len(candidates), asset_type, counts or "no saved changes"))
     return self.load_saved_assets(asset_type)
 
   @contextmanager
@@ -502,6 +526,7 @@ class Worker():
             self.movie_scraper = scraper.Scraper(imdb_source, file_details["name"])
 
           file_attributes = self.movie_scraper.get_movie_details(file_details, None)
+          file_attributes['info_retrieved'] = datetime.now(timezone.utc).isoformat()
           # Mark provenance
           file_attributes['source_lib'] = imdb_source
           file_attributes['file_metadata'] = {}

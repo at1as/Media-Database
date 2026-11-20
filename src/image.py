@@ -29,7 +29,7 @@ class Image(object):
     img = Image.fetch_remote_image(url)
 
     if not img:
-      return
+      return False
 
     if mediatype == "movie":
       media_dir = "movies"
@@ -46,12 +46,13 @@ class Image(object):
         img.decode_content = True
         shutil.copyfileobj(img, f)
         if not f.tell():
-          return
+          return False
       mode = destination.stat().st_mode & 0o777 if destination.exists() else 0o644
       temporary_path.chmod(mode)
       temporary_path.replace(destination)
+      return True
     except (OSError, ValueError):
-      pass
+      return False
     finally:
       img.close()
       if temporary_path is not None:

@@ -124,6 +124,26 @@ make run COUNT=1
 `COUNT` caps new lookup attempts for each category, including misses. A lower
 `max_assets_chunk` in `conf.json` still applies, and a value of `0` skips new lookups.
 
+To refresh up to 100 movie records before a fixed cutoff, use:
+
+```bash
+make refresh-movie COUNT=100 UPDATED_BEFORE=2026-11-19T20:00:00Z PRIORITY=missing
+```
+
+The equivalent CLI options are `--refresh movie 100 --updated-before
+2026-11-19T20:00:00Z --priority missing`. Set the cutoff once and reuse it for each
+batch. A date like `2026-11-19` means midnight UTC, and the comparison is strict.
+`PRIORITY=missing` starts with core gaps and then other missing fields. Use
+`PRIORITY=oldest` to order by the last retrieval or check instead. Movies default
+to oldest, while series and stand-up default to their existing gap priorities.
+
+Each cutoff-run attempt records its time, outcome and cutoff in the local catalog.
+This keeps unchanged, failed and mismatched lookups from blocking later batches
+with the same cutoff. To retry those, use a newer cutoff. `info_retrieved` advances
+only when improved metadata is saved. Movie refreshes use the saved IMDb ID and
+keep the saved media paths, file details and fuller metadata. The configured IMDb
+pause still applies, and saves happen after each record.
+
 Run tests:
 
 ```bash
