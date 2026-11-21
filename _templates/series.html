@@ -225,8 +225,8 @@
           </div>
         </div>
 
-        <div id="advanced-filters">
-          <div class="filters-section-title">Search Filters</div>
+        <details id="advanced-filters" open>
+          {% include "search_filters_summary.html" %}
 
           <div class="filters-grid">
 
@@ -291,18 +291,11 @@
               </div>
             </div>
           </div>
-        </div>
+        </details>
 
       </div>
 
-      <!-- Show / Hide filter toggle -->
       <div class="page-action-group">
-        <div id="filter_toggle">
-          <button id="filter_toggle_btn" type="button" class="btn media-action-btn" aria-controls="advanced-filters" aria-expanded="true" onclick="filter_toggle()">
-            <span class="media-action-btn-icon" aria-hidden="true">▲</span>
-            <span class="media-action-btn-label">Hide Search Filters</span>
-          </button>
-        </div>
         {% include "catalog_view_toggle.html" %}
         <div class="dropdown" id="table-columns">
           <button class="btn media-action-btn dropdown-toggle" type="button" id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
