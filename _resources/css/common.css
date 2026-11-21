@@ -315,14 +315,19 @@ body.modal-open {
 }
 #advanced-filters > summary::after {
   content: '';
-  width: 9px;
-  height: 9px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  width: 11px;
+  height: 11px;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
   transform: translateY(-2px) rotate(45deg);
 }
 #advanced-filters[open] > summary::after {
   transform: translateY(2px) rotate(225deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  #advanced-filters > summary::after {
+    transition: transform 150ms ease;
+  }
 }
 #advanced-filters > summary:hover {
   background: #e4ebf2;

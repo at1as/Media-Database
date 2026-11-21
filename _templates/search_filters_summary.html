@@ -4,3 +4,6 @@
     <span id="advanced-filter-count" hidden><span data-count></span><span class="sr-only"> active</span></span>
   </span>
 </summary>
+<script>
+  document.currentScript.parentElement.open = document.documentElement.dataset.catalogFilters !== 'closed';
+</script>
