@@ -1104,6 +1104,9 @@ body.modal-open {
     padding:11px 16px;
     font-size:0.9rem;
   }
+  [data-catalog-view="tiles"] .media-action-btn-random {
+    padding-block: 10px;
+  }
 }
 .table-columns-toggle-section{
   width:100%;
@@ -1282,7 +1285,7 @@ th{
 }
 
 .catalog-tile-sort select {
-  min-height: 40px;
+  min-height: 50px;
   padding: 0;
   padding-inline: 3rem 0.5rem;
   border: 1px solid #ced4da;
