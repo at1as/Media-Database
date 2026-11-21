@@ -1497,6 +1497,7 @@ function show_details(link, opener) {
   }
   load_details(link);
   document.getElementById('modal-close-btn').focus();
+  document.querySelector('#catalog-tiles .catalog-tile-preview')?.remove();
 }
 
 function load_details(link) {
@@ -1793,6 +1794,7 @@ function append_catalog_tiles() {
     const tableLink = tileLinks[renderedTileCount];
     const row = tableLink.closest('tr');
     const card = template.content.cloneNode(true);
+    card.firstElementChild.dataset.tileIndex = renderedTileCount;
     const link = card.querySelector('.catalog-tile');
     const image = card.querySelector('img');
     const { title, rating } = get_catalog_tile_labels(row);
@@ -1841,6 +1843,95 @@ function append_catalog_tiles() {
   document.getElementById('tile-results-status').textContent =
     'Showing ' + renderedTileCount + ' of ' + tileLinks.length + ' titles';
   return grid.children[previousCount]?.querySelector('.catalog-tile');
+}
+
+function initialize_catalog_tile_preview() {
+  const grid = document.getElementById('catalog-tiles');
+  const template = document.getElementById('catalog-tile-preview-template');
+  if (!grid || !template) {
+    return;
+  }
+
+  let dismissedTile = null;
+
+  function showPreview(tile) {
+    if (modalLink || tile === dismissedTile || tile.querySelector('.catalog-tile-preview')) {
+      return;
+    }
+
+    const currentPreview = grid.querySelector('.catalog-tile-preview');
+    if (currentPreview?.contains(document.activeElement)) {
+      return;
+    }
+    currentPreview?.remove();
+
+    const tableLink = tileLinks[tile.dataset.tileIndex];
+    const row = tableLink.closest('tr');
+    const genres = extract_cell_values(row.querySelector('[name="genre_data"], [name="genres_data"]'));
+    const description = row.querySelector('.catalog-title-cell').dataset.listDescription || '';
+    const preview = template.content.firstElementChild.cloneNode(true);
+    const genreText = preview.querySelector('.catalog-tile-preview-genres');
+    const plot = preview.querySelector('.catalog-tile-preview-description');
+    genreText.textContent = genres.slice(0, 2).join(' · ');
+    genreText.hidden = !genres.length;
+    plot.textContent = description;
+    plot.hidden = !description;
+
+    const cardLink = tile.querySelector('.catalog-tile');
+    const more = preview.querySelector('.catalog-tile-preview-more');
+    more.href = tableLink.href;
+    more.setAttribute('aria-label', 'See more about ' + cardLink.querySelector('.catalog-tile-title').textContent);
+    more.addEventListener('click', event => {
+      if (!open_details(event, cardLink, tableLink)) {
+        event.preventDefault();
+      }
+    });
+    tile.append(preview);
+  }
+
+  grid.addEventListener('pointerover', event => {
+    const tile = event.target.closest('li[data-tile-index]');
+    if (event.pointerType !== 'touch' && tile && !tile.contains(event.relatedTarget)) {
+      showPreview(tile);
+    }
+  });
+
+  grid.addEventListener('focusin', event => {
+    if (event.target.matches('.catalog-tile:focus-visible')) {
+      showPreview(event.target.parentElement);
+    }
+  });
+
+  function hidePreviewOnExit(event) {
+    const tile = event.target.closest('li[data-tile-index]');
+    if (!tile || tile.contains(event.relatedTarget)) {
+      return;
+    }
+    if (event.type === 'pointerout' ? tile.contains(document.activeElement) : tile.matches(':hover')) {
+      return;
+    }
+    if (tile === dismissedTile) {
+      dismissedTile = null;
+    }
+    tile.querySelector('.catalog-tile-preview')?.remove();
+  }
+
+  grid.addEventListener('pointerout', hidePreviewOnExit);
+  grid.addEventListener('focusout', hidePreviewOnExit);
+
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || event.defaultPrevented) {
+      return;
+    }
+    const preview = grid.querySelector('.catalog-tile-preview');
+    if (preview) {
+      dismissedTile = preview.parentElement;
+      if (preview.contains(document.activeElement)) {
+        dismissedTile.querySelector('.catalog-tile').focus({preventScroll: true});
+      }
+      preview.remove();
+    }
+  });
 }
 
 function show_more_tiles() {
@@ -1952,6 +2043,7 @@ document.addEventListener('DOMContentLoaded', setupColumnVisibilityCheckboxes);
 document.addEventListener('DOMContentLoaded', enhanceTableStyling);
 document.addEventListener('DOMContentLoaded', setup_results_scroll);
 document.addEventListener('DOMContentLoaded', initialize_catalog_view);
+document.addEventListener('DOMContentLoaded', initialize_catalog_tile_preview);
 document.addEventListener('DOMContentLoaded', initialize_catalog_list_descriptions);
 document.addEventListener('catalogviewchange', apply_catalog_view);
 document.addEventListener('DOMContentLoaded', function() {

@@ -1305,7 +1305,8 @@ th{
   list-style: none;
 }
 
-.catalog-tiles li {
+.catalog-tiles > li {
+  position: relative;
   min-width: 0;
 }
 
@@ -1331,6 +1332,7 @@ th{
 
 .catalog-view-toggle button:focus-visible,
 .catalog-tile-sort select:focus-visible,
+.catalog-tile-preview-more:focus-visible,
 .catalog-tile:focus-visible {
   outline: 2px solid #667eea;
   outline-offset: 3px;
@@ -1390,6 +1392,58 @@ th{
 
 .catalog-tile-rating {
   white-space: nowrap;
+}
+
+.catalog-tile-preview {
+  position: absolute;
+  z-index: 1;
+  inset: 1px 1px auto;
+  display: grid;
+  align-items: end;
+  aspect-ratio: 2 / 3;
+  pointer-events: none;
+}
+
+.catalog-tile-preview-content {
+  min-width: 0;
+  padding: 0.75rem;
+  background: rgba(25, 34, 47, 0.97);
+  color: #f3f6fb;
+  box-shadow: 0 -5px 18px rgba(16, 22, 34, 0.2);
+}
+
+.catalog-tile-preview-genres {
+  overflow: hidden;
+  margin: 0 0 0.35rem;
+  color: #c4cedc;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.catalog-tile-preview-description:not([hidden]) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.catalog-tile-preview-more {
+  pointer-events: auto;
+  color: #cbd7ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.catalog-tile-preview-more:hover,
+.catalog-tile-preview-more:focus-visible {
+  color: #fff;
 }
 
 .catalog-tile-pagination {
