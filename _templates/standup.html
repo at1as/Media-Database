@@ -369,7 +369,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="./standup/{{standup_list[standup].title|sanitize_title|urlencode}}({{standup_list[standup].year}}).html" data-title-details onclick="return open_details(event, this)">
-                    <img width="200px" src="images/standup/{{standup_list[standup].file_metadata.filename|urlencode}}.png" loading="lazy"><!-- ' -->
+                    <img class="catalog-list-poster" width="200px" src="images/standup/{{standup_list[standup].file_metadata.filename|urlencode}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -378,14 +378,12 @@
                 <td name="vote_data" class="hidden-sm hidden-xs vertical-row" style="display:none">
                   {{ standup_list[standup].votes|format_number }}
                 </td>
-                <td sorttable_customkey="{{ standup_list[standup].title }}" class="vertical-row">
+                {% set description = standup_list[standup].description | default('', true) | striptags %}
+                <td sorttable_customkey="{{ standup_list[standup].title|e }}" class="catalog-title-cell vertical-row"{% if description %} data-list-description="{{ description | e }}"{% endif %}>
                   <a
                     href="./standup/{{standup_list[standup].title|sanitize_title|urlencode}}({{standup_list[standup].year}}).html"
                     data-title-details onclick="return open_details(event, this)"
                     class="tooltip-info"
-                    data-placement="right"
-                    data-toggle="tooltip"
-                    title="{{ standup_list[standup].description|replace('"', '&quot;') }}"
                   >
                     {{ standup_list[standup].title }}
                   </a>

@@ -370,7 +370,7 @@
               <tr class="movie-row">
                 <td name="image_data" class="vertical-row" style="text-align:center;">
                   <a href="./movies/{{movie_list[movie].title|sanitize_title|urlencode}}({{movie_list[movie].year}}).html" data-title-details onclick="return open_details(event, this)">
-                    <img class="movie-list-poster" width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename|urlencode}}.png" loading="lazy"><!-- ' -->
+                    <img class="catalog-list-poster" width="200px" src="images/movies/{{movie_list[movie].file_metadata.filename|urlencode}}.png" loading="lazy"><!-- ' -->
                   </a>
                 </td>
                 <td name="rating_data" class="vertical-row" style="text-align:center">
@@ -380,7 +380,7 @@
                   {{ movie_list[movie].votes|format_number }}
                 </td>
                 {% set description = movie_list[movie].description | default('', true) | striptags %}
-                <td sorttable_customkey="{{ movie_list[movie].title|e }}" class="movie-title-cell vertical-row"{% if description %} data-movie-description="{{ description | e }}"{% endif %}>
+                <td sorttable_customkey="{{ movie_list[movie].title|e }}" class="catalog-title-cell vertical-row"{% if description %} data-list-description="{{ description | e }}"{% endif %}>
                   <a
                     href="./movies/{{movie_list[movie].title|sanitize_title|urlencode}}({{movie_list[movie].year}}).html"
                     data-title-details onclick="return open_details(event, this)"

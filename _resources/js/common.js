@@ -1753,17 +1753,20 @@ function sort_catalog_tile_links(links, sort) {
     return shuffledTileLinks.filter(link => visible.has(link));
   }
 
-  if (sort !== 'title' && sort !== 'rating') {
+  const ascendingRating = sort === 'rating-asc';
+  const byRating = sort === 'rating' || ascendingRating;
+  if (sort !== 'title' && !byRating) {
     return links;
   }
 
+  const unratedScore = ascendingRating ? Infinity : -Infinity;
   const entries = links.map(link => {
     const { title, rating } = get_catalog_tile_labels(link.closest('tr'));
-    return { link, title, score: rating ? Number(rating) : -Infinity };
+    return { link, title, score: rating ? Number(rating) : unratedScore };
   });
   entries.sort((first, second) => {
-    if (sort === 'rating' && first.score !== second.score) {
-      return second.score - first.score;
+    if (byRating && first.score !== second.score) {
+      return ascendingRating ? first.score - second.score : second.score - first.score;
     }
     return tileTitleCollator.compare(first.title, second.title);
   });
@@ -1844,16 +1847,16 @@ function show_more_tiles() {
   append_catalog_tiles()?.focus();
 }
 
-function initialize_movie_list_descriptions() {
-  const cells = document.querySelectorAll('.movie-title-cell[data-movie-description]');
+function initialize_catalog_list_descriptions() {
+  const cells = document.querySelectorAll('.catalog-title-cell[data-list-description]');
   if (!cells.length) {
     return;
   }
 
   function renderDescription(cell) {
     const paragraph = document.createElement('p');
-    paragraph.className = 'movie-list-description';
-    paragraph.textContent = cell.dataset.movieDescription;
+    paragraph.className = 'catalog-list-description';
+    paragraph.textContent = cell.dataset.listDescription;
     cell.append(paragraph);
     return paragraph;
   }
@@ -1949,7 +1952,7 @@ document.addEventListener('DOMContentLoaded', setupColumnVisibilityCheckboxes);
 document.addEventListener('DOMContentLoaded', enhanceTableStyling);
 document.addEventListener('DOMContentLoaded', setup_results_scroll);
 document.addEventListener('DOMContentLoaded', initialize_catalog_view);
-document.addEventListener('DOMContentLoaded', initialize_movie_list_descriptions);
+document.addEventListener('DOMContentLoaded', initialize_catalog_list_descriptions);
 document.addEventListener('catalogviewchange', apply_catalog_view);
 document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById('filters');
