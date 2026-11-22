@@ -3,7 +3,7 @@
   const storageKey = 'darkMode';
   const isFile = window.location.protocol === 'file:';
   const requested = new URLSearchParams(window.location.search).get('dark');
-  let dark = requested === '1' || (requested !== '0' && readPreference() === 'true');
+  let dark = requested === '1' || (requested !== '0' && readPreference() !== 'false');
   let storageAvailable = false;
 
   function readPreference() {

@@ -82,7 +82,7 @@
   }
 
   document.addEventListener('toggle', event => {
-    if (event.target.id !== 'advanced-filters') {
+    if (event.target.id !== 'advanced-filters' || event.target.closest('#catalog-filter-dialog')) {
       return;
     }
     const next = event.target.open ? 'open' : 'closed';
@@ -124,7 +124,7 @@
         filters = savedFilters;
         root.dataset.catalogFilters = filters;
         const panel = document.getElementById('advanced-filters');
-        if (panel) {
+        if (panel && !panel.closest('#catalog-filter-dialog')) {
           panel.open = filters === 'open';
         }
         updateNavigationLinks();
