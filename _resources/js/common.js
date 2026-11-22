@@ -1982,7 +1982,6 @@ function setup_results_scroll() {
 
   function updateScrollState() {
     const fits = container.scrollWidth <= container.clientWidth;
-    container.classList.toggle('fits-viewport', fits);
     if (fits) {
       container.removeAttribute('tabindex');
     } else {
