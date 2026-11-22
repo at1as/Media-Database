@@ -1,3 +1,5 @@
+
+
 # Media Database
 
 Media Database is a local media catalog for people who want direct control over how their collection is searched and browsed.
@@ -215,6 +217,7 @@ The interface is designed around precise control rather than recommendation feed
 - The site is static output, so it can be opened directly from disk, hosted locally, or served on an internal network
 - The project currently indexes movies, series, and standup
 - Browser filtering is a core product decision, not a secondary feature
+- The `pymediainfo` dependency requires the `MediaInfo` CLI tool to be installed on your host system to extract video metadata
 
 ## Related Files
 
