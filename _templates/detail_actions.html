@@ -3,5 +3,8 @@
   {% if trailer %}
     <a href="{{ trailer }}" target="_blank" rel="noopener noreferrer" class="imdb-button trailer-button">See trailer</a>
   {% endif %}
-  <a href="{{ media.url }}" target="_blank" class="imdb-button">Go to IMDB</a>
+  {% set imdb_url = media.url | imdb_title_url %}
+  {% if imdb_url %}
+    <a href="{{ imdb_url }}" target="_blank" class="imdb-button">Go to IMDB</a>
+  {% endif %}
 </div>
