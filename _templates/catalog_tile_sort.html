@@ -1,0 +1,12 @@
+{% macro render_tile_sort(id) %}
+<div id="{{ id }}-control" class="catalog-tile-sort" hidden>
+  <label for="{{ id }}">Sort:</label>
+  <select id="{{ id }}" aria-controls="catalog-tiles">
+    <option value="table">Table order</option>
+    <option value="title">Title (A–Z)</option>
+    <option value="rating">Rating (high to low)</option>
+    <option value="rating-asc">Rating (low to high)</option>
+    <option value="random">Random</option>
+  </select>
+</div>
+{% endmacro %}

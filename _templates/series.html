@@ -24,17 +24,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <style>
-      /* Hide number input spinners to prevent visual conflicts with icons */
-      input[type=number]::-webkit-inner-spin-button,
-      input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      input[type=number] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-      }
-
       /* Sorttable adds its own arrow when a column is sorted. */
       #results thead th::after {
         content: none;
@@ -225,7 +214,7 @@
           </div>
         </div>
 
-        <details id="advanced-filters" open>
+        <details id="advanced-filters">
           {% include "search_filters_summary.html" %}
 
           <div class="filters-grid">
@@ -237,7 +226,7 @@
               </div>
               <div class="filter-prefixed-control filter-prefixed-control-votes has-inline-clear">
                 <span class="filter-prefix" aria-hidden="true">MIN VOTES</span>
-                <input class="numeric-filter-input filter-inline-input" id="vote-search" type="number" min="0" step="1" inputmode="numeric" data-numeric-filter="integer" spellcheck="false">
+                <input class="numeric-filter-input filter-inline-input" id="vote-search" type="text" inputmode="numeric" aria-label="Minimum votes" spellcheck="false">
                 <button type="button" class="filter-clear-btn" onclick="clear_filter('vote-search')" aria-label="Clear votes filter"><i class="fa fa-times-circle clear-filter"></i></button>
               </div>
             </div>
@@ -294,6 +283,8 @@
         </details>
 
       </div>
+
+      {% include "sticky_catalog_filters.html" %}
 
       <div class="page-action-group">
         {% include "catalog_view_toggle.html" %}

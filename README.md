@@ -1,225 +1,120 @@
 # Media Database
 
-Media Database is a local media catalog for people who want direct control over how their collection is searched and browsed.
+Media Database catalogs movies, TV series, and stand-up specials stored on your own drives. It scans your media folders, fetches IMDb metadata, and generates a local website where you can search, compare, and browse your collection.
 
-Most modern streaming platforms are optimized for TVs and recommendation feeds. That works well for passive viewing, but it is a poor fit for people who want to investigate a library in detail. These systems are built around algorithmic curation, limited search controls, and platform lock-in. They decide what to surface and make it harder to compare titles on your own terms.
+## Quick start
 
-Media Database takes the opposite approach. It is designed for computers, where dense tables, granular filters, sorting, and text search are practical and effective. The goal is to make your library easier to explore without relying on a platform’s recommendation engine or being tied to a single streaming ecosystem.
-
-The project indexes locally stored media, enriches it with IMDb metadata, stores that data in local JSON files, and generates a static website for browsing movies, series, and standup.
-
-## Why It Exists
-
-- Browsing a large library is easier on a desktop than on a TV interface
-- Detailed filters are more useful than recommendation-driven discovery
-- Local data ownership keeps the catalog portable and independent
-- Static output makes the workflow simple to run, share, and host
-
-## What It Does
-
-- Scans configured local directories for media files
-- Fetches metadata from IMDb using the scraper configured in `conf.json`
-- Persists normalized metadata to local JSON repositories in `_data/`
-- Builds a static HTML site in `_output/`
-- Supports browser-based filtering and sorting across many fields
-- Supports movies, series, and standup
-- Includes random selection from the current filtered result set
-- Lets you customize visible columns in the list view
-- Can play media directly in the browser when the format is supported
-
-The table is the default view. Select **Tiles** to browse the same filtered results by poster. Tiles load as you scroll, and the site remembers your view across catalog pages. Select a title in either view to open its details.
-
-## Interface
-
-List view is the primary working surface: filter aggressively, sort results, and show only the columns you care about.
-
-![List view with dense filtering and configurable columns](docs/images/list-view.png)
-
-Each title also has a detail page for deeper browsing, and compatible files can be played directly in the browser.
-
-![Detail view with title metadata and playback](docs/images/instance-view.png)
-
-## How It Works
-
-1. Configure your media library paths in `conf.json`
-2. Run the indexer
-3. New titles are looked up on IMDb and stored in local JSON files
-4. The site generator renders static pages from those saved JSON files
-5. Open the generated site in a browser and use the filters there
-
-Current saved data files:
-
-- `_data/movie_data.json`
-- `_data/series_data.json`
-- `_data/standup_data.json`
-
-Generated site output:
-
-- `_output/index.html`
-- `_output/series.html`
-- `_output/standup.html`
-
-## Quick Start
+You’ll need Python 3.10+, Git, Make, and a web browser. Indexing new titles and refreshing metadata require an internet connection to IMDb.
 
 ```bash
 git clone https://github.com/at1as/Media-Database.git
 cd Media-Database
-make deps
 make config
-vim conf.json
-make run
 ```
 
-`make config` creates `conf.json` from [`conf.json.template`](conf.json.template) and refuses to overwrite an existing `conf.json`. Run it once, then edit the generated file with your local paths before starting the app.
-
-To rebuild the static site from the existing saved JSON data without scraping new titles:
-
-```bash
-make dryrun
-```
-
-To open the generated site locally:
-
-```bash
-open _output/index.html
-```
-
-## Configuration
-
-The project is configured through `conf.json`, which should be created from `conf.json.template` using `make config`.
-
-If `conf.json` is missing, the app exits with a clear error telling you to copy the template first.
-
-Top-level settings:
-
-- `assets`: per-media-type settings for `movies`, `series`, and `standup`
-- `exclude_files`: titles or directories to skip even if they match normal indexing rules
-- `include_extensions`: allowed media extensions
-- `file_override`: manual IMDb ID overrides for known mismatches
-- `pause_time_sec`: delay between remote requests
-- `imdb_source`: scraper implementation to use
-
-Each entry in `assets` supports:
-
-- `location`: absolute path to the media directory
-- `saved_data`: path to the JSON repository for that media type
-- `index_asset`: whether that media type should be scanned
-- `max_assets`: cap on how many filesystem entries to inspect
-- `max_assets_chunk`: cap on how many new items to process in a single run
-
-## Running and Maintenance
-
-Run the full pipeline:
-
-```bash
-make run
-```
-
-To try up to one new title per enabled category in a single run:
+Edit `conf.json` and set each media category’s `location` to your library folder. Set `index_asset` to `false` for categories you don’t want to scan.
 
 ```bash
 make run COUNT=1
 ```
 
-`COUNT` caps new lookup attempts for each category, including misses. A lower
-`max_assets_chunk` in `conf.json` still applies, and a value of `0` skips new lookups.
+This installs the dependencies in the local virtual environment, tries up to one new title per enabled category, and generates the site. Open `_output/index.html` in your browser. On macOS, use `open _output/index.html`.
 
-To refresh up to 100 movie records before a fixed cutoff, use:
+Run `make run` for a normal indexing run, or `make` to see all available commands.
+
+## Interface
+
+- **Search and filter.** Combine a title search with minimum IMDb rating and vote count, years, genres, languages, cast, and directors or creators. Dropdown counts reflect the current matches.
+- **Table and Tiles.** The table opens by default. Sort by a column or choose which columns to display. Tiles load as you scroll, support title, rating, and random sorting, and show a preview on hover. **Surprise Me** picks a title from your current results.
+- **Floating filters.** Once the regular filters scroll out of view, **Filters** opens a panel with a match-count preview. Apply your changes to jump to the first match, or cancel to keep your place. The site remembers your view and theme across catalog pages. Dark mode is the default.
+- **Title details.** Open a title to see its description, credits, IMDb link, and trailer when available. The detail view shows local media information and series episode lists, including resolution where it has been scanned. Compatible files can play in the browser.
+
+Select any screenshot to enlarge it.
+
+| Movie table | Movie tiles |
+| --- | --- |
+| <a href="docs/images/movie-table.jpg"><img src="docs/images/movie-table.jpg" width="390" alt="Movie table filtered by rating, votes, and thriller genre, with descriptions and cast"></a> | <a href="docs/images/movie-tiles.jpg"><img src="docs/images/movie-tiles.jpg" width="390" alt="Filtered movie posters with the Tiles view and Random sort selected"></a> |
+
+| Series filters and tile preview | Floating Filters panel |
+| --- | --- |
+| <a href="docs/images/series-tile-preview.jpg"><img src="docs/images/series-tile-preview.jpg" width="390" alt="Series poster grid with a tile preview and result counts beside language choices"></a> | <a href="docs/images/floating-filters.jpg"><img src="docs/images/floating-filters.jpg" width="390" alt="Floating Filters panel with sort, minimum rating, minimum votes, and a count of matching series"></a> |
+
+### Title details
+
+<a href="docs/images/movie-details.jpg"><img src="docs/images/movie-details.jpg" width="640" alt="Movie detail view with a poster, description, credits, trailer and IMDb links, and a local player"></a>
+
+## Configuration and output
+
+`make config` copies [`conf.json.template`](conf.json.template) and refuses to overwrite an existing configuration.
+
+| Setting | What it controls |
+| --- | --- |
+| `assets` | Media folders, saved JSON paths, enabled categories, and scan limits |
+| `exclude_files` | Files and directories the indexer skips |
+| `include_extensions` | Video file extensions the indexer recognizes |
+| `file_override` | IMDb IDs to use when a filename lookup picks the wrong title |
+| `pause_time_sec` | Delay between IMDb lookups |
+| `imdb_source` | Scraper implementation |
+
+For each category, `max_assets` limits how many filesystem entries the indexer inspects and `max_assets_chunk` limits new lookup attempts in one run. The default saved catalogs are `_data/movie_data.json`, `_data/series_data.json`, and `_data/standup_data.json`. The generated pages are in `_output/`. Git ignores the local configuration, catalog data, and generated pages.
+
+## Running and maintenance
+
+Rebuild the site from the saved catalog without fetching new metadata.
 
 ```bash
-make refresh-movie COUNT=100 UPDATED_BEFORE=2026-11-19T20:00:00Z PRIORITY=missing
+make dryrun
 ```
 
-The equivalent CLI options are `--refresh movie 100 --updated-before
-2026-11-19T20:00:00Z --priority missing`. Set the cutoff once and reuse it for each
-batch. A date like `2026-11-19` means midnight UTC, and the comparison is strict.
-`PRIORITY=missing` starts with core gaps and then other missing fields. Use
-`PRIORITY=oldest` to order by the last retrieval or check instead. Movies default
-to oldest, while series and stand-up default to their existing gap priorities.
+`COUNT` caps new lookup attempts per enabled category, including misses. A lower `max_assets_chunk` still applies. `make run COUNT=0` skips new lookups.
 
-Each cutoff-run attempt records its time, outcome and cutoff in the local catalog.
-This keeps unchanged, failed and mismatched lookups from blocking later batches
-with the same cutoff. To retry those, use a newer cutoff. `info_retrieved` advances
-only when improved metadata is saved. Movie refreshes use the saved IMDb ID and
-keep the saved media paths, file details and fuller metadata. The configured IMDb
-pause still applies, and saves happen after each record.
-
-Run tests:
+Use a fixed cutoff to refresh older movie records in batches of up to 100.
 
 ```bash
-make test
+make refresh-movie COUNT=100 UPDATED_BEFORE=2026-11-01 PRIORITY=missing
 ```
 
-Remove a bad saved entry so it can be re-scraped:
+Reuse the same cutoff across batches. Only records checked or retrieved strictly before it are eligible. A date without a time means midnight UTC. `PRIORITY=missing` starts with gaps in metadata. `PRIORITY=oldest` orders by last retrieval or check. Movies default to oldest, while series and stand-up default to filling gaps. Use `make refresh-series` or `make refresh-standup` for the other categories.
+
+Each cutoff run saves the time and outcome of each attempt, so unchanged, failed, and mismatched lookups don’t hold up future batches. Use a newer cutoff to retry them. Movie refreshes use the saved IMDb ID and preserve saved media paths, file details, and fuller metadata. `info_retrieved` advances when improved metadata is saved.
+
+Run the test suite with `make test`.
+
+Remove a saved record when you want the indexer to look up the title again.
 
 ```bash
 python3 scripts/remove_entry.py --movie "<movie_title>" "<YYYY>"
 python3 scripts/remove_entry.py --series "<series_title>" "<YYYY>"
 ```
 
-The year is optional. If omitted, the first matching entry is removed.
+The year is optional. If omitted, the first matching record is removed.
 
-## Library Layout
+## Library layout
 
-Movies can be single files:
+Movies can be individual files or directories containing the video and related assets.
 
 ```text
 Inception (2010).mp4
-```
 
-Or a directory containing the video file and related assets:
-
-```text
 Inception (2010)/
 |-- Inception (2010).mp4
 `-- Inception (2010).srt
 ```
 
-Series should use a top-level directory named after the show and start year, with episodes inside child directories such as seasons:
+Series should use a top-level directory named after the show and its start year, with episodes in season subdirectories.
 
 ```text
 Firefly (2002)/
-`-- Firefly Season 1
+`-- Firefly Season 1/
     |-- Firefly S01E01.mp4
     |-- Firefly S01E01.srt
     |-- Firefly S01E02 The Train Job.mp4
     `-- Firefly S01E02 The Train Job.srt
 ```
 
-## Filtering Model
+## Related files
 
-Filtering happens client-side on the rendered data, which keeps the browsing experience fast and makes it easy to combine structured and text-based refinement.
-
-Common fields available for filtering or sorting include:
-
-- title
-- year
-- rating
-- genre
-- languages
-- cast
-- director or creator
-- running time
-
-The browser UI also supports:
-
-- random selection from the current filtered results
-- customizable visible columns in list views
-- direct playback on detail pages when the browser supports the media format
-
-The interface is designed around precise control rather than recommendation feeds. It is built for users who already know something about what they want and want to narrow a large library quickly.
-
-## Notes
-
-- Metadata quality depends on IMDb lookup quality, scraper behavior, and local file naming
-- The site is static output, so it can be opened directly from disk, hosted locally, or served on an internal network
-- The project currently indexes movies, series, and standup
-- Browser filtering is a core product decision, not a secondary feature
-
-## Related Files
-
-- `run.py`: entry point for normal and dry-run execution
-- `src/worker.py`: indexing pipeline and JSON persistence
-- `src/site_generator.py`: static HTML generation
-- `src/scrapers/imdb_suggest.py`: current configured IMDb scraper
-- `docs/llm_overview.md`: current architecture and filter behavior overview
+- [`run.py`](run.py) runs indexing, refreshes, and site builds.
+- [`src/worker.py`](src/worker.py) handles indexing and catalog persistence.
+- [`src/site_generator.py`](src/site_generator.py) renders the static pages.
+- [`src/scrapers/imdb_suggest.py`](src/scrapers/imdb_suggest.py) implements the default IMDb lookup.

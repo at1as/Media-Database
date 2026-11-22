@@ -68,6 +68,21 @@ class SiteGenerator(object):
       return str(number)
 
   @staticmethod
+  def imdb_title_url(value):
+    """Turn a saved IMDb title link into its canonical HTTPS URL."""
+    if not isinstance(value, str):
+      return None
+
+    title = re.fullmatch(
+      r"https?://(?:(?:www|m)\.)?imdb\.com/title/(tt[0-9]+)/?(?:[?#]\S*)?",
+      value.strip(),
+      re.IGNORECASE,
+    )
+    if title:
+      return f"https://www.imdb.com/title/{title.group(1).lower()}/"
+    return None
+
+  @staticmethod
   def imdb_trailer_url(value):
     """Normalize saved IMDb video links before exposing them in a page."""
     if not isinstance(value, str):
@@ -127,6 +142,7 @@ class SiteGenerator(object):
     env.filters['sanitize_title'] = SiteGenerator.sanitize_title_filter
     env.filters['format_number'] = SiteGenerator.format_number_filter
     env.filters['content_rating_parts'] = SiteGenerator.content_rating_parts
+    env.filters['imdb_title_url'] = SiteGenerator.imdb_title_url
     env.filters['imdb_trailer_url'] = SiteGenerator.imdb_trailer_url
 
     movie_index     = env.get_template("index.html")

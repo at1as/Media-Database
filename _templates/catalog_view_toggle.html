@@ -1,14 +1,6 @@
+{% from "catalog_tile_sort.html" import render_tile_sort %}
 <div class="catalog-view-toggle" role="group" aria-label="Results view">
   <button type="button" id="table-view-btn" aria-pressed="true" aria-controls="results-container" data-view="table">Table</button>
   <button type="button" id="tile-view-btn" aria-pressed="false" aria-controls="tile-view" data-view="tiles">Tiles</button>
 </div>
-<div id="tile-sort-control" class="catalog-tile-sort" hidden>
-  <label for="tile-sort">Sort:</label>
-  <select id="tile-sort" aria-controls="catalog-tiles">
-    <option value="table">Table order</option>
-    <option value="title">Title (A–Z)</option>
-    <option value="rating">Rating (high to low)</option>
-    <option value="rating-asc">Rating (low to high)</option>
-    <option value="random">Random</option>
-  </select>
-</div>
+{{ render_tile_sort("tile-sort") }}

@@ -1,0 +1,20 @@
+{% from "catalog_tile_sort.html" import render_tile_sort %}
+<div id="catalog-filter-placeholder" hidden></div>
+<button type="button" id="sticky-filters-button" class="btn media-action-btn" aria-haspopup="dialog"
+        aria-controls="catalog-filter-dialog" hidden>
+  <span class="media-action-btn-icon" aria-hidden="true">☰</span>
+  <span class="media-action-btn-label">Filters</span>
+  <span id="sticky-filter-count" hidden><span data-count></span><span class="sr-only"> active</span></span>
+</button>
+<dialog id="catalog-filter-dialog" aria-labelledby="catalog-filter-dialog-title">
+  <div class="catalog-filter-dialog-header">
+    <h2 id="catalog-filter-dialog-title" class="catalog-filter-dialog-title" tabindex="-1" autofocus>Filters</h2>
+    {{ render_tile_sort("dialog-tile-sort") }}
+  </div>
+  <div class="catalog-filter-dialog-fields"></div>
+  <div class="catalog-filter-dialog-actions">
+    <p id="catalog-filter-dialog-empty" class="catalog-filter-dialog-empty" role="status"></p>
+    <button type="button" id="cancel-catalog-filters" class="btn btn-light">Cancel</button>
+    <button type="button" id="apply-catalog-filters" class="btn btn-primary">Show results</button>
+  </div>
+</dialog>
