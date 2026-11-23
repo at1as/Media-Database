@@ -167,7 +167,7 @@ class TestWorkerRefresh(unittest.TestCase):
 
   def test_cutoff_and_priorities_use_saved_timestamps(self):
     worker = self.build_worker("/tmp/unused.json")
-    cutoff = worker.parse_refresh_cutoff("2026-11-19T00:00:00Z")
+    cutoff = worker.parse_refresh_cutoff("2026-11-19T00:00:00+00:00")
     self.assertEqual(cutoff, worker.parse_refresh_cutoff("2026-11-19"))
     self.assertEqual(cutoff, worker.parse_refresh_cutoff("2026-11-18T16:00:00-08:00"))
     with self.assertRaises(ValueError):

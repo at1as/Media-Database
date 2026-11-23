@@ -42,7 +42,7 @@ config:
 config-check:
 	@test -f conf.json || (echo "conf.json is missing. Run 'make config' first." && exit 1)
 
-test: config-check deps
+test: deps
 		$(PY) -m unittest discover -s tests
 
 run: export MEDIA_DATABASE_RUN_COUNT = $(COUNT)

@@ -82,6 +82,7 @@ class IMDBV1(BaseScraper):
       res = [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][3]//a')][0:-1]
       if not res:
         return [x.text for x in xml_doc.xpath('//div[@class="plot_summary_wrapper"]//div[@class="credit_summary_item"][2]//a')][0:-1]
+      return res
     except IndexError:
       try:
         return xml_doc.xpath('//div[@class="plot_summary_wrapper"]/div[1]/div[3]/span/a/span/text()')

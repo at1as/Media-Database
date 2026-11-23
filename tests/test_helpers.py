@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,26 +16,25 @@ class TestHelpers(unittest.TestCase):
     pass
 
   def test_path_of_depth(self):
-    self.assertEquals("f/g", helpers.path_of_depth("a/b/c/d/e/f/g", 2))
-    self.assertEquals("a/b/c", helpers.path_of_depth("a/b/c", 100))
+    self.assertEqual("f/g", helpers.path_of_depth("a/b/c/d/e/f/g", 2))
+    self.assertEqual("a/b/c", helpers.path_of_depth("a/b/c", 100))
 
   def test_verify_config_file(self):
-    try:
-      helpers.verify_config_file()
-    except SystemExit as e:
-      self.fail("Exception raised verifying config file: {}".format(e))
+    template = Path(__file__).resolve().parent.parent / "conf.json.template"
+    with patch("src.helpers.relative_path", return_value=template):
+      self.assertEqual(helpers.verify_config_file(), json.loads(template.read_text()))
 
   def test_get_config_file(self):
-    try:
-      helpers.get_config_file()
-    except ValueError as e:
-      self.fail("Exception thrown reading config file. It is likely not valid JSON")
-    except IOError as e:
-      self.fail("Exception thrown reading config file. It likely does not exist or has invalid file permissions")
+    config = {"include_extensions": ["mp4"]}
+    with tempfile.TemporaryDirectory() as directory:
+      path = Path(directory) / "conf.json"
+      path.write_text(json.dumps(config))
+      with patch("src.helpers.relative_path", return_value=path):
+        self.assertEqual(helpers.get_config_file(), config)
 
   def test_natural_sort(self):
     episodes = ["season 10", "season 8", "season 1", "season 02"]
-    self.assertEquals(
+    self.assertEqual(
       helpers.natural_sort(episodes),
       ["season 1", "season 02", "season 8", "season 10"]
     )
