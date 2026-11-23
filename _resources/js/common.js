@@ -100,7 +100,7 @@ function update_clear_button_visibility(field_id) {
 
 function setup_search_clear_buttons() {
   var search_inputs = document.querySelectorAll('.filter-title-input, #vote-search');
-  forEach(search_inputs, function(input) {
+  search_inputs.forEach(function(input) {
     // Set initial visibility
     update_clear_button_visibility(input.id);
 
@@ -149,18 +149,17 @@ function trigger_page_search() {
 
 function apply_catalog_filters(matches) {
   for (const row of document.querySelectorAll('#results tbody tr')) {
-    row.style.display = matches.has(row) ? '' : 'none';
+    row.hidden = !matches.has(row);
   }
 
   update_results_count_display(matches.size);
   update_filter_counts();
   update_results_empty_state(matches.size);
   update_random_selection_button();
-  stripe_table();
 }
 
 function matches_current_filter_preview(row) {
-  return draftFilterRows === null ? row.style.display !== 'none' : draftFilterRows.has(row);
+  return draftFilterRows === null ? !row.hidden : draftFilterRows.has(row);
 }
 
 function filter_debug_enabled() {
@@ -347,7 +346,7 @@ function initialize_sticky_filters() {
       return [field, value];
     });
     draftFilterRows = new Set(Array.from(document.querySelectorAll('#results tbody tr'))
-      .filter(row => row.style.display !== 'none'));
+      .filter(row => !row.hidden));
     update_filter_dialog_count(draftFilterRows.size);
 
     // Keep the regular panel's space in the page while its controls are in the dialog.
@@ -606,7 +605,7 @@ function populate_select_options(select, values, include_empty_option) {
     select.appendChild(new Option('', ''));
   }
 
-  forEach(values, function(value) {
+  values.forEach(function(value) {
     select.appendChild(new Option(value, value));
   });
 }
@@ -702,9 +701,9 @@ function collect_year_values() {
   var values = {};
   var current_year = new Date().getFullYear();
 
-  forEach(cells, function(cell) {
+  cells.forEach(function(cell) {
     var matches = cell.textContent.match(/\d{4}/g) || [];
-    forEach(matches, function(match) {
+    matches.forEach(function(match) {
       values[match] = true;
     });
   });
@@ -740,11 +739,11 @@ function collect_visible_rating_threshold_counts() {
   var counts = {};
   var visible_ratings = [];
 
-  forEach(thresholds, function(threshold) {
+  thresholds.forEach(function(threshold) {
     counts[threshold] = 0;
   });
 
-  forEach(rows, function(row) {
+  rows.forEach(function(row) {
     if (!matches_current_filter_preview(row)) {
       return;
     }
@@ -760,10 +759,10 @@ function collect_visible_rating_threshold_counts() {
     }
   });
 
-  forEach(thresholds, function(threshold) {
+  thresholds.forEach(function(threshold) {
     var threshold_value = parseFloat(threshold);
 
-    forEach(visible_ratings, function(rating_value) {
+    visible_ratings.forEach(function(rating_value) {
       if (rating_value >= threshold_value) {
         counts[threshold] += 1;
       }
@@ -786,7 +785,7 @@ function refresh_rating_select_options() {
   rating_select.innerHTML = '';
   rating_select.appendChild(new Option('', ''));
 
-  forEach(rating_values, function(value) {
+  rating_values.forEach(function(value) {
     rating_select.appendChild(new Option(value + '+ (' + counts[value] + ')', value));
   });
 
@@ -806,7 +805,7 @@ function format_selected_rating_option() {
 }
 
 function format_selected_year_options() {
-  forEach(['year-min-search', 'year-max-search'], function(field_id) {
+  ['year-min-search', 'year-max-search'].forEach(function(field_id) {
     var year_select = document.getElementById(field_id);
     if (!year_select || year_select.tomselect || !year_select.value) {
       return;
@@ -825,7 +824,7 @@ function collect_visible_year_range_values() {
   var table_type = detect_results_table_type();
   var ranges = [];
 
-  forEach(rows, function(row) {
+  rows.forEach(function(row) {
     if (!matches_current_filter_preview(row)) {
       return;
     }
@@ -874,12 +873,12 @@ function build_year_option_counts(year_values) {
   var min_counts = {};
   var max_counts = {};
 
-  forEach(year_values, function(year_string) {
+  year_values.forEach(function(year_string) {
     var year_value = parseInt(year_string, 10);
     min_counts[year_string] = 0;
     max_counts[year_string] = 0;
 
-    forEach(ranges, function(range) {
+    ranges.forEach(function(range) {
       if (range.min >= year_value) {
         min_counts[year_string] += 1;
       }
@@ -909,7 +908,7 @@ function refresh_year_select_options() {
     year_min_select.innerHTML = '';
     year_min_select.appendChild(new Option('', ''));
 
-    forEach(year_values, function(value) {
+    year_values.forEach(function(value) {
       year_min_select.appendChild(new Option(value + ' (' + counts.min[value] + ')', value));
     });
 
@@ -920,7 +919,7 @@ function refresh_year_select_options() {
     year_max_select.innerHTML = '';
     year_max_select.appendChild(new Option('', ''));
 
-    forEach(year_values, function(value) {
+    year_values.forEach(function(value) {
       var numeric_value = parseInt(value, 10);
       if (min_floor !== null && numeric_value < min_floor) {
         return;
@@ -980,7 +979,7 @@ function initialize_enhanced_filter_selects() {
   }
 
   var year_values = collect_year_values();
-  forEach(['year-min-search', 'year-max-search'], function(field_id) {
+  ['year-min-search', 'year-max-search'].forEach(function(field_id) {
     var year_select = document.getElementById(field_id);
     if (year_select) {
       if (!year_select.dataset.filterBound) {
@@ -1349,41 +1348,6 @@ function title_match(query, listing) {
   return terms.length === 0 || terms.some(term => normalizedTitle.includes(term));
 }
 
-// Restripe the table rows after filtering out rows
-function stripe_table() {
-  var all_rows      = document.querySelectorAll('.table > tbody > tr');
-  var visible_rows  = []
-  var even_row      = false;
-
-  for(var n=0; n<all_rows.length; n++){
-    if (all_rows[n].style.display !== "none") { visible_rows.push(all_rows[n]) }
-  }
-
-  for(var k=0; k<visible_rows.length; k++){
-
-    var visible_cells = visible_rows[k].children;
-
-    if (even_row === false) {
-      for (var m=0; m<visible_cells.length; m++) {
-        // Preserve existing classes and only modify stripe classes
-        var existingClasses = visible_cells[m].className.replace(/\s*stripe-off\s*/g, '').replace(/\s*stripe-on\s*/g, '').trim();
-        visible_cells[m].className = existingClasses + " stripe-on";
-      }
-      even_row = true;
-
-    } else {
-      for (var m=0; m<visible_cells.length; m++) {
-        // Preserve existing classes and only modify stripe classes
-        var existingClasses = visible_cells[m].className.replace(/\s*stripe-off\s*/g, '').replace(/\s*stripe-on\s*/g, '').trim();
-        visible_cells[m].className = existingClasses + " stripe-off";
-      }
-      even_row = false;
-
-    }
-  }
-};
-
-
 // Return string with diactirics removed
 function remove_diacritics(str) {
 
@@ -1489,7 +1453,7 @@ function remove_diacritics(str) {
 function get_table_modal_links({includeHidden = false} = {}) {
   const rows = document.querySelectorAll('#results tbody tr');
   return Array.from(rows)
-    .filter(row => includeHidden || row.style.display !== 'none')
+    .filter(row => includeHidden || !row.hidden)
     .map(row => row.querySelector('a[data-title-details]'))
     .filter(Boolean);
 }
@@ -1616,7 +1580,7 @@ window.addEventListener('message', event => {
 function clear_all_filters() {
   var filter_inputs = get_filter_fields();
 
-  forEach(filter_inputs, function(input) {
+  filter_inputs.forEach(function(input) {
     clear_filter_field(input.id);
   });
 
@@ -1635,7 +1599,7 @@ function toggle_column_visibility(column_name, checkbox) {
   var should_show = checkbox && checkbox.checked;
   var display_state = should_show ? "" : "none";
 
-  forEach(column_cells, function(cell) {
+  column_cells.forEach(function(cell) {
     cell.style.display = display_state;
   });
 };
@@ -1659,7 +1623,7 @@ function update_random_selection_button() {
   var visible_rows = [];
 
   for(var i = 0; i < all_rows.length; i++){
-    if (all_rows[i].style.display !== "none"){
+    if (!all_rows[i].hidden){
       visible_rows.push(all_rows[i]);
     }
   }
@@ -1695,7 +1659,7 @@ function handleDropdownItemClick(checkboxId, columnType, event) {
 
 function setupColumnVisibilityCheckboxes() {
   var checkboxes = document.querySelectorAll('[id$="_data_checkbox"]');
-  forEach(checkboxes, function(checkbox) {
+  checkboxes.forEach(function(checkbox) {
     checkbox.addEventListener('change', function() {
       var columnType = checkbox.id.replace('_checkbox', '');
       toggle_column_visibility(columnType, checkbox);
@@ -2031,7 +1995,7 @@ function enhanceTableStyling() {
   }
 
   var genreCells = resultsTable.querySelectorAll('td[name="genres_data"], td[name="genre_data"]');
-  forEach(genreCells, function(cell) {
+  genreCells.forEach(function(cell) {
     if (cell.dataset.enhanced) {
       return;
     }
@@ -2049,7 +2013,7 @@ function enhanceTableStyling() {
   });
 
   var ratingCells = resultsTable.querySelectorAll('td[name="rating_data"]');
-  forEach(ratingCells, function(cell) {
+  ratingCells.forEach(function(cell) {
     if (cell.dataset.enhanced) {
       return;
     }

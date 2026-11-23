@@ -50,7 +50,7 @@
   }
 
   function updateNavigationLinks() {
-    document.querySelectorAll('#navbarSupportedContent a.nav-link').forEach(link => {
+    document.querySelectorAll('#navbarSupportedContent a.nav-link, .navbar-about').forEach(link => {
       const destination = new URL(link.href);
       updateUrlParams(destination, isFile);
       link.href = destination.href;

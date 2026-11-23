@@ -227,12 +227,11 @@
               </span>
             </a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link active" href="./about.html">About</a>
-          </li>
         </ul>
       </div>
-      {% include "theme_toggle.html" %}
+      {% with about_is_current=true %}
+        {% include "navbar_utilities.html" %}
+      {% endwith %}
     </nav>
 
     <div class="container body-container">

@@ -23,12 +23,13 @@
     }
   }
 
-  function applyTheme() {
+  function applyTheme(animateToggle = false) {
+    root.classList.toggle('theme-toggle-animated', animateToggle);
     root.classList.toggle('dark-theme', dark);
     const toggle = document.getElementById('darkModeToggle');
     if (toggle) {
       toggle.checked = dark;
-      document.querySelectorAll('#navbarSupportedContent a.nav-link').forEach(link => {
+      document.querySelectorAll('#navbarSupportedContent a.nav-link, .navbar-about').forEach(link => {
         const destination = new URL(link.href);
         if (isFile || !storageAvailable) {
           destination.searchParams.set('dark', dark ? '1' : '0');
@@ -70,7 +71,7 @@
       dark = event.target.checked;
       storageAvailable = savePreference();
       updatePageUrl();
-      applyTheme();
+      applyTheme(true);
     });
   });
 
@@ -89,6 +90,6 @@
       }
     }
     // Browsers may restore the checkbox value after firing pageshow.
-    requestAnimationFrame(applyTheme);
+    requestAnimationFrame(() => applyTheme());
   });
 })();
