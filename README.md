@@ -2,6 +2,8 @@
 
 Media Database catalogs movies, TV series, and stand-up specials stored on your own drives. It scans your media folders, fetches IMDb metadata, and generates a local website where you can search, compare, and browse your collection.
 
+> **[Try the live demo →](https://www.jasonwillems.com/sites/mediadatabase/output/)** — browse a hosted sample catalog with table & tile views, dark mode, and live filters.
+
 ## Quick start
 
 You’ll need Python 3.10+, Git, Make, and a web browser. Indexing new titles and refreshing metadata require an internet connection to IMDb.
